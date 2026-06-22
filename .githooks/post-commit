@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# post-commit: 自动刷新 .content-index.json（不阻塞）
+# 索引本身被 gitignore，不会卷入历史。
+
+if [ ! -f scripts/pyproject.toml ] || ! command -v uv >/dev/null 2>&1; then
+    exit 0
+fi
+
+# 静默重建索引，失败不报错（hook 不应影响 commit 已完成的事实）
+uv run --directory scripts --quiet content index >/dev/null 2>&1 || true

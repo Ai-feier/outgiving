@@ -1,0 +1,69 @@
+# === 内容产出（保留目录结构，忽略内容文件）===
+topics/**
+!topics/.gitkeep
+platforms/**
+!platforms/.gitkeep
+published/**
+!published/.gitkeep
+analytics/**
+!analytics/.gitkeep
+
+# === 素材媒体文件（保留目录结构，忽略二进制文件）===
+assets/characters/*
+!assets/characters/.gitkeep
+assets/scenes/*
+!assets/scenes/.gitkeep
+assets/storyboards/*
+!assets/storyboards/.gitkeep
+assets/props/*
+!assets/props/.gitkeep
+assets/vfx/*
+!assets/vfx/.gitkeep
+assets/audio/*
+!assets/audio/.gitkeep
+assets/lighting/*
+!assets/lighting/.gitkeep
+assets/materials/*
+!assets/materials/.gitkeep
+assets/concepts/*
+!assets/concepts/.gitkeep
+assets/templates/*
+!assets/templates/.gitkeep
+assets/rigging/*
+!assets/rigging/.gitkeep
+assets/palettes/*
+!assets/palettes/.gitkeep
+assets/typography/*
+!assets/typography/.gitkeep
+assets/matte-paintings/*
+!assets/matte-paintings/.gitkeep
+assets/brand/*
+!assets/brand/.gitkeep
+assets/images/*
+!assets/images/.gitkeep
+assets/snippets/*
+!assets/snippets/.gitkeep
+
+# === 素材运行时状态（不入库）===
+assets/material-backlog*.md
+.asset-lab.lock
+
+# === 内容索引（脚本生成）===
+.content-index.json
+
+# === Python / uv ===
+scripts/.venv/
+scripts/.git/
+**/__pycache__/
+*.pyc
+
+# === 编辑器 ===
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# === 系统 ===
+.DS_Store
+Thumbs.db
+.env

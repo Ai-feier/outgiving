@@ -1,0 +1,8 @@
+{
+    "video_provider": "seedance",
+    "tts_provider": "volcengine",
+    "music_provider": "volcengine_genbgm",
+    "preferred_voice": "zh_female_shuangkuisi",
+    "default_duration": 5,
+    "note": "Set VIDEO_PROVIDER / TTS_PROVIDER / MUSIC_PROVIDER env vars to override. To add a new provider: implement the same interface, add to registry.py."
+}

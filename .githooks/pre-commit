@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# pre-commit: 校验 staged 的 markdown frontmatter 是否合规
+# 安装：git config core.hooksPath .githooks
+
+set -e
+
+# 找出本次提交涉及的、需要校验的 md 文件
+STAGED_MD=$(git diff --cached --name-only --diff-filter=ACM \
+    | grep -E '^(topics|platforms|published|analytics)/.*\.md$' \
+    | grep -vE '(_TEMPLATE|outline\.md|README\.md)' || true)
+
+if [ -z "$STAGED_MD" ]; then
+    exit 0
+fi
+
+# 必须有 uv + scripts 项目
+if ! command -v uv >/dev/null 2>&1; then
+    echo "❌ pre-commit: uv 未安装，无法校验 frontmatter"
+    exit 1
+fi
+
+if [ ! -f scripts/pyproject.toml ]; then
+    echo "❌ pre-commit: scripts/ 项目不存在"
+    exit 1
+fi
+
+echo "🔍 校验 frontmatter ($(echo "$STAGED_MD" | wc -l) 个文件)..."
+if ! uv run --directory scripts --quiet content validate; then
+    echo ""
+    echo "❌ 提交被阻止：frontmatter 不合规"
+    echo "   修复后重新 add + commit；或用 git commit --no-verify 强制提交（不推荐）"
+    exit 1
+fi
+
+echo "✅ frontmatter 全部合规"

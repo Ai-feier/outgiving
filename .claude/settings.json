@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(uv run --directory scripts content *)"
+    ],
+    "deny": [
+      "Edit(*frontmatter*)",
+      "Write(*frontmatter*)"
+    ]
+  },
+  "outputStyle": "content-style"
+}
