@@ -232,14 +232,26 @@ grep 'deprecated' assets/*-index.md | grep 'appears_in.*\[T.+]'   # 阻塞归档
 2. **场景定调图**：同流程 → 人确认 → Seedream 生成 → `ai-video/projects/TXXX/assets/ref-images/` → 验证 → 晋升 `assets/scenes/` + `assets/scenes-index.md`
 3. **分镜关键帧**：入库 `ai-video/projects/TXXX/assets/storyboards/`，标注 beat 编号。关键定格帧晋升 `assets/storyboards/` 并更新子索引
 
-**生图确认门**（每次生成前）：将 Seedream prompt + **参考图声明**（清单：路径+用途+正/负面标注）+ 构图描述 → 人确认 → 调用 API。人不确认 → 不生成。门记录存档在 `gates/image-gen-{资产名}.md`。
+**生图确认门**（生成前创建 → 人确认 → 生成后更新）：
 
-参考图声明格式：
+**Step 1 — 生成前**：创建 `gates/image-gen-{资产名}.md`，包含：
+- Seedream prompt（完整文本）
+- **参考图声明**：`![]()` 内联预览 + 路径 + 用途 + 正/负面标注（参照 `_index.md` 七字段格式）
+- 构图描述 + 生成参数（model/size/参考图数量）
+→ **人确认后**才调用 API。人不确认 → 不生成。
+
+**Step 2 — 生成后**：同一 gate 文件追加「生成结果」节——图片 `![]()` 预览 + 质量评估 + 偏差记录 + 产出文件清单。
+
+参考图声明格式（`![]()` 内联，参照 `_index.md`）：
 ```
-参考图清单：
-  - ref-images/Ichigo_front_v01.png（正面，正面参考：身份+脸型+发型）
-  - ref-images/Byakuya_official.png（动画截图，正面参考：服装+配色）
-  负面参考：ref-images/Yhwach_front_v01.png（脸型骷髅化，不匹配目标角色）
+## 参考图声明
+
+| 文件 | 类型 | 用途 | 来源 | 质量 |
+|------|------|------|------|------|
+| ![001_char_identity_v01.png](../assets/ref-images/001_char_identity_v01.png) | CHR | layout+id | ai:Seedream | 1440/M/N |
+| ![002_keyvisual_v01.jpg](../assets/ref-images/002_keyvisual_v01.jpg) | KV | style | animecorner.me | 1080/H/N |
+
+负面参考：`path/to/img.png`（原因）
 ```
 
 **协作契约**：产出 `visual-assets-spec.md` → 自产图 → 质量自检 → 按命名规范入库 → 更新对应子索引 → 协调 figure-draftsman 分镜线稿 → video-director 查子索引收集素材 → 编入 prompt 9 要素。
