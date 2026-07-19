@@ -134,7 +134,7 @@ P3 优先搜 Pixiv/Danbooru 标签系统。
   负参考：ref-images/T003/003_style_look_WrongStyle_v01.png（风格不匹配当前选题）
 ```
 
-gate 文件写入 `gates/image-gen-{topic}.md`。
+gate 文件写入 `gates/image-gen-{资产名}.md`。
 
 ## 精进机制
 

@@ -228,7 +228,7 @@ grep 'deprecated' assets/*-index.md | grep 'appears_in.*\[T.+]'   # 阻塞归档
 
 产出两阶段：草稿阶段存项目 `ref-images/` → 验证后晋升 `assets/`。晋升条件：IaD检查通过 / ≥1024px .png / 至少一段视频验证有效 / 命名转全局规范。视频验证前所有参考图只存在于项目级 `ref-images/`，不在 `assets/` 创建条目。
 
-1. **角色参考图**：来源优先级——(a) 查 `assets/characters-index.md` 已有可复用资产；(b) `/find-ref` 搜索官方设定集/动画截图（下载到 `ref-images/`，标注来源）；(c) Seedream fallback——找一张现有多视图设计稿作为布局参考图 → 人确认（确认门含参考图声明：路径+用途+正/负面标注 + 参考图数量 1-3，铁律 1a）→ `SeedreamImage.generate_to_file()` 单图直接生成 → 质量检查(IaD/≥1024px/.png) → Seedance验证通过 → 晋升 `assets/characters/`（按全局规范重命名）→ 更新 `assets/characters-index.md`
+1. **角色参考图**：来源优先级——(a) 查 `assets/characters-index.md` 已有可复用资产；(b) `/find-ref` 搜索官方设定集/动画截图（下载到 `ref-images/`，标注来源）；(c) Seedream fallback——找一张现有多视图设计稿作为布局参考图 → 通过生图确认门 → 生成 → 质量检查(IaD/≥1024px/.png) → Seedance验证通过 → 晋升 `assets/characters/`（按全局规范重命名）→ 更新 `assets/characters-index.md`
 2. **场景定调图**：同流程 → 人确认 → Seedream 生成 → `ai-video/projects/TXXX/assets/ref-images/` → 验证 → 晋升 `assets/scenes/` + `assets/scenes-index.md`
 3. **分镜关键帧**：入库 `ai-video/projects/TXXX/assets/storyboards/`，标注 beat 编号。关键定格帧晋升 `assets/storyboards/` 并更新子索引
 
