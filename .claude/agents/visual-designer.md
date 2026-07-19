@@ -105,7 +105,24 @@ V=5: 人群+高度细节+7+材质类 (街景/战争场面)
 | 道具 | 稀疏Token | ≥1图 |
 | 动效/环境 | 无追踪 | 0图 |
 
-**Seedance参考图策略**：四类——(1)角色锚定:1帧组合图（正面+半侧+全身合一帧，满足Argus分布+KeyFrame-Compass≤1帧。不同角色分图）；(2)场景定调；(3)运镜参考:1段视频；(4)节奏:1段音频。总参考图≤4张。
+**生视频参考图策略（Seedance，铁律 1b：3-7 张）**：四类——(1)角色锚定:1帧组合图（正面+半侧+全身合一帧，满足Argus分布+KeyFrame-Compass≤1帧。不同角色分图）；(2)场景定调；(3)运镜参考:1段视频；(4)节奏:1段音频。API 硬上限 9 张，3-7 为推荐区间。
+
+**角色参考图必须是角色设计稿格式（character design sheet）**，不是艺术肖像或 key visual。设计稿 = 多视图合成帧（正面/3:4侧面/全身站姿）+ 中性表情 + 服装完整展示 + 纯色/中性背景。参考官方动画角色设定集——信息密度优先于氛围感。不允许：单张艺术肖像、非中性表情、动作姿态、武器展示、复杂背景。
+
+**参考图来源优先级**：web 优先 > Seedream fallback。
+1. **查 assets/ 子索引**：已有可复用资产直接引用路径。
+2. **网上找**：Bleach 等成熟 IP 有大量官方设定集/动画截图/同人作品。搜索下载到 `ref-images/`，标注来源。若找到官方角色设计稿（多视图+中性表情+纯色背景），直接作为规范参考，无需 Seedream 生成。
+3. **Seedream fallback**：仅当网上找不到合适来源时（如原创角色/特定组合形态），才用 Seedream 生成。
+
+**Seedream 5.0 限制**：Seedream 5.0 是文生图模型，无法从文本理解"三栏合成帧"。
+
+**解决方案：布局参考图策略**。模型不是不理解多视图——是没有见过。给一张现有的角色设计稿作为布局参考图即可：
+
+1. 找一张多视图角色设计稿（任何 anime character design sheet），下载到 `ref-images/`
+2. 作为 `reference_image_url` 传入 Seedream——提供布局格式 + 风格锚定
+3. Prompt 描述目标角色外观（色值/面部锚点/服装）——模型照布局替换角色
+
+单图直接生成多视图设计稿，不需要拼合。如果加了布局参考图还不行 → 根因在 prompt 细节或参考图质量，不在模型能力。
 
 > **注意**：Seedance官方推荐每角色4-8张独立图，但KeyFrame-Compass(2026)发现参考密度越高，模型忠实度与自然度冲突越明显，≤1帧/实体效果最佳。当前复合帧策略是折中——1帧内包含多视角信息。实践中若遇到面部变形，可尝试减至3张最一致的单视图，加强Reference Lock。
 
@@ -209,10 +226,21 @@ grep 'deprecated' assets/*-index.md | grep 'appears_in.*\[T.+]'   # 阻塞归档
 
 ### 三条产出线
 
-同原设计，索引操作更新：
-1. **角色参考图**：产出 → 质量检查(IaD/≥1024px/.png) → 入库 `assets/characters/` → 按命名规范 → 更新 `assets/characters-index.md`（含 `appears_in_style` + `appears_in_topic`）
-2. **场景定调图**：同流程 → `assets/scenes/` + `assets/scenes-index.md`
-3. **分镜关键帧**：入库 `assets/storyboards/` + `assets/storyboards-index.md`，标注 beat 编号
+产出两阶段：草稿阶段存项目 `ref-images/` → 验证后晋升 `assets/`。晋升条件：IaD检查通过 / ≥1024px .png / 至少一段视频验证有效 / 命名转全局规范。视频验证前所有参考图只存在于项目级 `ref-images/`，不在 `assets/` 创建条目。
+
+1. **角色参考图**：来源优先级——(a) 查 `assets/characters-index.md` 已有可复用资产；(b) `/find-ref` 搜索官方设定集/动画截图（下载到 `ref-images/`，标注来源）；(c) Seedream fallback——找一张现有多视图设计稿作为布局参考图 → 人确认（确认门含参考图声明：路径+用途+正/负面标注 + 参考图数量 1-3，铁律 1a）→ `SeedreamImage.generate_to_file()` 单图直接生成 → 质量检查(IaD/≥1024px/.png) → Seedance验证通过 → 晋升 `assets/characters/`（按全局规范重命名）→ 更新 `assets/characters-index.md`
+2. **场景定调图**：同流程 → 人确认 → Seedream 生成 → `ai-video/projects/TXXX/assets/ref-images/` → 验证 → 晋升 `assets/scenes/` + `assets/scenes-index.md`
+3. **分镜关键帧**：入库 `ai-video/projects/TXXX/assets/storyboards/`，标注 beat 编号。关键定格帧晋升 `assets/storyboards/` 并更新子索引
+
+**生图确认门**（每次生成前）：将 Seedream prompt + **参考图声明**（清单：路径+用途+正/负面标注）+ 构图描述 → 人确认 → 调用 API。人不确认 → 不生成。门记录存档在 `gates/image-gen-{资产名}.md`。
+
+参考图声明格式：
+```
+参考图清单：
+  - ref-images/Ichigo_front_v01.png（正面，正面参考：身份+脸型+发型）
+  - ref-images/Byakuya_official.png（动画截图，正面参考：服装+配色）
+  负面参考：ref-images/Yhwach_front_v01.png（脸型骷髅化，不匹配目标角色）
+```
 
 **协作契约**：产出 `visual-assets-spec.md` → 自产图 → 质量自检 → 按命名规范入库 → 更新对应子索引 → 协调 figure-draftsman 分镜线稿 → video-director 查子索引收集素材 → 编入 prompt 9 要素。
 
@@ -249,14 +277,28 @@ grep 'deprecated' assets/*-index.md | grep 'appears_in.*\[T.+]'   # 阻塞归档
 **闭环验证**：VLM检查问题节拍，仅重绘问题拍(recall-first)，更新规范参考。
 
 ## 工作方法
+
+### 阶段A — 方向同步（先写TOGETHER）
 1. 读brief+video-style+风格文件→判断视觉形态
-2. 状态块工作法(环境→角色→动作→首尾帧→风格)
-3. 产出visual-assets-spec.md+自产参考图（质量检查IaD+≥1024px+.png → 入库assets/{characters,scenes,storyboards}/ → 更新对应子索引）+协调分镜线稿（入库assets/storyboards/ → 更新storyboards-index.md）
-4. 六维选择+材质实例→V输出rhythm-designer(CF与V不得同时≥4)
+2. 状态块工作法粗筛(环境→角色→动作→首尾帧→风格)，确定V值粗估
+3. **填TOGETHER.md §2.2**：我理解的方向、视觉形态+理由、核心假设（谁需要确认）、V值、给script的约束（实体复现间隔/禁止清单）、给rhythm的约束（V值/材质复杂度）—— **不填完不进阶段B**
+
+### 阶段B — 详细设计
+4. 六维选择+材质实例→V精确定值→输出rhythm-designer(CF×V<4)
 5. 记忆策略+工具选择；实体规范参考由首拍锁定
 6. 视觉DNA表+读取情绪锚点(追问三件事)
 7. 标注P0；校验节拍时长+实体复现间隔+CF×V<4
-8. 时序验证+闭环验证→输出visual-world.md
+8. 产出 visual-assets-spec.md → 为每个 P0 资产收集参考图（按来源优先级：查 assets/ 子索引 → 网上找官方图下载到 ref-images/ 并标注来源 → Seedream fallback）：
+   - 角色参考图：先在 asset-lab 查重 + `/find-ref` 搜索官方设定集/动画截图下载到 ref-images/ + 找一张多视图设计稿做布局参考图 → Seedream 单图直接生成（参考图数量 1-3，铁律 1a：布局参考+角色锚定+风格参考）
+   - 场景定调图：网上找场景参考或 Seedream 单图生成
+   → **人确认 prompt + 参考图声明（路径+用途+正/负面标注）+ 构图**（生图确认门，记录存档 gates/image-gen-{资产名}.md）
+   → 通过后生成/下载 → 质量检查(IaD/≥1024px/.png) → 视频验证有效后晋升 assets/{characters,scenes,storyboards}/（按全局规范重命名 + 更新子索引）。协调分镜线稿 → 入库 storyboards/
+9. 时序验证+闭环验证→输出visual-world.md
+
+### 阶段C — 对齐回读（产出后必做）
+10. **回读其他设计师的TOGETHER.md §2** → 在§3勾对齐状态（总拍数/总时长/段数/锚点拍/CF×V/实体复现间隔/段边界尾帧策略）
+11. **不对齐** → 在§4写评论 @目标agent（标注严重度🔴/🟡/🟢）→ 参与loop优化直至全部✅
+12. **为门3准备**：整理视觉侧矛盾点 → 配合video-director生成design-contradiction-summary.md
 
 ## 自检
 - [ ] 视觉形态选出的？P0≤30%且已优先生产？
@@ -264,11 +306,20 @@ grep 'deprecated' assets/*-index.md | grep 'appears_in.*\[T.+]'   # 阻塞归档
 - [ ] 锚点四级选定？规范参考+记忆策略就位？
 - [ ] 情绪动作化已翻译（无抽象词进prompt）？
 - [ ] CF与V不得同时≥4？节拍时长+实体间隔与script对齐？
+- [ ] **TOGETHER.md §2.2 已填（方向+假设+V值+约束）？产出后回读其他设计师§2并标注§3对齐状态？不对齐已在§4评论@目标agent？**
+- [ ] **门3输入已准备？design-contradiction-summary.md 已整理视觉侧矛盾点（与script/rhythm的拍数/内容/边界冲突）？**
+- [ ] **门4素材已就位？参考图数量/质量/角色IaD中性表情、段边界尾帧链规划已确认？**
 - [ ] 换风格时[STYLE-DEP]同步更新？资产规格产出？参考图质量检查（IaD+分辨率+.png）？
 - [ ] **资产命名按规范 `{Type}_{TopicID}[_{StyleTag}]_{EntityName}_{Variant}_v{NN}.{ext}`？Type 已注册于 taxonomy-registry.md？Variant 属受控变体表？**
 - [ ] **风格标签已在 taxonomy-registry.md 注册？多风格资产用 `appears_in_style` 而非文件名 StyleTag？**
 - [ ] **对应子索引已更新（含 `appears_in_topic` + `appears_in_style` + 版本关系）？锁文件已清理？**
 - [ ] **taxonomy-registry 维护职责履行？（新增类型/风格/变体已注册？季度审计逾期未做？）**
+- [ ] **ai-video/ 产出符合工作区规范？——工作素材存 ref-images/（草稿命名），晋升 assets/ 前满足三条件（IaD + 分辨率 + 实用验证 + 全局命名转换）？**
+- [ ] **尾帧管理就位？——链式传递使用前段尾帧，重大项目变更时版本号递增，选题结束清理临时尾帧？**
+- [ ] **参考图来源已验证（查 assets/ 子索引 → 网上找官方图 → Seedream fallback）？网上找到的已下载到 ref-images/ 并标注来源？**
+- [ ] **Seedream prompt 已产出（角色设计稿单图生成 + 布局参考图 + 参考图声明 + 参考图数量 1-3，铁律 1a）？生图确认门已通过（gates/ 记录存档）？生成后 IaD 检查通过？**
+- [ ] **生图确认门参考图数量在 1-3 范围内（铁律 1a）？少于 1 → 阻塞，先找参考图？**
+- [ ] **生图前不跳过确认门——prompt + 参考图声明 + 构图描述已让人看过并确认？**
 
 ## 反思
 遵循reflecting漏斗模型。入口：六维选择被纠正≥2次/帧间一致性失败/工具重大更新/director反馈不可消费/[STYLE-DEP]漏更新。
@@ -280,10 +331,4 @@ grep 'deprecated' assets/*-index.md | grep 'appears_in.*\[T.+]'   # 阻塞归档
 | **深度3**框架层 | 核心假设变化/工具剧变 | 重新定义「你面对的」→更新_index.md |
 | **升级** | ≥3次修不好 | 触发reflecting+广播video-director |
 
-### 精进历史（摘要）
-- **第三~九轮(07.17-18)**：STYLE-DEP重构；GroundShot星形一致；IaD/ExpPortrait三维解耦；Argus动态身份分布；Seedance参考策略；视觉资产沉淀体系。
-- **第十轮(07.18)**：自检精简(13→9)；情绪表补充快乐/惊讶；三维解耦去指标留实践；记忆策略去论文引用留语义。
-- **第十一~十三轮(07.18)**：Lynx/PAIR/EchoStyle/Aura/Gemini-OMNI集成；KeyFrame-Compass≤1帧约束→复合帧策略；跨agent一致性审计(四文件对位，修正8处)；工具表第4列新增；AniMatrix确认未开源。
-- **第十四轮(07.18 合成轮reflecting)**：删除过时论文指标、模型内部机制描述、不可行动的技术流程(PSIVG TTCO/VideoNeuMat/人格调制)；合并重叠概念(工作方法11→8步，自检9→6项)；解决Seedance vs KeyFrame-Compass参考量冲突(显式标注)；"你面对的"8段→3段合成；精进历史压缩。263→约175行。
-- **第十五轮(07.18 资产系统reflecting)**：WebSearch 调研驱动——4方向搜索覆盖游戏AAA管线(Kokku Games/Unity/Semaphore)、设计系统命名规范(Figma/GitLab Pajamas/Jack Henry)、混合索引架构(Warner Bros NAB/Moments Lab+LucidLink/Orange Logic)、资产生命周期版本管理(MovieLabs OMC/Cloudinary/Netflix AMP)。发现资产单表设计在50+条目下的5项可扩展性风险。变更：资产索引拆分为类型级子索引 + 命名规范表 + 版本关系追踪(replaced_by/derived_from) + 跨题引用追踪(appears_in 拦截) + agent读写协调锁(.asset-lab.lock)。自检补资产专项。asset-lab.md 重构为根清单+子索引结构。
-- **第十六轮(07.18 多题材防熵增reflecting)**：WebSearch 调研——6方向搜索覆盖 DAM 分类法设计(Frontify/Bynder/Orange Logic)、MovieLabs OMC 本体论、受控词汇表设计模式(Correia & Aguiar PLoP)、游戏管线资产复用(Walla Walla Studio/Perforce)、多租户元数据治理(MetaBroadcast MGB/TEADAL KCONG)、风格标签分面分类(Getty AAT)。发现当前系统 3 个熵增点：类型前缀不可扩展(仅3种)、风格标签不存在、无治理机制。变更：(1)新建 `assets/taxonomy-registry.md` 受控词汇表——14 类型前缀 + 8 风格标签 + 受控变体表 + 治理流程；(2)风格确定为独立分类维度（子索引 `appears_in_style` 列），非文件名强制要件；(3)命名规范增加可选 `{_StyleTag}` 段；(4)扩展 asset-lab.md 路由表至 14 类型；(5)子索引统一增加 `style` / `replaced_by` / `appears_in_topic` / `appears_in_style` 列；(6) script-designer + video-director 同步更新查询协议。来源：Frontify/Bynder DAM taxonomy guide; MovieLabs OMC v2.6; Correia & Aguiar PLoP 2011; Walla Walla Studio unified asset pipeline; MetaBroadcast MGP April 2025; Getty AAT.
+精进日志：`.claude/reflecting-log.md`

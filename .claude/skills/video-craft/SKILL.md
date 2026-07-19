@@ -3,7 +3,6 @@ name: video-craft
 description: AI 视频创作的元知识 — 剧本/主体/节奏三元素相互成就的认知框架。不是工序流水线，是理解 AI 视频创作本质的底层知识。独立于文本 pipeline，共享选题 brief。
 argument-hint: "[new|design|direct|style]"
 ---
-
 # video-craft — AI 视频创作元知识
 
 ## 和 content-pipeline 的关系
@@ -60,12 +59,12 @@ brief → outline → video-style（可选，该选题的视觉美学偏好）
 
 ## Agent 清单
 
-| Agent | 角色 | 本质 |
-|-------|------|------|
+| Agent                                       | 角色     | 本质                                           |
+| ------------------------------------------- | -------- | ---------------------------------------------- |
 | [script-designer](agents/script-designer.md) | 剧本设计 | 叙事架构——信息以什么顺序、什么情绪递进被接收 |
 | [visual-designer](agents/visual-designer.md) | 主体设计 | 视觉世界——观众在整个视频中看见的世界的统一性 |
-| [rhythm-designer](agents/rhythm-designer.md) | 节奏设计 | 时间呼吸——信息密度和情绪密度的曲线 |
-| [video-director](agents/video-director.md) | 导演合成 | 三元素互洽 → AI 视频生成 prompt |
+| [rhythm-designer](agents/rhythm-designer.md) | 节奏设计 | 时间呼吸——信息密度和情绪密度的曲线           |
+| [video-director](agents/video-director.md)   | 导演合成 | 三元素互洽 → AI 视频生成 prompt               |
 
 ## 风格参考
 

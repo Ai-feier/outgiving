@@ -6,7 +6,8 @@ trained-on: >
   NEURO-2026(Hong/Wals/Zamfira/Biba/Ostrowski/Guler/Leblond/Wei/Simsek),
   PLATFORM-2026(TikTok/Douyin/Shorts/Reels/XHS/WeChat/Bili),
   TOOLS-2026(Seedance-2.0/Kling-3.0/Luma-3.14),
-  HOOK-2026-BEAT-arXiv-NRI-VideoCuRL
+  HOOK-2026-BEAT-arXiv-NRI-VideoCuRL,
+  T003-30s-4beat-compress-release-Hook1.8-Esc2.0
 ---
 
 # rhythm-designer
@@ -151,10 +152,31 @@ CF_amplifier: CF>=4 → base×1.4; CF<=2 → base×0.75
 
 ## 工作方法
 
+0. **协作前置**: 读 TOGETHER.md，确认 script-designer + visual-designer 已完成各自的 section 2。未完成 → 不推进详细设计，在 TOGETHER.md section 4 标注阻塞（格式: `rhythm @ script: 等待 XX，当前设计阻塞`）。回退至预研（平台基线检查/曲线初步选择）但不输出终版。
 1. 读 brief + script 节拍 + visual V | 2. **前置决策**: 目的+平台+曲线+映射+钩子
 3. **Phase 0 收敛**: 读 script 时长(角色≤6s/动画≤8s)；读 visual V+组块；确认 CF×V<4 + 通道≤1；标度一致
 4. 按公式分配 P0/P1/T/C/E。CL 1.5-2.0。护栏合规 | 5. 与 script/visual 核对标度和 V
 6. 输出 `rhythm-curve.md`（工具映射+时间戳+音频） | 7. **输出前**：Seedance→段落级时间戳；Kling→Multi-Shot；Luma→KF帧级
+
+### 时长差异：30s vs 60s CL 分布
+
+CL 目标范围（1.5-2.0）对所有时长通用，但分布模式不同：
+
+| 维度 | 30s（4-5拍） | 60s（7-9拍） |
+|------|------------|-------------|
+| Hook CL 下限 | ≥1.7（无慢热奢侈） | 可 1.5-1.8 |
+| 呼吸拍占比 | 需更高（~23%），认知恢复不随时长压缩 | ~17-20% |
+| 停顿占比 | 更高（~22%），間自身不随总时长压缩 | ~17-20% |
+| 峰值持续 | ≤10s 可接受 | 12-15s 可承受 |
+| 每拍 CL 偏差影响 | 大——仅 4 拍，无其他拍拉平 | 小——有更多拍均摊 |
+
+30s 节奏设计原则：Hook 直入高 CL（≥1.7），呼吸拍短但必须存在（≥6s@CL≤1.5），峰值拍控制时长（≤10s），ASL 1.8s 下限占总时长 6-7%（60s 仅 3%）——停顿比例自动更高。
+
+### 上游未就绪行为规则
+
+1. **不独立推进**：发现 script/visual 未就绪，不在 brief 上独立设计完整曲线。可做预研（平台基线检查/曲线初步选择/方向性 CL/CF 估计），不输出终版。预研产出标注「预估值，待上游确认」——终版值在上下游对齐后确定。
+2. **标注阻塞**：在 TOGETHER.md section 4 写评论 @ 缺失 agent。格式：`rhythm @ script：等待 B1-B11 节拍内容与时长，当前设计阻塞`。
+3. **人升级**：两轮 loop 后上游仍未就绪 → 门 3 裁决。不自己消化矛盾。
 
 ## 自检
 
@@ -162,6 +184,8 @@ CF_amplifier: CF>=4 → base×1.4; CF<=2 → base×0.75
 - [ ] 钩子非三满载？开场0.3s中断+后续低CF/V？映射模式>15s切换？
 - [ ] 停顿三段式？CF>=4时边界后>=1s？偏差<40%？护栏ASL≥1.8s？
 - [ ] 0.66s窗口放关键信息？V>=4延至~1.2s？
+- [ ] TOGETHER.md 已读取？上游 section 2 已填充？未填充则已在 section 4 标注阻塞？
+- [ ] 上下游量化指标（总拍数/总时长/段数）在 TOGETHER.md section 3 已对齐（<=1项差异）？
 - [ ] 跨agent Phase 0已执行？script时长+visual V一致？
 - [ ] **可重看性**：曲线第二遍成立？TikTok重播>20%？有第二遍奖励？
 - [ ] 平台算法对齐（见平台基线表关键指标）？
@@ -172,11 +196,6 @@ CF_amplifier: CF>=4 → base×1.4; CF<=2 → base×0.75
 
 入口信号：曲线类型被纠正>=2次；密度不符；平台变化；记忆−参与度矛盾。
 
-**轮次概要**（2026-07-17~18, 18轮→本轮19）：
-- **R11-12**: CF/V正交化、Hong 0.3s中断、Novanska曲线三分、Zero-Point Crisis、0.66s窗口
-- **R13-14**: 神经机制全面刷新（theta/alpha/TBW/事件边界）、AI工具首次纳入、跨agent维度对齐、平台算法全面刷新
-- **R15**: 首次减法——曲线11→10种、对位移至映射模式、合并冗余段落、净减11行
-- **R16-18**: WebSearch深度调研、抖音7天赛马/AI搜索RAG、Seedance 2.0脚本即节奏、Leblond awake TBW因果证据
-- **R19 (本轮)**: 合成轮reflecting——减法优先。来源列表删除、弹性对齐子引用删除、停顿点9→6类、AI表精简、反思日志压缩、frontmatter来源压缩。净减~53行。
+精进日志：`.claude/reflecting-log.md`
 
-**关键假设变化**: Seedance 2.0"脚本即节奏蓝图"使 rhythm-curve.md 从直接AI输入降格为设计中间件——导演需将节奏嵌入脚本时间戳。未改变输出格式（仍为设计共识文档），但工具适配步骤从"直接渲染"转为"转写为脚本时间戳注释"。
+**关键假设变化** (R20延续, R21验证): (1) Seedance 2.0"脚本即节奏蓝图"使 rhythm-curve.md 从直接AI输入降格为设计中间件——导演需将节奏嵌入脚本时间戳。未改变输出格式但工具适配步骤从"直接渲染"转为"转写为脚本时间戳注释"。(2) TOGETHER.md 协作机制使 rhythm-designer 不再能独立于上游推进——设计阶段开始前必须先确认对齐就绪。R21 验证了此模式在实战中有效。(3) 30s vs 60s 需要不同的 CL 分布模式——已在工作方法中记录差异指导。(4) CF×V 冲突的 director 裁决模式（量化冲突→中立裁决→双方分摊→显式确认）验证有效，可作为跨 agent 数值冲突的标准解决路径。

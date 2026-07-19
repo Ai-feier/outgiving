@@ -10,6 +10,7 @@
 | [index-md](skills/index-md/SKILL.md) | 新增/修改 `.claude/` 文件后、定期巡检 | 通过 `_index.md` 反向引用体系管理 AI 基础设施的可发现性 |
 | [reflecting](skills/reflecting/SKILL.md) | 会话收尾 / 内容 review 出问题 / 修改基础设施 / 手动 | 三层漏斗（Agent→协作者→系统）：4 深度递进→协同性审计→ABC 审视→元反思 |
 | [video-craft](skills/video-craft/SKILL.md) | 视频选题、AI 视频生成 | AI 视频创作元知识：剧本/主体/节奏三元素相互成就的认知框架，不是工序流水线 |
+| [find-ref](skills/find-ref/SKILL.md) | `/find-ref [query]` — 任何 agent 需要参考素材时 | 规范化参考素材搜索：五步法（需求→来源→搜索→验证→下载）+ 精进日志。与 visual-designer gate 流程对接 |
 
 ## Agents
 
@@ -67,11 +68,25 @@
 |-------|------|
 | [content-style](output-styles/content-style.md) | 操作简洁、元输出结构化、内容创作不受限 |
 
+## Rules（项目管理宪法）
+
+始终加载的操作约束。不同于 Skills（任务触发）、Agents（角色定义）——Rules 是**自动生效的约束**。
+
+| Rule | 文件 | 说明 |
+|------|------|------|
+| 内容工作流 | [workflow](rules/project/workflow.md) | 生命周期状态机 + CLI + 质量门禁 + 协同性自检 |
+| Agent 协作 | [collaboration](rules/project/collaboration.md) | 调用约定 + 共享文件协议 + 交接契约 + 指标对齐 |
+| 项目约定 | [conventions](rules/project/conventions.md) | 命名 + frontmatter + 目录结构 + Git 约定 |
+
+> 架构参考 [affaan-m/ECC](https://github.com/affaan-m/ECC) `.claude/rules`，为本项目特化。
+> Rules 与 CLAUDE.md 的关系：CLAUDE.md 定义「为什么」（灵魂+第一性原理），Rules 定义「怎么做」（操作约束）。
+
 ## 项目全局入口
 
 | 文件 | 角色 |
 |------|------|
 | `CLAUDE.md` | 项目协作权威入口：数据模型、命令、约定、协作者角色 |
+| `rules/README.md` | Rules 系统说明：架构、优先级、维护规则 |
 | `README.md` | 人类可读的项目说明 |
 
 ## 资产系统
@@ -89,10 +104,11 @@
 每次修改 `.claude/` 后自审，每次 reflecting 触发时全面检查：
 
 ```
-□ 去重        — skills/agents 间无重复规则，冲突规则已合并
+□ 去重        — skills/agents/rules 间无重复规则，冲突规则已合并
 □ 过期        — 所有引用路径有效（链接目标存在），无失效引用
-□ 行数        — 单个 SKILL.md ≤ 200 行，超限拆 references/
-□ 交叉引用    — _index.md 覆盖全部 skills/agents/output-styles/memory，无孤立文件
+□ 行数        — 单个 SKILL.md ≤ 200 行，单个 rule ≤ 150 行，超限拆分
+□ 交叉引用    — _index.md 覆盖全部 skills/agents/rules/output-styles/memory，无孤立文件
 □ 触发条件    — 每个 skill 的触发条件准确，无漏触发/误触发
 □ CLAUDE.md   — 项目级入口不超过 200 行，新增命令/约定已同步
+□ Rules       — 规则不重复 CLAUDE.md 内容（灵魂信仰/第一性原理），规则定义操作约束
 ```
