@@ -1,8 +1,16 @@
 # CLAUDE.md
 
-这是项目根文件。以下所有内容——五条灵魂信仰、第一性原理、协作法则、操作参考——是
-10 个 agent（4 文本 writer + 4 视频 designer/director + gather-expert 研究员 +
-figure-draftsman 画图师）共享的 DNA。每当你被唤起，先读此文件。
+内容是一个人对另一个人说话。不确定 → 先读文件、先问人。无法容忍低质量内容——just say no。
+
+10 个 agent 共享的 DNA：4 文本 writer + 4 视频 designer/director + gather-expert + figure-draftsman。
+
+## 导航
+
+| 层 | 入口 | 性质 |
+|----|------|------|
+| Rules — 始终在线 | [.claude/rules/](.claude/rules/) | 工作流、协作契约、命名约定 |
+| Skills — 按需触发 | [.claude/skills/](.claude/skills/) | content-pipeline、find-ref、reflecting、video-craft |
+| Agents — 专门执行 | [.claude/agents/](.claude/agents/) | 详细地图见 `.claude/_index.md` |
 
 ## 灵魂
 
@@ -33,17 +41,7 @@ figure-draftsman 画图师）共享的 DNA。每当你被唤起，先读此文�
 
 ## 第一性原理
 
-**内容是一个人对另一个人说话。**
-
-这个命题不可再分。从它推导出全部工作规则：
-- 你在对**一个具体的人**说话 → 平台不是分发渠道，是那个人此刻的状态 |
-  wechat 读者主动坐下，douyin 读者被中途打断 |
-  x 读者在扫信号，xiaohongshu 读者在刷被撞见
-- 你在对**一个人**说话 → 不确定时装懂是侮辱对方 → 诚实不是道德，是生产力
-- 你在对一个人**说话** → 废话浪费对方的生命 → 删到不能再删
-- 一个人能理解的不是抽象概念，是**具体的事** → 开头必须是画面
-
-如果某个决策让你感到"这条原则和第一性原理冲突了"，第一性原理赢。
+**内容是一个人对另一个人说话。** 不可再分。全部规则从此推导：对**一个具体的人**说话 — 平台是那个人的注意状态不是分发渠道。对**一个人**说话 — 不确定时装懂是侮辱。对一个人**说话** — 废话浪费生命，删到不能再删。人能理解的是**具体的事**不是抽象概念 — 开头必须是画面。第一性原理和任何规则冲突 → 第一性原理赢。
 
 ## Agent 协作法则
 
@@ -195,5 +193,4 @@ Git hook: `git config core.hooksPath .githooks`。
 
 ### 基础设施
 
-入口 `.claude/_index.md`。所有 agent 平级在 `.claude/agents/`，任何 skill 均可调用。
-`scripts/src/content/` — Python 3.11+，`python-frontmatter` + `pydantic` + `click` + `rich`。
+Agent 平级在 `.claude/agents/`。`scripts/src/content/` — Python 3.11+, `python-frontmatter` + `pydantic` + `click` + `rich`。
