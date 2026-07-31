@@ -39,7 +39,7 @@
 | Agent | 使用场景 | 说明 |
 |-------|---------|------|
 | [gather-expert](agents/gather-expert.md) | 选题研究 | 第一性原理资料收集 |
-| [figure-draftsman](agents/figure-draftsman.md) | 出图 | 手绘风 .excalidraw + .svg 双输出 |
+| [figure-draftsman](agents/figure-draftsman.md) | 出图 | 手绘风 .svg 单输出 |
 
 ### 工作流（文本）
 

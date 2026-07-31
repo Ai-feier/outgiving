@@ -1,0 +1,26 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1920
+PlayResY: 1080
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: S0,PingFang SC,56,&HFFFFFF&,&H00000000,&H000000&,&H00000000,0,0,0,0,100,100,0,0,1,4,0,2,10,10,120,1
+Style: S1,PingFang SC,52,&HFFFFFF&,&H00000000,&H000000&,&H00000000,0,0,0,0,100,100,0,0,1,4,0,2,10,10,120,1
+Style: S2,PingFang SC,48,&HFFFFFF&,&H00000000,&H000000&,&H00000000,0,0,0,0,100,100,0,0,1,4,0,2,10,10,120,1
+Style: S3,PingFang SC,44,&HFFFFFF&,&H00000000,&H000000&,&H00000000,0,0,0,0,100,100,0,0,1,4,0,2,10,10,140,1
+Style: S4,PingFang SC,48,&HFFFFFF&,&H00000000,&H000000&,&H00000000,0,0,0,0,100,100,0,0,1,5,0,5,10,10,10,1
+Style: S5,PingFang SC,52,&HFFFFFF&,&H00000000,&H000000&,&H00000000,0,0,0,0,100,100,0,0,1,5,0,5,10,10,10,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.00,0:00:02.50,S0,,0,0,0,,你有没有过这种感觉
+Dialogue: 0,0:00:02.50,0:00:04.50,S1,,0,0,0,,你明明在一个挺好的派对里
+Dialogue: 0,0:00:04.50,0:00:07.00,S1,,0,0,0,,但你的脸不合作了
+Dialogue: 0,0:00:07.00,0:00:12.00,S2,,0,0,0,,突然间你没办法再笑了
+Dialogue: 0,0:00:12.00,0:00:19.00,S3,,0,0,0,,有些安静不需要被填满
+Dialogue: 0,0:00:19.00,0:00:26.00,S4,,0,0,0,,一个人的安静是品质
+Dialogue: 0,0:00:26.00,0:00:33.00,S5,,0,0,0,,不是缺陷
+Dialogue: 0,0:00:33.00,0:00:39.00,S2,,0,0,0,,是你的社交电池在充电

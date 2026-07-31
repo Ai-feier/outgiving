@@ -122,7 +122,7 @@ Agent 启动前确保已就绪：
 
 ### 技术上
 - **图片路径用 `![](assets/figN.svg)` 不要 `../../../`**——preview 服务器会智能解析
-- **`.excalidraw` + `.svg` 双源同生**——excalidraw 可编辑，svg 可预览
+- **`.svg` 单源**——svg 可预览
 - **图片生成交给 `figure-draftsman` agent**——不要手写 matplotlib
 - **研究交给 `gather-expert` agent**——第一性原理收敛，不写综述
 - **平台改写交给对应 `*-writer` agent**——不自己手动改写

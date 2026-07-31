@@ -1,0 +1,1153 @@
+{
+  "footage:pexels-new-book-pages-01": {
+    "id": "footage:pexels-new-book-pages-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-new-book-pages-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {},
+    "created_at": 1785249105.4057534
+  },
+  "footage:pexels-ch14-night-city-01": {
+    "id": "footage:pexels-ch14-night-city-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-ch14-night-city-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {
+      "duration_s": "8.2",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.40725
+  },
+  "profile:pexels-ch14-night-city-01": {
+    "id": "profile:pexels-ch14-night-city-01",
+    "kind": "content",
+    "type": "markdown",
+    "content_ref": "assets/footage/pexels-ch14-night-city-01.profile.md",
+    "community": "",
+    "confidence": "inferred",
+    "version": 2,
+    "meta": {
+      "duration_s": "8.2",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.4094012
+  },
+  "footage:pexels-ch12-grocery-tired-01": {
+    "id": "footage:pexels-ch12-grocery-tired-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-ch12-grocery-tired-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {
+      "duration_s": "10.7",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.4129946
+  },
+  "profile:pexels-ch12-grocery-tired-01": {
+    "id": "profile:pexels-ch12-grocery-tired-01",
+    "kind": "content",
+    "type": "markdown",
+    "content_ref": "assets/footage/pexels-ch12-grocery-tired-01.profile.md",
+    "community": "",
+    "confidence": "inferred",
+    "version": 2,
+    "meta": {
+      "duration_s": "10.7",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.415173
+  },
+  "footage:pexels-new-walking-nature-01": {
+    "id": "footage:pexels-new-walking-nature-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-new-walking-nature-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {},
+    "created_at": 1785249105.4199588
+  },
+  "footage:pexels-person-walking-alone-01": {
+    "id": "footage:pexels-person-walking-alone-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-person-walking-alone-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {},
+    "created_at": 1785249105.4214792
+  },
+  "footage:pexels-new-stars-night-01": {
+    "id": "footage:pexels-new-stars-night-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-new-stars-night-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {},
+    "created_at": 1785249105.4230437
+  },
+  "footage:pexels-ch12-checking-watch-01": {
+    "id": "footage:pexels-ch12-checking-watch-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-ch12-checking-watch-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {
+      "duration_s": "9.6",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.4244034
+  },
+  "profile:pexels-ch12-checking-watch-01": {
+    "id": "profile:pexels-ch12-checking-watch-01",
+    "kind": "content",
+    "type": "markdown",
+    "content_ref": "assets/footage/pexels-ch12-checking-watch-01.profile.md",
+    "community": "",
+    "confidence": "inferred",
+    "version": 2,
+    "meta": {
+      "duration_s": "9.6",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.4268134
+  },
+  "footage:pexels-ocean-waves-calm-01": {
+    "id": "footage:pexels-ocean-waves-calm-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-ocean-waves-calm-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {},
+    "created_at": 1785249105.4303682
+  },
+  "footage:pexels-ch14-phone-charging-01": {
+    "id": "footage:pexels-ch14-phone-charging-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-ch14-phone-charging-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {
+      "duration_s": "10.5",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.4322102
+  },
+  "profile:pexels-ch14-phone-charging-01": {
+    "id": "profile:pexels-ch14-phone-charging-01",
+    "kind": "content",
+    "type": "markdown",
+    "content_ref": "assets/footage/pexels-ch14-phone-charging-01.profile.md",
+    "community": "",
+    "confidence": "inferred",
+    "version": 2,
+    "meta": {
+      "duration_s": "10.5",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.4349387
+  },
+  "footage:pexels-ocean-waves-calm-02": {
+    "id": "footage:pexels-ocean-waves-calm-02",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-ocean-waves-calm-02.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {},
+    "created_at": 1785249105.4388144
+  },
+  "footage:pexels-hook-party-crowd-01": {
+    "id": "footage:pexels-hook-party-crowd-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-hook-party-crowd-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {
+      "duration_s": "10.4",
+      "scenes": "2"
+    },
+    "created_at": 1785249105.4399076
+  },
+  "profile:pexels-hook-party-crowd-01": {
+    "id": "profile:pexels-hook-party-crowd-01",
+    "kind": "content",
+    "type": "markdown",
+    "content_ref": "assets/footage/pexels-hook-party-crowd-01.profile.md",
+    "community": "",
+    "confidence": "inferred",
+    "version": 2,
+    "meta": {
+      "duration_s": "10.4",
+      "scenes": "2"
+    },
+    "created_at": 1785249105.441575
+  },
+  "footage:pexels-ch13-reading-cafe-01": {
+    "id": "footage:pexels-ch13-reading-cafe-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-ch13-reading-cafe-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {
+      "duration_s": "9.4",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.4452548
+  },
+  "profile:pexels-ch13-reading-cafe-01": {
+    "id": "profile:pexels-ch13-reading-cafe-01",
+    "kind": "content",
+    "type": "markdown",
+    "content_ref": "assets/footage/pexels-ch13-reading-cafe-01.profile.md",
+    "community": "",
+    "confidence": "inferred",
+    "version": 2,
+    "meta": {
+      "duration_s": "9.4",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.4476068
+  },
+  "footage:pexels-ch13-cat-sleeping-01": {
+    "id": "footage:pexels-ch13-cat-sleeping-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-ch13-cat-sleeping-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {
+      "duration_s": "11.7",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.452041
+  },
+  "profile:pexels-ch13-cat-sleeping-01": {
+    "id": "profile:pexels-ch13-cat-sleeping-01",
+    "kind": "content",
+    "type": "markdown",
+    "content_ref": "assets/footage/pexels-ch13-cat-sleeping-01.profile.md",
+    "community": "",
+    "confidence": "inferred",
+    "version": 2,
+    "meta": {
+      "duration_s": "11.7",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.4539359
+  },
+  "footage:pexels-ch12-phone-stress-01": {
+    "id": "footage:pexels-ch12-phone-stress-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-ch12-phone-stress-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {
+      "duration_s": "9.6",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.4571743
+  },
+  "profile:pexels-ch12-phone-stress-01": {
+    "id": "profile:pexels-ch12-phone-stress-01",
+    "kind": "content",
+    "type": "markdown",
+    "content_ref": "assets/footage/pexels-ch12-phone-stress-01.profile.md",
+    "community": "",
+    "confidence": "inferred",
+    "version": 2,
+    "meta": {
+      "duration_s": "9.6",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.460976
+  },
+  "footage:pexels-new-ocean-waves-01": {
+    "id": "footage:pexels-new-ocean-waves-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-new-ocean-waves-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {},
+    "created_at": 1785249105.4663308
+  },
+  "footage:pexels-new-fireworks-night-01": {
+    "id": "footage:pexels-new-fireworks-night-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-new-fireworks-night-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {},
+    "created_at": 1785249105.4686823
+  },
+  "footage:pexels-city-traffic-blur-01": {
+    "id": "footage:pexels-city-traffic-blur-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-city-traffic-blur-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {},
+    "created_at": 1785249105.470225
+  },
+  "footage:pexels-stars-night-sky-time-03": {
+    "id": "footage:pexels-stars-night-sky-time-03",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-stars-night-sky-time-03.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {},
+    "created_at": 1785249105.4718676
+  },
+  "footage:pexels-stars-night-sky-time-01": {
+    "id": "footage:pexels-stars-night-sky-time-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-stars-night-sky-time-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {},
+    "created_at": 1785249105.473832
+  },
+  "footage:pexels-sunset-timelapse-clo-01": {
+    "id": "footage:pexels-sunset-timelapse-clo-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-sunset-timelapse-clo-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {},
+    "created_at": 1785249105.4755578
+  },
+  "footage:pexels-person-walking-alone-03": {
+    "id": "footage:pexels-person-walking-alone-03",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-person-walking-alone-03.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {},
+    "created_at": 1785249105.477089
+  },
+  "footage:pexels-ch14-blanket-fort-01": {
+    "id": "footage:pexels-ch14-blanket-fort-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-ch14-blanket-fort-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {
+      "duration_s": "17.6",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.4785562
+  },
+  "profile:pexels-ch14-blanket-fort-01": {
+    "id": "profile:pexels-ch14-blanket-fort-01",
+    "kind": "content",
+    "type": "markdown",
+    "content_ref": "assets/footage/pexels-ch14-blanket-fort-01.profile.md",
+    "community": "",
+    "confidence": "inferred",
+    "version": 2,
+    "meta": {
+      "duration_s": "17.6",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.4813447
+  },
+  "footage:pexels-ch13-journal-writing-01": {
+    "id": "footage:pexels-ch13-journal-writing-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-ch13-journal-writing-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {
+      "duration_s": "9.8",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.4856937
+  },
+  "profile:pexels-ch13-journal-writing-01": {
+    "id": "profile:pexels-ch13-journal-writing-01",
+    "kind": "content",
+    "type": "markdown",
+    "content_ref": "assets/footage/pexels-ch13-journal-writing-01.profile.md",
+    "community": "",
+    "confidence": "inferred",
+    "version": 2,
+    "meta": {
+      "duration_s": "9.8",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.4878078
+  },
+  "footage:pexels-coffee-steam-close-u-02": {
+    "id": "footage:pexels-coffee-steam-close-u-02",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-coffee-steam-close-u-02.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {},
+    "created_at": 1785249105.4917598
+  },
+  "footage:pexels-book-pages-turning-02": {
+    "id": "footage:pexels-book-pages-turning-02",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-book-pages-turning-02.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {},
+    "created_at": 1785249105.492876
+  },
+  "footage:pexels-ch14-headphones-music-01": {
+    "id": "footage:pexels-ch14-headphones-music-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-ch14-headphones-music-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {
+      "duration_s": "9.1",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.4940822
+  },
+  "profile:pexels-ch14-headphones-music-01": {
+    "id": "profile:pexels-ch14-headphones-music-01",
+    "kind": "content",
+    "type": "markdown",
+    "content_ref": "assets/footage/pexels-ch14-headphones-music-01.profile.md",
+    "community": "",
+    "confidence": "inferred",
+    "version": 2,
+    "meta": {
+      "duration_s": "9.1",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.4955251
+  },
+  "footage:pexels-ch12-business-meeting-01": {
+    "id": "footage:pexels-ch12-business-meeting-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-ch12-business-meeting-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {
+      "duration_s": "9.8",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.499723
+  },
+  "profile:pexels-ch12-business-meeting-01": {
+    "id": "profile:pexels-ch12-business-meeting-01",
+    "kind": "content",
+    "type": "markdown",
+    "content_ref": "assets/footage/pexels-ch12-business-meeting-01.profile.md",
+    "community": "",
+    "confidence": "inferred",
+    "version": 2,
+    "meta": {
+      "duration_s": "9.8",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.5012796
+  },
+  "footage:pexels-city-traffic-blur-03": {
+    "id": "footage:pexels-city-traffic-blur-03",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-city-traffic-blur-03.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {},
+    "created_at": 1785249105.5051625
+  },
+  "footage:pexels-new-sunset-clouds-01": {
+    "id": "footage:pexels-new-sunset-clouds-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-new-sunset-clouds-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {},
+    "created_at": 1785249105.5063624
+  },
+  "footage:pexels-sunset-timelapse-clo-02": {
+    "id": "footage:pexels-sunset-timelapse-clo-02",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-sunset-timelapse-clo-02.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {},
+    "created_at": 1785249105.5074701
+  },
+  "footage:pexels-hook-brain-scan-01": {
+    "id": "footage:pexels-hook-brain-scan-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-hook-brain-scan-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {
+      "duration_s": "19.2",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.5086033
+  },
+  "profile:pexels-hook-brain-scan-01": {
+    "id": "profile:pexels-hook-brain-scan-01",
+    "kind": "content",
+    "type": "markdown",
+    "content_ref": "assets/footage/pexels-hook-brain-scan-01.profile.md",
+    "community": "",
+    "confidence": "inferred",
+    "version": 2,
+    "meta": {
+      "duration_s": "19.2",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.510204
+  },
+  "footage:pexels-ocean-waves-calm-03": {
+    "id": "footage:pexels-ocean-waves-calm-03",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-ocean-waves-calm-03.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {},
+    "created_at": 1785249105.5146015
+  },
+  "footage:pexels-ch12-person-running-01": {
+    "id": "footage:pexels-ch12-person-running-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-ch12-person-running-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {
+      "duration_s": "5.1",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.516871
+  },
+  "profile:pexels-ch12-person-running-01": {
+    "id": "profile:pexels-ch12-person-running-01",
+    "kind": "content",
+    "type": "markdown",
+    "content_ref": "assets/footage/pexels-ch12-person-running-01.profile.md",
+    "community": "",
+    "confidence": "inferred",
+    "version": 2,
+    "meta": {
+      "duration_s": "5.1",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.5213382
+  },
+  "footage:pexels-stars-night-sky-time-02": {
+    "id": "footage:pexels-stars-night-sky-time-02",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-stars-night-sky-time-02.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {},
+    "created_at": 1785249105.524911
+  },
+  "footage:pexels-book-pages-turning-01": {
+    "id": "footage:pexels-book-pages-turning-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-book-pages-turning-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {},
+    "created_at": 1785249105.52613
+  },
+  "footage:pexels-hook-exhausted-person-01": {
+    "id": "footage:pexels-hook-exhausted-person-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-hook-exhausted-person-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {
+      "duration_s": "9.9",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.527281
+  },
+  "profile:pexels-hook-exhausted-person-01": {
+    "id": "profile:pexels-hook-exhausted-person-01",
+    "kind": "content",
+    "type": "markdown",
+    "content_ref": "assets/footage/pexels-hook-exhausted-person-01.profile.md",
+    "community": "",
+    "confidence": "inferred",
+    "version": 2,
+    "meta": {
+      "duration_s": "9.9",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.5287526
+  },
+  "footage:pexels-ch13-forest-path-01": {
+    "id": "footage:pexels-ch13-forest-path-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-ch13-forest-path-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {
+      "duration_s": "10.0",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.5329547
+  },
+  "profile:pexels-ch13-forest-path-01": {
+    "id": "profile:pexels-ch13-forest-path-01",
+    "kind": "content",
+    "type": "markdown",
+    "content_ref": "assets/footage/pexels-ch13-forest-path-01.profile.md",
+    "community": "",
+    "confidence": "inferred",
+    "version": 2,
+    "meta": {
+      "duration_s": "10.0",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.5350914
+  },
+  "footage:pexels-ch12-subway-crowd-01": {
+    "id": "footage:pexels-ch12-subway-crowd-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-ch12-subway-crowd-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {
+      "duration_s": "10.8",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.538674
+  },
+  "profile:pexels-ch12-subway-crowd-01": {
+    "id": "profile:pexels-ch12-subway-crowd-01",
+    "kind": "content",
+    "type": "markdown",
+    "content_ref": "assets/footage/pexels-ch12-subway-crowd-01.profile.md",
+    "community": "",
+    "confidence": "inferred",
+    "version": 2,
+    "meta": {
+      "duration_s": "10.8",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.5402317
+  },
+  "footage:pexels-new-flowers-blooming-01": {
+    "id": "footage:pexels-new-flowers-blooming-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-new-flowers-blooming-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {},
+    "created_at": 1785249105.543872
+  },
+  "footage:pexels-city-traffic-blur-02": {
+    "id": "footage:pexels-city-traffic-blur-02",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-city-traffic-blur-02.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {},
+    "created_at": 1785249105.5452354
+  },
+  "footage:pexels-new-friends-laughing-01": {
+    "id": "footage:pexels-new-friends-laughing-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-new-friends-laughing-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {},
+    "created_at": 1785249105.5465703
+  },
+  "footage:pexels-book-pages-turning-03": {
+    "id": "footage:pexels-book-pages-turning-03",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-book-pages-turning-03.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {},
+    "created_at": 1785249105.5484395
+  },
+  "footage:pexels-coffee-steam-close-u-01": {
+    "id": "footage:pexels-coffee-steam-close-u-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-coffee-steam-close-u-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {},
+    "created_at": 1785249105.5502994
+  },
+  "footage:pexels-hook-fake-smile-01": {
+    "id": "footage:pexels-hook-fake-smile-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-hook-fake-smile-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {
+      "duration_s": "11.7",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.5520003
+  },
+  "profile:pexels-hook-fake-smile-01": {
+    "id": "profile:pexels-hook-fake-smile-01",
+    "kind": "content",
+    "type": "markdown",
+    "content_ref": "assets/footage/pexels-hook-fake-smile-01.profile.md",
+    "community": "",
+    "confidence": "inferred",
+    "version": 2,
+    "meta": {
+      "duration_s": "11.7",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.5551379
+  },
+  "footage:pexels-ch12-hiit-workout-01": {
+    "id": "footage:pexels-ch12-hiit-workout-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-ch12-hiit-workout-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {
+      "duration_s": "12.5",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.5586426
+  },
+  "profile:pexels-ch12-hiit-workout-01": {
+    "id": "profile:pexels-ch12-hiit-workout-01",
+    "kind": "content",
+    "type": "markdown",
+    "content_ref": "assets/footage/pexels-ch12-hiit-workout-01.profile.md",
+    "community": "",
+    "confidence": "inferred",
+    "version": 2,
+    "meta": {
+      "duration_s": "12.5",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.5602255
+  },
+  "footage:pexels-ch13-rain-window-01": {
+    "id": "footage:pexels-ch13-rain-window-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-ch13-rain-window-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {
+      "duration_s": "10.0",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.5642211
+  },
+  "profile:pexels-ch13-rain-window-01": {
+    "id": "profile:pexels-ch13-rain-window-01",
+    "kind": "content",
+    "type": "markdown",
+    "content_ref": "assets/footage/pexels-ch13-rain-window-01.profile.md",
+    "community": "",
+    "confidence": "inferred",
+    "version": 2,
+    "meta": {
+      "duration_s": "10.0",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.5662527
+  },
+  "footage:pexels-new-elderly-couple-01": {
+    "id": "footage:pexels-new-elderly-couple-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-new-elderly-couple-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {},
+    "created_at": 1785249105.570089
+  },
+  "footage:pexels-new-autumn-leaves-01": {
+    "id": "footage:pexels-new-autumn-leaves-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-new-autumn-leaves-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {},
+    "created_at": 1785249105.5714164
+  },
+  "footage:pexels-new-city-aerial-01": {
+    "id": "footage:pexels-new-city-aerial-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-new-city-aerial-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {},
+    "created_at": 1785249105.5727565
+  },
+  "footage:pexels-new-coffee-steam-01": {
+    "id": "footage:pexels-new-coffee-steam-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-new-coffee-steam-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {},
+    "created_at": 1785249105.5741367
+  },
+  "footage:pexels-person-walking-alone-02": {
+    "id": "footage:pexels-person-walking-alone-02",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-person-walking-alone-02.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {},
+    "created_at": 1785249105.5754545
+  },
+  "footage:pexels-new-rain-drops-01": {
+    "id": "footage:pexels-new-rain-drops-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-new-rain-drops-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {},
+    "created_at": 1785249105.576828
+  },
+  "footage:pexels-new-child-playing-01": {
+    "id": "footage:pexels-new-child-playing-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-new-child-playing-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {},
+    "created_at": 1785249105.578323
+  },
+  "footage:pexels-ch12-group-conversation-01": {
+    "id": "footage:pexels-ch12-group-conversation-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-ch12-group-conversation-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {
+      "duration_s": "10.6",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.5796802
+  },
+  "profile:pexels-ch12-group-conversation-01": {
+    "id": "profile:pexels-ch12-group-conversation-01",
+    "kind": "content",
+    "type": "markdown",
+    "content_ref": "assets/footage/pexels-ch12-group-conversation-01.profile.md",
+    "community": "",
+    "confidence": "inferred",
+    "version": 2,
+    "meta": {
+      "duration_s": "10.6",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.5816402
+  },
+  "footage:pexels-ch12-coconut-01": {
+    "id": "footage:pexels-ch12-coconut-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-ch12-coconut-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {
+      "duration_s": "11.6",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.585492
+  },
+  "profile:pexels-ch12-coconut-01": {
+    "id": "profile:pexels-ch12-coconut-01",
+    "kind": "content",
+    "type": "markdown",
+    "content_ref": "assets/footage/pexels-ch12-coconut-01.profile.md",
+    "community": "",
+    "confidence": "inferred",
+    "version": 2,
+    "meta": {
+      "duration_s": "11.6",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.587539
+  },
+  "footage:pexels-sunset-timelapse-clo-03": {
+    "id": "footage:pexels-sunset-timelapse-clo-03",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-sunset-timelapse-clo-03.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {},
+    "created_at": 1785249105.593668
+  },
+  "footage:pexels-new-candle-flame-01": {
+    "id": "footage:pexels-new-candle-flame-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-new-candle-flame-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {},
+    "created_at": 1785249105.5965624
+  },
+  "footage:pexels-ch13-genuine-smile-01": {
+    "id": "footage:pexels-ch13-genuine-smile-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-ch13-genuine-smile-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {
+      "duration_s": "10.0",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.5994563
+  },
+  "profile:pexels-ch13-genuine-smile-01": {
+    "id": "profile:pexels-ch13-genuine-smile-01",
+    "kind": "content",
+    "type": "markdown",
+    "content_ref": "assets/footage/pexels-ch13-genuine-smile-01.profile.md",
+    "community": "",
+    "confidence": "inferred",
+    "version": 2,
+    "meta": {
+      "duration_s": "10.0",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.6026268
+  },
+  "footage:pexels-ch12-thinking-calculating-01": {
+    "id": "footage:pexels-ch12-thinking-calculating-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-ch12-thinking-calculating-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {
+      "duration_s": "14.6",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.6087828
+  },
+  "profile:pexels-ch12-thinking-calculating-01": {
+    "id": "profile:pexels-ch12-thinking-calculating-01",
+    "kind": "content",
+    "type": "markdown",
+    "content_ref": "assets/footage/pexels-ch12-thinking-calculating-01.profile.md",
+    "community": "",
+    "confidence": "inferred",
+    "version": 2,
+    "meta": {
+      "duration_s": "14.6",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.610256
+  },
+  "footage:pexels-ch12-gym-tired-01": {
+    "id": "footage:pexels-ch12-gym-tired-01",
+    "kind": "content",
+    "type": "video",
+    "content_ref": "assets/footage/pexels-ch12-gym-tired-01.mp4",
+    "community": "",
+    "confidence": "explicit",
+    "version": 1,
+    "meta": {
+      "duration_s": "12.2",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.6158435
+  },
+  "profile:pexels-ch12-gym-tired-01": {
+    "id": "profile:pexels-ch12-gym-tired-01",
+    "kind": "content",
+    "type": "markdown",
+    "content_ref": "assets/footage/pexels-ch12-gym-tired-01.profile.md",
+    "community": "",
+    "confidence": "inferred",
+    "version": 2,
+    "meta": {
+      "duration_s": "12.2",
+      "scenes": "1"
+    },
+    "created_at": 1785249105.6182067
+  },
+  "composition:composition-agent-v1": {
+    "id": "composition:composition-agent-v1",
+    "kind": "content",
+    "type": "markdown",
+    "content_ref": "composition-agent-v1.md",
+    "community": "",
+    "confidence": "inferred",
+    "version": 1,
+    "meta": {},
+    "created_at": 1785249105.6230104
+  },
+  "composition:composition-agent-v2": {
+    "id": "composition:composition-agent-v2",
+    "kind": "content",
+    "type": "markdown",
+    "content_ref": "composition-agent-v2.md",
+    "community": "",
+    "confidence": "inferred",
+    "version": 1,
+    "meta": {},
+    "created_at": 1785249105.6247933
+  },
+  "composition:composition-v2": {
+    "id": "composition:composition-v2",
+    "kind": "content",
+    "type": "markdown",
+    "content_ref": "composition-v2.md",
+    "community": "",
+    "confidence": "inferred",
+    "version": 1,
+    "meta": {},
+    "created_at": 1785249105.6288671
+  },
+  "composition:composition-working": {
+    "id": "composition:composition-working",
+    "kind": "content",
+    "type": "markdown",
+    "content_ref": "composition-working.md",
+    "community": "",
+    "confidence": "inferred",
+    "version": 1,
+    "meta": {},
+    "created_at": 1785249105.6314173
+  },
+  "composition:composition": {
+    "id": "composition:composition",
+    "kind": "content",
+    "type": "markdown",
+    "content_ref": "composition.md",
+    "community": "",
+    "confidence": "inferred",
+    "version": 1,
+    "meta": {},
+    "created_at": 1785249105.6340551
+  },
+  "diagnosis:social-battery-v9": {
+    "id": "diagnosis:social-battery-v9",
+    "kind": "content",
+    "type": "markdown",
+    "content_ref": "social-battery-v9.diagnosis.md",
+    "community": "",
+    "confidence": "inferred",
+    "version": 1,
+    "meta": {},
+    "created_at": 1785249105.6367044
+  }
+}

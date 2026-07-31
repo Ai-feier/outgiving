@@ -58,14 +58,7 @@ gather-expert 有自己独立的五条研究信条（见其 agent 文件）。
 
 ### 协作方式
 
-agent 间通过**共享文件**通信，不通过对话历史：
-
-```
-outline.md → 结构共识（所有 agent 读，决定改什么）
-style.md → 写作宪法（writer agent 写之前必读）
-gather-expert 产出 → 证据锚点（writer agent 引用时标注来源性质）
-figure-draftsman 产出 → assets/figN.svg + .excalidraw
-```
+agent 间通过**共享文件**通信，不通过对话历史：`outline.md`（结构共识）→ `style.md`（写作宪法）→ gather-expert 产出（证据锚点）→ figure-draftsman 产出（`assets/figN.svg`）。
 
 读 `style.md` 再下笔。先有论据再有论点。论据不够 → 诚实标"推测"。
 外部论点必须挂链接，来源性质诚实标注。
@@ -78,14 +71,14 @@ figure-draftsman 产出 → assets/figN.svg + .excalidraw
 
 | 交接点 | 上游产出 | 下游必读 | 格式约束 |
 |--------|---------|---------|---------|
-| 研究→选题 | gather-expert 证据锚点文件 | brief.md 作者 + 4 个 writer agent（最低读取集）+ figure-draftsman（进阶读取集） | 每个证据必须有至少2个跨谱系锚点；证据块首行须含"判定"（可引用/须注明/不可引用） |
+| 研究→选题 | gather-expert 证据锚点文件 | brief.md 作者 + 4 个 writer agent（最低读取集）+ figure-draftsman（进阶读取集） | ≥1 跨谱系锚点；单谱系来源标注「置信度受限」；证据块首行须含"判定"（可引用/须注明/不可引用） |
 | 选题→大纲 | brief.md 关键信息点列表 | outline.md 作者 | 每个信息点一句话，能被证伪 |
 | 大纲→风格 | outline.md 结构共识 | style.md 作者 | 结构节点标注对应的关键信息点编号 |
 | 风格→写作 | style.md 写作宪法 | 4 个 writer agent | 写作宪法必须在写正文前被 Read |
 | 写作→出图 | brief.md 的「视觉资产规划」节（规划阶段）+ article.md 中的 `<!-- fig:N -->` 标记（位置标记） | figure-draftsman | brief.md 规划每张图服务哪号关键信息点，article.md 标记嵌入位置。图片路径统一用相对路径指向 topic assets 目录，不允许复制.svg到平台目录 |
-| 三元素→合成 | script-beats / visual-world / rhythm-curve | video-director | 各文件必须在 director 读取前完成 |
-| 视觉设计→资产 | visual-world.md + visual-assets-spec.md | video-director（角色/场景图收集）+ figure-draftsman（分镜线稿）+ **assets/asset-lab.md**（索引查重） | 角色参考图 IaD 中性表情；分镜线稿标注 beat 编号；入库前查 asset-lab 去重 |
-| 合成→AI 生成 | video-prompt.md（director 裁决后的分段 prompt） | SeedanceVideo adapter | 每段含完整 9 要素 prompt + 全局一致性前缀；9:16 竖屏；model 按工具选 |
+| 三元素→合成 | script-beats / visual-world / rhythm-curve | video-director | 各文件在 director 读取前完成 |
+| 视觉设计→资产 | visual-world.md + visual-assets-spec.md | video-director + figure-draftsman + asset-lab.md 查重 | IaD 中性表情；分镜线稿标 beat 编号；入库前 asset-lab 去重 |
+| 合成→AI 生成 | video-prompt.md（director 分段 prompt） | `ai generate video` CLI | 9 要素 prompt + 全局一致性前缀；9:16 竖屏 |
 
 ### 跨 agent 约束对齐
 
@@ -94,10 +87,10 @@ agent 各自定义的量化指标可能不一致。以下指标必须显式对�
 | 指标 | 涉及 agent | 对齐结果 |
 |------|-----------|---------|
 | **单拍时长上限** | script-designer → video-director | 实体≤6s/纯视觉≤8s/钩子B1不限；director 默认 4-6s 窗口 |
-| **CF vs V** | script-designer ↔ rhythm-designer ↔ visual-designer | CF 归 rhythm（时间）、V 归 visual（空间），乘积<4 |
+| **CF vs V** | script-designer ↔ rhythm-designer ↔ visual-designer | CF 归 rhythm（时间，<2）/ V 归 visual（空间，独立管理） |
 | **感知组块计数** | figure-draftsman → 所有引用图的 agent | 统一为"感知组块"；各平台上限：公众号≤15 / X≤5 / 小红书 3-6 / 抖音≤3 |
 | **实体复现间隔** | script-designer ↔ visual-designer ↔ video-director | 主角≤3拍/配角≤5拍/道具叙事触发/场景边界防御 |
-| **通道堆叠** | douyin-writer ↔ rhythm-designer | 同期活跃通道≤1（Schneider 2026 AV WM 对象绑定） |
+| **通道堆叠** | douyin-writer ↔ rhythm-designer | 同期活跃通道≤2 带显式标注 |
 | **认知负荷标度** | script-designer → rhythm-designer | script 粗估(1-5)≠rhythm CL(1.5-2.0)，rhythm 独立标定 |
 | **gather-expert 三级措辞** | gather-expert → 所有 writer | 暗示/与…一致/表明；writer 据此决定引用立场 |
 | **gather-expert FRANQ 消费** | gather-expert → 所有 writer | 用 事实性（✓/✗/不可判）做引用门禁，忠实性（✓/✗/不可判）做来源忠实度检查 |
@@ -107,7 +100,7 @@ agent 各自定义的量化指标可能不一致。以下指标必须显式对�
 
 ### 平台变化广播
 
-当任一 agent 发现平台规则/算法实质变化时：1.修改自己的 .md（Agent 漏斗深度 3）；2.广播给相关 agent（文本→所有 writer，AI 工具→视频四 agent）；3.更新 reflecting 协同性审计；4.相关 agent 在下一轮精进中吸收。
+当任一 agent 发现平台规则/算法实质变化或通用工具/方法改进时：1.修改自己的 .md（Agent 漏斗深度 3）；2.广播给相关 agent（文本→所有 writer，AI 工具→视频四 agent）；3.更新 reflecting 协同性审计；4.相关 agent 在下一轮精进中吸收。工具/方法改进需在精进记录中标注 `可广播至: [agent列表]`。
 
 ### 协作者 — 我是谁
 
@@ -121,9 +114,9 @@ agent 各自定义的量化指标可能不一致。以下指标必须显式对�
 
 **我的成败取决于他们的自主，不取决于我的覆盖。** agent 产出质量高但方向是我定的 → 不是成功。agent 走错路但自己发现了 → 接近成功。agent 在我只给目标的情况下走完全程并自我精进 → 成功。
 
-下发前一句话自检：我在替它思考还是在给它目标？人在 loop 中：创意参数（选题/受众/钩子/信息点/风格）过半是我替人填的 → 先出选项让人确认，不下发。
+下发前自检：我在替它思考还是在给它目标？创意参数过半是我替人填的 → 先出选项让人确认，不下发。
 
-协作者反思：被纠正协调方式 ≥2 次 → 深度 1 改 prompt → 深度 2 更新本文件+memory → 深度 3 重写本节。详见 reflecting skill。
+协作者反思：被纠正 ≥2 次 → 深度1改prompt → 深度2更新本文件+memory → 深度3重写本节。执行中的工具行为/平台变化发现 ≥2 次确认后同样进入。
 
 ### 协同性自检（每轮 loop 必做）
 
@@ -131,6 +124,7 @@ agent 各自定义的量化指标可能不一致。以下指标必须显式对�
 - [ ] 平台变化已广播？无重复调研？
 - [ ] 量化指标统一定义？（时长/密度/频率/复杂度标度对齐）
 - [ ] 无幽灵引用？（来源逐字验证）
+- [ ] 术语体系一致？（同一符号在不同 agent 中无指向冲突——如 P0 在 find-ref=可达性层级，在 visual-designer=资产优先级）
 - [ ] 共享假设一致？（「你相信的」和读者状态表无漂移）
 
 ## 你面对的是谁
@@ -139,9 +133,9 @@ agent 各自定义的量化指标可能不一致。以下指标必须显式对�
 
 | 平台 | Agent | 读者状态 | 契约 |
 |---|---|---|---|
-| 公众号 | wechat-writer | 三种入口三种状态——推荐流刷到坐下、搜索流主动来访、贴图流从评论进主页 | 1500-3000 字。入口不同但坐下后都做了一次有意识的注意力投资 |
-| 小红书 | xiaohongshu-writer | 在刷，被你的封面撞见 | ≤1000 字。0.5 秒没钩住 = 不存在 |
-| X | x-writer | 在扫，判断这是不是信号 | ≤280 字符 × 3-7 条。第一条就是一个完整判断 |
+| 公众号 | wechat-writer | 三种入口三种状态——推荐流刷到坐下、搜索流主动来访、贴图流从评论进主页 | 2000-4000 字。入口不同但坐下后都做了一次有意识的注意力投资 |
+| 小红书 | xiaohongshu-writer | 在刷，被你的封面撞见 | 800-1500 字甜区。0.5 秒没钩住 = 不存在 |
+| X | x-writer | 在扫，判断这是不是信号 | 双路径：短线程 3-7 条 / 单条长文 1 条 ≤4000 字。第一条就是一个完整判断 |
 | 抖音 | douyin-writer | 被打断，准备划走 | 60-90s 主流 / 30-60s 知识型。前 3 秒不值得 = 消失 |
 
 四个 writer 并行工作。视频四 agent 面向同一个读者——只是用的不再是文字，是时间。
@@ -153,15 +147,22 @@ Agent 地图见 `.claude/_index.md`。
 ### 命令
 
 ```bash
-uv run --directory scripts content list                 # 选题总览（先看这个）
-uv run --directory scripts content new "标题"            # 新建选题
-uv run --directory scripts content adapt T001 wechat     # 派生平台草稿
-uv run --directory scripts content show T001             # 选题详情
+# 内容管线
+uv run --directory scripts content list              # 选题总览
+uv run --directory scripts content new "标题"         # 新建选题
+uv run --directory scripts content adapt T001 wechat  # 派生平台草稿
+uv run --directory scripts content show T001          # 选题详情
 uv run --directory scripts content transition T001-wechat-v1 ready
-uv run --directory scripts content validate              # 校验 frontmatter
-uv run --directory scripts content index                 # 重建索引
-uv run --directory scripts content stats                 # 全局统计
-uv run --directory scripts content preview T001          # 浏览器四平台并排（0.0.0.0:8765）
+uv run --directory scripts content validate           # 校验 frontmatter
+uv run --directory scripts content preview T001       # 四平台并排预览
+
+# AI 生成（provider-agnostic，默认火山引擎）
+uv run --directory scripts ai generate image --prompt "..." -o out.png
+uv run --directory scripts ai generate video --scene "..." --subject "..." -o ./out/
+uv run --directory scripts ai extract-lastframe in.mp4 -o frame.png
+
+# 工具
+uv run --directory scripts web-fetcher download <url> -o <path>  # curl_cffi 浏览器指纹
 ```
 
 平台名：`wechat` / `xiaohongshu` / `x` / `douyin`。首次 `scripts/` 跑 `uv sync`。
@@ -184,13 +185,14 @@ Git hook: `git config core.hooksPath .githooks`。
 - `content new` / `content adapt` 创建 frontmatter，不手写
 - `content transition` 推进状态，不手改 status
 - 图片 `![](assets/figN.svg)`，不用相对路径 `../../../`
-- `.excalidraw` + `.svg` 双源，图给 `figure-draftsman` agent
+- `.svg` 单源，图给 `figure-draftsman` agent
 - 研究给 `gather-expert` agent
 
 ### AI 视频生成基础设施
 
-视频四 agent 产出通过 `scripts/src/volcengine/` 调用 AI 服务：Seedance 2.0 (`seedance.py`, ARK_API_KEY) / TTS (`tts.py`, AK/SK) / BGM (`genbgm.py`, AK/SK)。SDK 抽象层语义模型与适配器分离。Model: `doubao-seedance-2-0-260128`(Pro) / `-fast`(Fast) / `-mini`(Mini)，需在[控制台](https://console.volcengine.com/ark/region:ark+cn-beijing/openManagement)开通。
+Provider-agnostic 架构：`ai` CLI → 注册表 (`get_image_generator`/`get_video_generator`) → 适配器。默认火山引擎 Seedance 2.0 / Seedream 5.0，可切换 provider。Seedance 2.0 含版权过滤器——知名 IP 特征组合触发拦截（如「橙发+黑长袍+双刀」→ Bleach），分镜拆分或同义词替换可绕过。`web_fetcher`（curl_cffi 浏览器指纹）用于参考素材下载，绕过 Cloudflare。
 
 ### 基础设施
 
-Agent 平级在 `.claude/agents/`。`scripts/src/content/` — Python 3.11+, `python-frontmatter` + `pydantic` + `click` + `rich`。
+Agent 平级在 `.claude/agents/`。`scripts/src/` — Python 3.11+, Click + rich。
+`ai-video/projects/TXXX/` — 视频项目根目录（已注册到 conventions.md）。

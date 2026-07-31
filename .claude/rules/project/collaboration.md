@@ -23,12 +23,15 @@ Agent 间通过**共享文件**通信，不通过对话历史：
 
 | 交接点 | 上游 | 下游必读 | 格式约束 |
 |--------|------|---------|---------|
-| 研究→选题 | gather-expert 证据锚点 | brief 作者 + 4 writer + figure-draftsman | 每证据 ≥2 跨谱系锚点，证据块首行含判定 |
+| 研究→选题 | gather-expert 证据锚点 | brief 作者 + 4 writer + figure-draftsman | 每证据 ≥1 跨谱系锚点；单谱系来源标注「置信度受限」；证据块首行含判定 |
 | 选题→大纲 | brief.md 关键信息点 | outline 作者 | 每点一句话可证伪 |
 | 大纲→风格 | outline.md | style 作者 | 结构节点标注信息点编号 |
 | 风格→写作 | style.md | 4 writer | 写前必须 Read |
 | 写作→出图 | brief 视觉规划 + `<!-- fig:N -->` | figure-draftsman | 图服务信息点，路径用相对 topic assets |
 | 三元素→合成 | script-beats / visual-world / rhythm-curve | video-director | 各文件在 director 读取前完成 |
+| 视觉设计→资产 | visual-world.md + visual-assets-spec.md | video-director + figure-draftsman + asset-lab.md | IaD 中性表情；分镜线稿标 beat 编号；入库前 asset-lab 去重 |
+| 视觉→分镜确认 | 分镜确认门 gates/storyboard-{beat}.md + 分镜图 | video-director（RefImg 门禁） | P0 关键拍分镜图未确认 → 阻塞 director Phase 0 preflight |
+| 合成→AI 生成 | video-prompt.md（director 分段 prompt） | `ai generate video` CLI | 9 要素 prompt + 全局一致性前缀；9:16 竖屏 |
 
 ## 量化指标对齐
 
@@ -37,10 +40,10 @@ Agent 间通过**共享文件**通信，不通过对话历史：
 | 指标 | 涉及 agent | 对齐结果 |
 |------|-----------|---------|
 | 单拍时长 | script-designer → video-director | 实体≤6s / 纯视觉≤8s / 钩子不限 |
-| CF vs V | script ↔ rhythm ↔ visual | CF 归 rhythm，V 归 visual，乘积<4 |
+| CF vs V | script ↔ rhythm ↔ visual | CF 归 rhythm（<2 单边约束），V 归 visual（独立管理） |
 | 感知组块 | figure-draftsman → 所有引用图 agent | 公众号≤15 / X≤5 / 小红书 3-6 / 抖音≤3 |
 | 实体复现 | script ↔ visual ↔ director | 主角≤3拍 / 配角≤5拍 |
-| 通道堆叠 | douyin-writer ↔ rhythm | 同期活跃≤1 |
+| 通道堆叠 | douyin-writer ↔ rhythm | 同期活跃≤2 带显式标注 |
 | 认知负荷 | script → rhythm | script 粗估(1-5) ≠ rhythm CL(1.5-2.0) |
 
 ## 来源标注
@@ -51,3 +54,5 @@ gather-expert FRANQ：事实性做引用门禁，忠实性做来源忠实度检�
 ## 平台变化广播
 
 发现平台规则/算法变化 → 1) 修改自己 .md 2) 广播相关 agent 3) 更新 reflecting 审计 4) 下轮精进吸收。
+
+发现通用工具/方法改进 → 判断是否跨 writer 适用 → 若是，写入精进记录并标注 `可广播至: [writer列表]`。

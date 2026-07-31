@@ -6,22 +6,22 @@
 
 ## 索引路由
 
-| 资产类型   | 类型前缀 | 媒体目录                | 子索引文件                      | 前次查询 |
-| ---------- | -------- | ----------------------- | ------------------------------- | -------- |
-| 角色参考图 | CHR      | `assets/characters/`    | `assets/characters-index.md`    | active   |
-| 场景定调图 | SCN      | `assets/scenes/`        | `assets/scenes-index.md`        | active   |
-| 分镜关键帧 | STB      | `assets/storyboards/`   | `assets/storyboards-index.md`   | active   |
-| 道具物件   | PRP      | `assets/props/`         | `assets/props-index.md`         | active   |
-| 视觉特效   | VFX      | `assets/vfx/`           | `assets/vfx-index.md`           | active   |
-| 音频素材   | AUD      | `assets/audio/`         | `assets/audio-index.md`         | active   |
-| 灯光设定   | LGT      | `assets/lighting/`      | `assets/lighting-index.md`      | active   |
-| 材质纹理   | MAT      | `assets/materials/`     | `assets/materials-index.md`     | active   |
-| 概念艺术   | CNC      | `assets/concepts/`      | `assets/concepts-index.md`      | active   |
-| 模板预设   | TPL      | `assets/templates/`     | `assets/templates-index.md`     | active   |
-| 绑定骨架   | RIG      | `assets/rigging/`       | `assets/rigging-index.md`       | active   |
-| 调色板     | CLP      | `assets/palettes/`      | `assets/palettes-index.md`      | active   |
-| 字体排版   | TYP      | `assets/typography/`    | `assets/typography-index.md`    | active   |
-| 数字绘景   | MNT      | `assets/matte-paintings/`| `assets/matte-paintings-index.md`| active  |
+| 资产类型   | 类型前缀 | 媒体目录                    | 子索引文件                          | 前次查询 |
+| ---------- | -------- | --------------------------- | ----------------------------------- | -------- |
+| 角色参考图 | CHR      | `assets/characters/`      | `assets/characters-index.md`      | active   |
+| 场景定调图 | SCN      | `assets/scenes/`          | `assets/scenes-index.md`          | active   |
+| 分镜关键帧 | STB      | `assets/storyboards/`     | `assets/storyboards-index.md`     | active   |
+| 道具物件   | PRP      | `assets/props/`           | `assets/props-index.md`           | active   |
+| 视觉特效   | VFX      | `assets/vfx/`             | `assets/vfx-index.md`             | active   |
+| 音频素材   | AUD      | `assets/audio/`           | `assets/audio-index.md`           | active   |
+| 灯光设定   | LGT      | `assets/lighting/`        | `assets/lighting-index.md`        | active   |
+| 材质纹理   | MAT      | `assets/materials/`       | `assets/materials-index.md`       | active   |
+| 概念艺术   | CNC      | `assets/concepts/`        | `assets/concepts-index.md`        | active   |
+| 模板预设   | TPL      | `assets/templates/`       | `assets/templates-index.md`       | active   |
+| 绑定骨架   | RIG      | `assets/rigging/`         | `assets/rigging-index.md`         | active   |
+| 调色板     | CLP      | `assets/palettes/`        | `assets/palettes-index.md`        | active   |
+| 字体排版   | TYP      | `assets/typography/`      | `assets/typography-index.md`      | active   |
+| 数字绘景   | MNT      | `assets/matte-paintings/` | `assets/matte-paintings-index.md` | active   |
 
 **扩展路径**：新增类型 → 在 `taxonomy-registry.md` 注册前缀 → 创建目录 + 子索引（从已有子索引模板复制） → 更新本表。**禁止凭空创建目录后不注册前缀。**
 
@@ -37,16 +37,17 @@
 
 其中 `{_StyleTag}` 为**可选段**——仅当资产为单一风格专属时加入，便于快速视觉过滤。通用资产省略。
 
-| 段         | 规则                     | 示例值                                                            |
-| ---------- | ------------------------ | ----------------------------------------------------------------- |
-| Type       | 大写三字母，`assets/taxonomy-registry.md` 注册 | `CHR`(角色) / `SCN`(场景) / `VFX`(特效) |
-| TopicID    | 来源选题编号             | `T002`                                                          |
-| StyleTag   | **可选**。小写 kebab-case，受控于 `taxonomy-registry.md` 风格表 | `bleach` / `cyberpunk` |
-| EntityName | PascalCase，无空格无缩写 | `LinBei`                                                        |
-| Variant    | 小写 kebab-case，受控于 `taxonomy-registry.md` 变体表 | `canonical` / `multi-view` / `outfit-{名}` / `scene-{名}` |
-| Version    | v + 两位数字             | `v01`                                                           |
+| 段         | 规则                                                                    | 示例值                                                            |
+| ---------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| Type       | 大写三字母，`assets/taxonomy-registry.md` 注册                        | `CHR`(角色) / `SCN`(场景) / `VFX`(特效)                     |
+| TopicID    | 来源选题编号                                                            | `T002`                                                          |
+| StyleTag   | **可选**。小写 kebab-case，受控于 `taxonomy-registry.md` 风格表 | `bleach` / `cyberpunk`                                        |
+| EntityName | PascalCase，无空格无缩写                                                | `LinBei`                                                        |
+| Variant    | 小写 kebab-case，受控于`taxonomy-registry.md` 变体表                  | `canonical` / `multi-view` / `outfit-{名}` / `scene-{名}` |
+| Version    | v + 两位数字                                                            | `v01`                                                           |
 
 完整示例：
+
 - 风格专属：`CHR_T002_bleach_LinBei_canonical_v01.png`
 - 风格中立（无风格段）：`MAT_T002_SteelPlate_brushed_v01.png`
 

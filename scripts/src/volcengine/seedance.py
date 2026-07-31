@@ -18,7 +18,13 @@ from typing import Any
 
 from volcengine._auth import Credentials, get_credentials
 from volcengine._http import VolcError
-from volcengine.models import VideoPrompt, VideoResult, VideoStatus
+from volcengine.models import (
+    LEGAL_DURATIONS,
+    VideoPrompt,
+    VideoResult,
+    VideoStatus,
+    snap_duration,
+)
 
 
 # ARK API endpoint
@@ -94,6 +100,30 @@ class SeedanceVideo:
             error_message="Timeout waiting for video generation",
         )
 
+    def submit_with_retry(self, prompt: VideoPrompt, max_retries: int = 3) -> VideoResult:
+        """提交并等待，失败自动重试（最多 max_retries 次）。
+
+        31% 首次失败率（Seedance 2.0 ARK 实测），自动重试提升可靠性。
+        """
+        last_error: str | None = None
+        for attempt in range(max_retries):
+            result = self.submit(prompt)
+            if not result.task_id:
+                last_error = result.error_message or "No task_id"
+                time.sleep(2 ** attempt)  # exponential backoff
+                continue
+            final = self.wait(result.task_id)
+            if final.status == VideoStatus.COMPLETED:
+                return final
+            last_error = final.error_message or "Unknown error"
+            if attempt < max_retries - 1:
+                time.sleep(2 ** attempt)
+        return VideoResult(
+            task_id="",
+            status=VideoStatus.FAILED,
+            error_message=f"All {max_retries} retries failed. Last: {last_error}",
+        )
+
     # ── private ─────────────────────────────────────────────
 
     def _headers(self) -> dict[str, str]:
@@ -151,10 +181,25 @@ class SeedanceVideo:
                     "role": "reference_audio",
                 })
 
+        # entity_tags → reference image association (Gap 2)
+        if prompt.entity_tags and prompt.reference_image_url:
+            ref_urls = prompt.reference_image_url if isinstance(prompt.reference_image_url, list) else [prompt.reference_image_url]
+            for i, (key, val) in enumerate(prompt.entity_tags.items()):
+                if i < len(ref_urls):
+                    content.append({
+                        "type": "text",
+                        "text": f"[{key}] ({val}) maps to Image{i+1}",
+                    })
+                else:
+                    content.append({
+                        "type": "text",
+                        "text": f"[{key}] is {val}",
+                    })
+
         req: dict[str, Any] = {
             "model": self._model,
             "content": content,
-            "duration": min(max(prompt.duration_hint, 4), 15),
+            "duration": snap_duration(prompt.duration_hint),  # Gap 4
         }
 
         # 画面比例
@@ -166,6 +211,15 @@ class SeedanceVideo:
         # 可选参数
         if prompt.negative_prompt:
             req["negative_prompt"] = prompt.negative_prompt
+
+        # ARK API 控制参数 (Gap 5)
+        req["generate_audio"] = prompt.generate_audio
+        if prompt.seed is not None:
+            req["seed"] = prompt.seed
+        req["watermark"] = prompt.watermark
+        req["return_last_frame"] = prompt.return_last_frame
+        req["service_tier"] = prompt.service_tier
+        req["priority"] = prompt.priority
 
         return req
 

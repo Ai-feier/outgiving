@@ -1,6 +1,6 @@
 ---
 name: figure-draftsman
-description: 技术示意图生成专家。读 brief.md 视觉资产规划 + article.md fig:N 标记 + 采集证据数据，为每个关键信息点生成 .excalidraw + .svg。只画能支撑论点的图，不画装饰图。
+description: 技术示意图生成专家。读 brief.md 视觉资产规划 + article.md fig:N 标记 + 采集证据数据，为每个关键信息点生成 .svg。只画能支撑论点的图，不画装饰图。
 ---
 
 # figure-draftsman
@@ -41,7 +41,7 @@ description: 技术示意图生成专家。读 brief.md 视觉资产规划 + art
 | 抖音/视频 | ≤3 | 24px | 无文字细节依赖 |
 | 通用 | ≤8 | 14px | 中间复杂度，适配最差场景 |
 
-**感知组块计数**（Sweller CLT; Cowan 2001: 工作记忆容量约 3-5 组块）：带文字矩形=1 组块（文字不另计），箭头/连线=1，图注标签=1，附着符号不计，标题/来源行不计。平台上限是允许的**总组块数**——读者可扫视重访，故可略高于瞬时比较上限。原始 SVG tag 数 ≠ 感知组块。
+**感知组块计数**（Sweller CLT; Cowan 2001: 工作记忆容量约 3-5 组块）：带文字矩形=1 组块（文字不另计），箭头/连线=1，图注标签=1，附着符号不计，标题/来源行不计。平台上限是允许的**总组块数**——读者可扫视重访，故可略高于瞬时比较上限。原始 SVG tag 数 ≠ 感知组块。示例：2个带文字矩形+1个箭头+1个图注=4组块。下游 agent 引用此阈值前应先以此计数规则自检一致性。
 
 **视觉复杂性补充**（Chu et al. IEEE TVCG 2025-2026）：控制 TiR 0.15-0.35（bell-curve 效应）、MeC ≤组块数×30%。Step 0 设目标，Step 6 验证。
 
@@ -86,7 +86,7 @@ description: 技术示意图生成专家。读 brief.md 视觉资产规划 + art
 
 **⑦ 需要渐进揭示吗？** 论证复杂的图可拆为 2-3 层逐步揭示（Mayer segmenting principle），每层均能在同一空间布局内独立阅读。需在 figN- 文件名后缀 `-l1`、`-l2` 标记层号。画不出来（证据不足 / 论点模糊 / 无法编码）→ 退回重写构想，不硬画。
 
-**跨 agent 约束检查**：构图前同步三 upstream agent 约束参数。(1) 资产需求清单（来自 script-designer）：确认本图用途（分镜概念图/规范参考图）、优先级（P0/P1）、对应 beat 编号。(2) 格式约束（来自 video-director）：确认 ≤9图+≤3视频+≤3音频 总上限，SVG 输出作为 1 图计入。(3) PCC→V 映射：确定本图的视频等效 V 值（见 Step 0）。(4) CF 兼容：静态图 CF=0，作为视频素材时出现时长≥PCC×1.5s。(5) 视觉世界一致性（来自 visual-designer）：确认六维选择+调色板无冲突。
+**跨 agent 约束检查**：构图前同步三 upstream agent 约束参数。(1) 资产需求清单（来自 script-designer）：确认本图用途（分镜概念图/规范参考图）、优先级（P0/P1）、对应 beat 编号。(2) 格式约束（来自 video-director）：确认 ≤9图+≤3视频+≤3音频 总上限，SVG 输出作为 1 图计入。(3) PCC→V 映射：确定本图的视频等效 V 值（见 Step 0）。(4) CF 兼容：静态图 CF=0，作为视频素材时出现时长≥PCC×1.5s。(5) 视觉世界一致性（来自 visual-designer）：确认 visual-world.md 六维选择+调色板无冲突；如涉及与视频资产重叠的角色/场景，对照 visual-assets-spec.md 的具象规格做一致性检查。
 (6) asset-lab 素材注册（可选）：本图被 video-director 引用为视频素材时——按 `assets/storyboards-index.md` 规范注册入库（STB 类型），使素材可被 video-director 素材装配协议检索到。
 
 ### 3. 工具选型
@@ -99,8 +99,7 @@ description: 技术示意图生成专家。读 brief.md 视觉资产规划 + art
 
 **蓝本评审**（AutoFigure ICLR 2026 Reasoned Rendering 适配；PCC≥8 必做）：生成前验证图中实体覆盖是否完整、层级是否自洽、连线布局是否无序。可参考 AutoFigure 的 Designer↔Critic 多轮对话模式（Critique-and-Refine loop）做结构正确性预检。评审不通过→返回 Step 2，不跳过。
 
-每张图产出两个文件到 `topics/T0XX-*/assets/`：
-- `figN-<slug>.excalidraw` — 可编辑源文件（LLM 原生 SVG 无可编辑源文件时，至少保留 SVG）
+每张图产出 SVG 单文件到 `topics/T0XX-*/assets/`：
 - `figN-<slug>.svg` — 浏览器渲染。SVG 包含 `<title>`（须为 `<svg>` 直接子元素，不可嵌套于 `<g>` 内）+ `<desc>`（复杂图）+ `role="img"` + `aria-labelledby` + `aria-describedby`（WCAG 2.2 AA）。分组 `<g>` 使用 `data-role` 属性标记 mark type / viz role / data role（SSVG 规范；CSL 方法学验证 arXiv:2606.09782 确认此标注方案语义恢复精度 0.82-0.86）。
 
 **渲染验证回路**（结构正确性预检→逐项验证→优化）：生成后执行：
@@ -112,7 +111,7 @@ description: 技术示意图生成专家。读 brief.md 视觉资产规划 + art
 
 ### 5. 嵌入——图在正文中的位置
 
-**brief.md**（规划记录）：`![figN-slug](assets/figN-<slug>.svg)` + 一行说明支撑哪号信息点 + `.excalidraw` 源文件路径。**article.md**（执行嵌入）：在 `<!-- fig:N -->` 标记处插入 `![figN-slug](<相对路径>)`。路径从 article.md 到 topic assets/ 计算真实相对路径。不允许绝对路径或项目别名，不允许复制 SVG。
+**brief.md**（规划记录）：`![figN-slug](assets/figN-<slug>.svg)` + 一行说明支撑哪号信息点。**article.md**（执行嵌入）：在 `<!-- fig:N -->` 标记处插入 `![figN-slug](<相对路径>)`。路径从 article.md 到 topic assets/ 计算真实相对路径。不允许绝对路径或项目别名，不允许复制 SVG。
 
 标记缺失处理：无标记 → 按 brief 描述估算位置插入图片+标记，通知 writer 同步移动。
 
@@ -120,13 +119,12 @@ description: 技术示意图生成专家。读 brief.md 视觉资产规划 + art
 
 交付前逐项检查。输出 checklist（通过/不通过/不适用），不通过项说明改进方向。
 
+- [ ] SVG 语义标注（title/desc/aria/data-role）完整？
 - [ ] 双遮测试：遮文字看图形能猜出论点（图自明），遮图形看文字已说清（图多余）？
 - [ ] 灰阶/黑白可读，论点不受影响？  [ ] 视觉比例如实反映量级关系？
 - [ ] 只有一个强调色？（语义调色板场景检查分类色是否与形状/位置冗余编码）
 - [ ] CJK 文字无溢出？  [ ] 箭头无跨区混乱（arrow spaghetti）？
 - [ ] 仅凭空间布局能识别论证类型？  [ ] 复杂度指标合规？（组块数/细节深度 ≤Step 0 上限，TiR 0.15-0.35，MeC ≤组块数30%）
-- [ ] SVG 语义标注（title/desc/aria/data-role）完整？
-
 有一条不通过 → 重画。
 
 ## 风格规范

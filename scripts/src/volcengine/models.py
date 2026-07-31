@@ -12,6 +12,18 @@ from enum import Enum
 from typing import Optional
 
 
+# ── Duration ────────────────────────────────────────────
+
+# Seedance 2.0 legal duration values (seconds)
+LEGAL_DURATIONS = (4, 5, 6, 8, 10, 12, 15)
+
+
+def snap_duration(hint: int) -> int:
+    """Snap to nearest legal Seedance duration value."""
+    hint = max(4, min(15, hint))
+    return min(LEGAL_DURATIONS, key=lambda d: abs(d - hint))
+
+
 # ── Video Generation ────────────────────────────────────────────
 
 
@@ -42,6 +54,10 @@ class VideoPrompt:
     style: str = "cinematic, 4K"
     duration_hint: int = 5
 
+    # 六块公式扩展（Gap 1）
+    motion: str = ""
+    audio: str = ""
+
     # Seedance 特有：多角色标签绑定
     entity_tags: dict[str, str] = field(default_factory=dict)
     # 多模态参考（Seedance 2.0 支持）
@@ -51,14 +67,61 @@ class VideoPrompt:
     # 负向提示
     negative_prompt: str = ""
 
+    # ARK API 控制参数（Gap 5）
+    generate_audio: bool = True
+    seed: int | None = None
+    watermark: bool = True
+    return_last_frame: bool = False
+    service_tier: str = "default"
+    priority: str = "normal"
+
     def to_natural_language(self) -> str:
-        """合成自然语言 prompt（通用格式）。"""
-        parts = [
-            f"{self.scene}, {self.subject}",
-            self.camera,
-            self.lighting,
-            self.style,
-        ]
+        """合成自然语言 prompt（六块公式结构）。
+
+        对齐 ARK 社区验证格式：
+        [Subject] + [Action/Motion] + [Camera] + [Setting & Lighting]
+        + [Style] + [Audio/Constraints]
+        """
+        parts = []
+
+        # 1. Subject
+        parts.append(f"{self.scene}, {self.subject}")
+
+        # 2. Action/Motion
+        if self.motion:
+            parts.append(self.motion)
+
+        # 3. Camera
+        if self.camera:
+            parts.append(self.camera)
+
+        # 4. Setting & Lighting
+        if self.lighting:
+            parts.append(self.lighting)
+
+        # 5. Style
+        if self.style:
+            parts.append(self.style)
+
+        # 6. Audio/Constraints
+        if self.audio:
+            parts.append(self.audio)
+
+        # entity_tags 嵌入（Gap 2）
+        if self.entity_tags:
+            tag_text = " ".join(f"[{k}] is {v}" for k, v in self.entity_tags.items())
+            parts.append(tag_text)
+
+        # @ 引用语法 — reference images as character/style anchor （Gap 1）
+        if self.reference_image_url:
+            count = (
+                len(self.reference_image_url)
+                if isinstance(self.reference_image_url, list)
+                else 1
+            )
+            refs = " ".join(f"@Image{i+1}" for i in range(count))
+            parts.append(f"{refs} as reference")
+
         return ", ".join(p for p in parts if p)
 
 
@@ -131,3 +194,36 @@ class MusicResult:
     task_id: str = ""
     audio_url: str | None = None
     duration_ms: int = 0
+
+
+# ── Image Generation ─────────────────────────────────────────────
+
+
+@dataclass
+class ImagePrompt:
+    """图像生成的语义 prompt（Seedream ARK API）。
+
+    对齐 visual-designer 的参考图生产需求：
+    - prompt: 自然语言描述
+    - reference_image_url: 参考图（1-14 张，用于风格/角色锚定）
+    - size: 分辨率预设或 WxH
+    - sequential_image_generation: 组图模式
+    """
+
+    prompt: str
+    reference_image_url: str | list[str] | None = None  # 1-14 张参考图
+    size: str = "2K"  # 1K/2K/3K/4K 或 WxH
+    sequential_image_generation: str = "disabled"  # "auto" 组图 1-15 张
+    output_format: str = "png"
+    response_format: str = "url"  # "url" 或 "b64_json"
+    watermark: bool = False
+    optimize_mode: str = "standard"  # "standard" 质量优先 / "fast" 速度优先
+    negative_prompt: str = ""
+
+
+@dataclass
+class ImageResult:
+    images: list[dict] = field(default_factory=list)  # [{"url": "...", "size": "3104x1312"}]
+    created: int = 0
+    usage: dict = field(default_factory=dict)
+    error_message: str | None = None

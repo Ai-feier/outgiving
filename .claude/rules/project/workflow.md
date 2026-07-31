@@ -44,13 +44,13 @@ uv run --directory scripts content preview T001       # 浏览器四平台并排
 - 研究 → `gather-expert` agent，不自己搜
 - 出图 → `figure-draftsman` agent，不自己画
 - 图放 topic 级 `assets/`，正文引用 `![](assets/figN.svg)`，不复制到平台目录
-- `.excalidraw` + `.svg` 双源
+- `.svg` 单源
 
 ## 质量门禁
 
 ### briefing → outlined
 
-- [ ] 关键信息点每点一句话可证伪，gather-expert 证据 ≥2 跨谱系锚点
+- [ ] 关键信息点每点一句话可证伪，gather-expert 证据 ≥1 跨谱系锚点（单谱系标注「置信度受限」）
 - [ ] 视觉资产规划节已写，研究结论诚实标注（可引用/须注明/不可引用）
 
 ### draft → reviewing
@@ -67,13 +67,13 @@ uv run --directory scripts content preview T001       # 浏览器四平台并排
 
 | 维度 | 公众号 | 小红书 | X | 抖音 |
 |------|--------|--------|---|------|
-| 字数/时长 | 1500-3000 | ≤1000 | ≤280×3-7 | 60-90s |
+| 字数/时长 | 2000-4000 | 800-1500 | 双路径: 短线程3-7条 / 单条长文1条4000字 | 60-90s |
 | 感知组块 | ≤15 | 3-6 | ≤5 | ≤3 |
 | 钩子位置 | 前 3 句 | 封面+首句 | 第一条 | 前 3 秒 |
 
 ### 视频维度
 
-单拍实体≤6s / 纯视觉≤8s，通道堆叠≤1，rhythm CL 1.5-2.0
+单拍实体≤6s / 纯视觉≤8s，通道堆叠≤2 带显式标注，rhythm CL 1.5-2.0
 
 ### 协同性自检（每轮 loop）
 

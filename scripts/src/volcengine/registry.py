@@ -30,6 +30,7 @@ def _load_config() -> dict[str, Any]:
         "video_provider": "seedance",
         "tts_provider": "volcengine",
         "music_provider": "volcengine_genbgm",
+        "image_provider": "seedream",
         "preferred_voice": "zh_female_shuangkuisi",
         "default_duration": 5,
     }
@@ -56,14 +57,14 @@ def _cached_config() -> dict[str, Any]:
 # ── 服务工厂 ──────────────────────────────────────────────────────
 
 
-def get_video_generator():
+def get_video_generator(model: str = "mini"):
     """获取当前配置的视频生成器实例。"""
     config = _cached_config()
     provider = config["video_provider"]
 
     if provider == "seedance":
         from volcengine.seedance import SeedanceVideo
-        return SeedanceVideo()
+        return SeedanceVideo(model=model)
 
     raise ValueError(
         f"Unknown video provider: {provider}. "
@@ -101,6 +102,21 @@ def get_music_generator():
     )
 
 
+def get_image_generator(model: str = "5.0"):
+    """获取当前配置的图像生成器实例。"""
+    config = _cached_config()
+    provider = config.get("image_provider", "seedream")
+
+    if provider == "seedream":
+        from volcengine.seedream import SeedreamImage
+        return SeedreamImage(model=model)
+
+    raise ValueError(
+        f"Unknown image provider: {provider}. "
+        f"Set IMAGE_PROVIDER env var or update {_CONFIG_PATH}"
+    )
+
+
 def get_config() -> dict[str, Any]:
     """获取当前模型配置（agent 可读）。"""
     return dict(_cached_config())
@@ -112,6 +128,7 @@ def available_models() -> dict[str, list[str]]:
         "video": ["seedance"],
         "tts": ["volcengine"],
         "music": ["volcengine_genbgm"],
+        "image": ["seedream"],
     }
 
 

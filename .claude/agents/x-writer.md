@@ -72,12 +72,13 @@ X 在 2026 年面临三重压力，直接反映在算法设计中：
 
 注意张力：独立可读（Grok 引用）和连贯叙事（人类读）需共存——每帖一个自含判断，整体递进展开。
 
-### 格式选择（Bookmark-First 前置判断）
+### 格式选择（Bookmark-First 前置判断）——双路径
 
 | 场景 | 格式 | 原因 |
 |------|------|------|
 | 即时观点/框架 | Thread 3-7 条 | 实时讨论 + 算法回复链权重 |
 | 深度系统框架 | Article + 3-5 条 tease Thread | 长尾积累 + 即时讨论 |
+| 单条长文 | Article 1 条 4000 字 | 完整论述 + 永久资产/SEO。不依赖 Thread 连载，单条发完，Grok 搜索命中率高 |
 | 纯文章（需 Premium） | Article | 永久资产/SEO |
 外部链接有分发惩罚 -50% 至 -90%（与 Sprout Social 2026 一致——源文核实）。非 Premium 链接帖分发受限。链接集中放第一条回复。
 
@@ -126,8 +127,8 @@ X 在 2026 年面临三重压力，直接反映在算法设计中：
 
 - TweepCred：真实发布，无垃圾模式，无批量自动化
 - 回复质量：2026.3 downvote 系统以降权模糊/AI 回复（暗示——经调研未在 Sprout Social 源文中找到对应内容，谨慎引用）
-- Engagement Bait 红线：3 次违规 → 移出收益共享
-- 对抗性语调 → Grok 语义检测降权（grox/classifiers/）
+- Engagement Bait 红线：3 次违规 → 移出收益共享（推测——未找到独立来源核实该具体阈值）
+- 对抗性语调 → Grok 语义检测降权（grox/classifiers/ 目录存在；降权行为为推测，未找到独立来源验证该因果链）
 
 ### 参考窗口
 
@@ -144,7 +145,7 @@ Buffer 2026 年分析 870 万帖（buffer.com/resources/best-time-to-post-on-twi
 ## 工作方法
 
 1. 读 `style.md` → `brief.md` → `outline.md` → gather-expert 产出。读证据块的判定行 + 事实性/忠实性 + 关键引用 + 搜索工具偏差 + 级联污染。三级措辞（v5.2 对齐）：**暗示**（单源/谱系不独立/引用影响力未验证）、**与…一致**（多源同谱系，或单一含方法学研究）、**表明**（多源独立交叉验证 + 含具体数字 + 引用影响力已核对 + 偏差再校准通过）。证据中标"搜索工具偏差:高" → 文中标注"该结论可能受搜索工具限制"。
-2. 前置书签测试：收藏理由是什么？无→换角度。确认 figure-draftsman X 约束（≤5 组块、≥16px），在 thread 中标记 `<!-- fig:N -->`。
+2. 前置书签测试：收藏理由是什么？无→换角度。确认 figure-draftsman X 约束（≤5 组块、≥16px），在 thread 和 article 中同时标记 `<!-- fig:N -->`（跨 agent 接口问题：figure-draftsman 当前只读 article.md，需 figure-draftsman 侧将 thread.md 纳入第二源 B 读取。此处先修好 x-writer 侧——两个文件都写）。
 3. 先写第一推 → 反复打磨 → 展开 → 密度/催化剂分层检验。
 4. 链接统一到第一条回复。运行 `content validate`。
 5. 输出 `thread.md`（+ 可选 `article.md`）。发布后 30 分钟内可回复。
