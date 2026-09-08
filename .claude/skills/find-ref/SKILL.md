@@ -13,20 +13,21 @@ argument-hint: "[query] — 描述要搜索的素材类型和用途"
 
 ## 与现有系统的关系
 
-visual-designer 角色参考图流程第 2 步"网上找"的标准化执行者。产出 → `gates/image-gen-*.md` 参考图声明。素材存 `ref-images/`（按主题子目录），验证后晋升 `_index.md`。与 gather-expert 互补——后者搜文本证据，本 skill 搜视觉/听觉素材。
+visual-designer 角色参考图流程第 2 步"网上找"的标准化执行者。产出 → visual 单元 ③ 参考图声明（生图确认门内容）。素材存 `ref-images/`（按主题子目录），验证后晋升 `_index.md`。与 gather-expert 互补——后者搜文本证据，本 skill 搜视觉/听觉素材。
 
 ## 五步法
 
 ### 第一步：明确需求
 
 | 问题 | 选项 |
-|------|------|
+| ------ | ------ |
 | 类型 | 图片 / 视频 / 音频 / 3D模型 / 设计参照 |
 | 用途 | 身份锚定 / 场景定调 / 动作参考 / 风格参考 / 情绪锚定 / 材质参考 |
 | 预期数量 | 设定图 1-3 / 截图 3-5 / 模型 1-2 / 音频 1 段 |
 | 质量门槛 | 图片≥1024px / 音频≥128kbps / 视频≥720p / 慢动作≥60fps |
 
 **角色语言素材维度**（visual-designer 构建角色语言体系时额外启用）：
+
 - **动作参考 (Motion Reference)** — signature gestures 定义前需真实人类动作参考
 - **运动质量 (Laban Effort)** — Weight/Time/Space/Flow Effort Profile 视觉参考
 - **空间关系 (Proxemics)** — 角色间距离和空间关系视觉参考
@@ -54,7 +55,7 @@ P5 — AI 生成 fallback（P1-P4 均无可用时）
 **角色语言素材来源优先级**：
 
 | 素材类型 | 首选来源 | 关键词模板（英/中） |
-|----------|---------|-------------------|
+| ---------- | --------- | ------------------- |
 | 动作参考 | P1: 舞蹈/武术/体育慢动作视频 | "slow motion {action} reference dance" / "慢动作 {动作} 参考" |
 | 运动质量(Laban) | P1: 现代舞录像+武术演示 | "laban effort heavy sustained contemporary dance" / "现代舞 动作质感" |
 | 空间关系 | P1: 电影截图/剧照 | "cinematic two-shot film still" / "电影 双人镜头 构图" |
@@ -65,6 +66,7 @@ P5 — AI 生成 fallback（P1-P4 均无可用时）
 ### 第三步：搜索执行
 
 **日志格式**：
+
 ```
 ## 搜索日志 — {日期} | 需求：{声明}
 | 优先级 | 关键词 | 站点 | 命中? | URL |
@@ -72,6 +74,7 @@ P5 — AI 生成 fallback（P1-P4 均无可用时）
 ```
 
 **角色语言素材搜索策略**：
+
 - **动作质感**：用 "质感形容词+动作类型" 而非角色名，如 "explosive punch slow motion reference"
 - **Laban 术语映射**：heavy→grounded weight / light→floating delicate / sustained→continuous flow / sudden→explosive burst / direct→focused / indirect→wandering / bound→controlled tension / free→flowing release
 - **Proxemics**：用距离描述词 (intimate/personal/social/public) + framing (close-up/two-shot/wide) + "film still"
@@ -86,6 +89,7 @@ P5 — AI 生成 fallback（P1-P4 均无可用时）
 | 主体完整可见 / 用途匹配 / 无「禁止转载/商用」声明 | 通过/不通过 |
 
 **动作类素材附加检查**：
+
 - 慢动作帧率≥60fps（细节可见性），<30fps 标注「帧率受限」
 - 标注角度覆盖（正面/侧面/背面），单角度标注「单角度」
 - 连续帧截图≥3 张提取关键姿态
@@ -93,15 +97,18 @@ P5 — AI 生成 fallback（P1-P4 均无可用时）
 ### 第五步：下载和引用
 
 **命名**：`ref-images/{TopicID}/{SEQ}_{Type}_{Purpose}_{Entity}_v{NN}.{ext}`
+
 - SEQ 三位数字 | Type: CHR/SCN/KV/LYT/PROP/STYLE/ACTION/AUDIO/REF
 - Purpose: identity/mood/motion/look | Entity: PascalCase | vNN
 
 示例：`001_CHR_identity_LinBei_v01.png`
 
 **来源清单**（`ref-sources.md`）：
+
  ```
  | 文件 | 类型 | 用途 | URL | 来源性质 | 版权状态 | 验证状态 |
 ```
+
 验证状态：已直接验证 / 未独立验证 / 推测。来源性质：官方设定集/动画截图/游戏资源/同人/模型站/AI生成。
 
 **gate 对接**：`参考图声明（find-ref 产出）：正参考：{path}（{来源+特征}）负参考：{path}（{不匹配理由}）`
@@ -115,6 +122,7 @@ P5 — AI 生成 fallback（P1-P4 均无可用时）
 ### ref-inbox 消费
 
 用户说"处理 ref-inbox" 或 `ref-inbox.md` 待处理区有未处理条目时：
+
 1. 下载 → `web_fetcher download`
 2. 命名 → 按第五步规范
 3. 注册 → 追加 `_index.md` 行（八字段+`![]()`）
@@ -125,7 +133,7 @@ P5 — AI 生成 fallback（P1-P4 均无可用时）
 ## 角色语言素材搜索速查表
 
 | 需求类型 | 最佳来源 | 搜索关键词（英/中） | 质量标准 |
-|----------|---------|--------------------|---------|
+| ---------- | --------- | -------------------- | --------- |
 | Signature Gesture 定义 | 舞蹈/武术慢动作 P1 | "{action} slow motion reference dance" / "慢动作 动作 参考 角色" | ≥60fps, 多角度优先 |
 | Laban Weight (strong∼light) | 现代舞/举重纪录片 P1 | "grounded weighted dance" / "现代舞 重量感 沉重" | 慢动作, 全身可见 |
 | Laban Time (sudden∼sustained) | 武术/体育爆破 P1 | "explosive burst slow mo" / "爆发 慢动作 动作参考" | ≥60fps, 起止帧清晰 |

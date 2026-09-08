@@ -8,14 +8,14 @@ platforms/<plat>/T001-<slug>/ # 平台草稿（article.md）
 published/YYYY-MM/            # 已发布存档
 analytics/                    # 数据分析
 scripts/                      # Python CLI
-ai-video/                     # AI 视频项目（projects/TXXX/ + gates/ + assets/）
+ai-video/                     # AI 视频项目（projects/TXXX/ + assets/）
 .claude/                      # AI 基础设施（agents/ skills/ rules/ output-styles/）
 ```
 
 ## 命名
 
 | 对象 | 格式 | 示例 |
-|------|------|------|
+| ------ | ------ | ------ |
 | 选题 ID | `T` + 三位数字 | `T001` |
 | 草稿 ID | `{topic}-{platform}-v{rev}` | `T001-wechat-v1` |
 | 发布 ID | `{topic}-{platform}-pub` | `T001-wechat-pub` |
@@ -28,12 +28,15 @@ ai-video/                     # AI 视频项目（projects/TXXX/ + gates/ + asse
 **不手写**，用 `content new` / `content adapt` 创建，`content transition` 推进。
 
 ### TopicFM 必填
+
 `id`, `kind`, `topic_id`, `title`, `status`, `created_at`, `updated_at`
 
 ### DraftFM 必填
+
 `id`, `kind`, `topic_id`, `parent_id`, `platform`, `revision`, `status`, `title`, `created_at`, `updated_at`
 
 ### 纯写作区
+
 `outline.md` / `style.md` / `article.md` 无 frontmatter。
 
 ## Agent 文件
@@ -45,26 +48,32 @@ ai-video/                     # AI 视频项目（projects/TXXX/ + gates/ + asse
 ## Git
 
 ### 分支
+
 `main` ← `{topic-id}-{描述}`（如 `T001-wechat-draft`）
 不在 main 上直接编辑内容文件。
 
 ### Commit 格式
+
 ```
 <type>(<scope>): <描述>
 ```
+
 Type: `content` / `review` / `publish` / `asset` / `infra` / `fix` / `research`
 Scope: 选题 ID 或 infra 组件名
 
 ### 时机
+
 每个 agent 产出后一个 commit，状态推进后一个 commit。
 
 ### 禁止
+
 - 不 commit 二进制 >5MB
 - 不 force push main
 - 不 commit 敏感信息
 - 所有 commit 尾部加 `Co-Authored-By: Claude <noreply@anthropic.com>`
 
 ### Hook
+
 ```bash
 git config core.hooksPath .githooks
 ```
@@ -76,7 +85,7 @@ git config core.hooksPath .githooks
 参考资产（角色设计稿/场景参考图/布局模板）的尺寸比例由**内容布局需求**决定，不由最终产出格式决定。
 
 | 资产类型 | 推荐比例 | 理由 |
-|---------|---------|------|
+| --------- | --------- | ------ |
 | 多视图合成帧（三栏/四栏角色设计稿） | 横版 16:9 或 3:2 | 多列并排需要宽度 |
 | 单角色肖像/正面 | 竖版 3:4 可 | 单视图无并排需求 |
 | 场景参考 | 保留原图比例 | 裁剪会丢失空间信息 |

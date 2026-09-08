@@ -4,9 +4,11 @@ from __future__ import annotations
 
 from datetime import date, datetime
 from pathlib import Path
+from typing import Any
 
 import frontmatter
 
+from . import clock
 from .schema import AnyFM, parse_frontmatter
 
 
@@ -25,7 +27,7 @@ def read(path: Path) -> tuple[AnyFM, str]:
     return fm, post.content
 
 
-def read_raw(path: Path) -> tuple[dict, str]:
+def read_raw(path: Path) -> tuple[dict[str, Any], str]:
     """不做 schema 校验，原样读"""
     post = frontmatter.load(str(path))
     return dict(post.metadata), post.content
@@ -33,14 +35,14 @@ def read_raw(path: Path) -> tuple[dict, str]:
 
 def write(path: Path, fm: AnyFM, body: str) -> None:
     """模型 → md，自动更新 updated_at"""
-    fm = fm.model_copy(update={"updated_at": date.today()})
+    fm = fm.model_copy(update={"updated_at": clock.today()})
     meta = fm.model_dump(mode="json", exclude_none=False)
     post = frontmatter.Post(body, **meta)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(frontmatter.dumps(post) + "\n", encoding="utf-8")
 
 
-def write_raw(path: Path, meta: dict, body: str) -> None:
+def write_raw(path: Path, meta: dict[str, Any], body: str) -> None:
     """跳过 schema，原样写（用于 migrate）"""
     post = frontmatter.Post(body, **meta)
     path.parent.mkdir(parents=True, exist_ok=True)

@@ -67,3 +67,16 @@ scripts/.git/
 .DS_Store
 Thumbs.db
 .env
+
+# === 媒体与生成文件 ===
+*.mp4
+*.mp3
+*.mov
+*.png
+*.jpg
+*.jpeg
+
+# === Pi (pi.dev) 运行时状态 ===
+.pi/tasks/
+.pi/delegate/
+*.tmp

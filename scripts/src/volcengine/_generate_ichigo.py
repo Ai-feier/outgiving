@@ -12,9 +12,9 @@ from pathlib import Path
 _project_root = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(_project_root))
 
-from scripts.src.volcengine.seedream import SeedreamImage
-from scripts.src.volcengine.models import ImagePrompt
-from scripts.src.volcengine._utils import image_to_data_uri
+from scripts.src.ai.providers.volcengine.seedream import SeedreamImage
+from scripts.src.ai.models import ImagePrompt
+from scripts.src.ai._utils import image_to_data_uri
 
 
 def main():

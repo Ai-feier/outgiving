@@ -16,7 +16,7 @@ from urllib.parse import unquote, urlparse
 
 from markdown_it import MarkdownIt
 
-from .id_gen import Platform
+from . import platform as _platform
 from .parser import read_raw
 from .repo import Repo, find_repo_root
 
@@ -28,26 +28,22 @@ _MD = MarkdownIt("commonmark", {"html": True, "linkify": True, "typographer": Tr
 
 # 侧栏分组定义：(标题, emoji, 目录前缀, 平台 token)
 # 平台 token 决定右侧主体的配色（None 表示无平台特定色）
+# 平台行从注册表生成——加平台只改 content/platform.py
 _GROUPS: list[tuple[str, str, str, str | None]] = [
     ("母版", "📋", "topics", None),
-    ("微信公众号", "💬", "platforms/wechat", "wechat"),
-    ("小红书", "📕", "platforms/xiaohongshu", "xiaohongshu"),
-    ("X", "𝕏", "platforms/x", "x"),
-    ("抖音", "🎬", "platforms/douyin", "douyin"),
+    *[(spec.display, spec.emoji, spec.dir_name, spec.value) for spec in _platform.all()],
     ("已发布", "📊", "published", None),
     ("复盘", "📈", "analytics", None),
 ]
 
 # 平台配色（Tailwind 颜色名 + 主色 hex；用于强调线和 badge）
-_PLATFORM_COLORS = {
-    "wechat":      ("#07c160", "emerald"),    # 微信绿
-    "xiaohongshu": ("#ff2442", "rose"),       # 小红书红
-    "x":           ("#1d9bf0", "sky"),        # X 蓝
-    "douyin":      ("#fe2c55", "pink"),       # 抖音粉
+_PLATFORM_COLORS: dict[str, tuple[str, str]] = {
+    spec.value: (spec.color_hex, spec.color_name) for spec in _platform.all()
 }
 
 
 # ────────────────────────── 文件收集 ──────────────────────────
+
 
 def _collect_topic_files(root: Path, topic_id: str) -> dict[str, list[Path]]:
     """按分组收集与某 topic 相关的所有 md 文件。
@@ -84,6 +80,7 @@ def _group_for_path(rel_path: str) -> tuple[str, str, str | None]:
 
 # ────────────────────────── HTML 渲染 ──────────────────────────
 
+
 def _build_toc_and_anchors(html: str) -> tuple[str, str]:
     """从渲染 HTML 提取标题、加锚点 id、构建目录栏。
 
@@ -93,18 +90,7 @@ def _build_toc_and_anchors(html: str) -> tuple[str, str]:
     used: dict[str, int] = {}
 
     def _slugify(raw: str) -> str:
-        plain = re.sub(r"<[^>]+>", "", raw).strip()
-        plain = re.sub(r"[^\w一-鿿-]", "", plain)
-        plain = re.sub(r"_", "-", plain)
-        plain = re.sub(r"\s+", "-", plain).strip("-").lower()
-        if not plain:
-            plain = "section"
-        if plain in used:
-            used[plain] += 1
-            plain = f"{plain}-{used[plain]}"
-        else:
-            used[plain] = 0
-        return plain
+        return _platform.slugify_anchor(raw, used)
 
     def _add_id(m: re.Match) -> str:
         tag, inner = m.group(1), m.group(2)
@@ -137,6 +123,7 @@ def _build_toc_and_anchors(html: str) -> tuple[str, str]:
         <nav class="px-2 py-2 pb-8" id="toc-nav">{items}</nav>
     </aside>"""
     return modified, toc
+
 
 def _html_shell(body_html: str, title: str = "Content Pipeline") -> str:
     """统一 HTML 外壳：Tailwind CDN + typography 插件，零构建"""
@@ -238,11 +225,11 @@ def _html_shell(body_html: str, title: str = "Content Pipeline") -> str:
   }}
 
   /* hover */
-  .dark .hover\:bg-slate-100:hover {{ background: #334155 !important; }}
-  .dark .hover\:bg-slate-50:hover  {{ background: #1e293b !important; }}
-  .dark .hover\:text-slate-800:hover {{ color: #e2e8f0 !important; }}
-  .dark .hover\:text-slate-900:hover {{ color: #f1f5f9 !important; }}
-  .dark .hover\:underline:hover {{ /* keep */ }}
+  .dark .hover\\:bg-slate-100:hover {{ background: #334155 !important; }}
+  .dark .hover\\:bg-slate-50:hover  {{ background: #1e293b !important; }}
+  .dark .hover\\:text-slate-800:hover {{ color: #e2e8f0 !important; }}
+  .dark .hover\\:text-slate-900:hover {{ color: #f1f5f9 !important; }}
+  .dark .hover\\:underline:hover {{ /* keep */ }}
 
   /* shadow */
   .dark .shadow-sm {{ box-shadow: 0 1px 3px rgba(0,0,0,0.4) !important; }}
@@ -333,10 +320,13 @@ def _render_index(repo: Repo) -> str:
     rows = ""
     for tid in sorted(views):
         v = views[tid]
-        drafts = " ".join(
-            f'<span class="inline-block px-1.5 py-0.5 rounded text-xs bg-slate-100 text-slate-600">{d.platform}</span>'
-            for d in v.drafts
-        ) or '<span class="text-slate-300">—</span>'
+        drafts = (
+            " ".join(
+                f'<span class="inline-block px-1.5 py-0.5 rounded text-xs bg-slate-100 text-slate-600">{d.platform}</span>'
+                for d in v.drafts
+            )
+            or '<span class="text-slate-300">—</span>'
+        )
         rows += f"""
         <tr class="border-b border-slate-100 hover:bg-slate-50">
             <td class="py-3 px-4 font-mono text-sm"><a class="text-sky-600 hover:underline" href="/t/{tid}">{tid}</a></td>
@@ -405,11 +395,7 @@ def _render_topic_view(repo: Repo, topic_id: str, file_rel: str | None) -> str:
             rel = str(fp.relative_to(repo.root))
             name = fp.name.replace(".md", "")
             is_active = selected_path is not None and fp == selected_path
-            cls = (
-                "bg-slate-900 text-white"
-                if is_active
-                else "text-slate-600 hover:bg-slate-100"
-            )
+            cls = "bg-slate-900 text-white" if is_active else "text-slate-600 hover:bg-slate-100"
             sidebar_items += f"""
             <a href="/t/{topic_id}?f={rel}"
                class="block px-6 py-1.5 text-sm rounded-r-md {cls}">{name}</a>"""
@@ -438,6 +424,7 @@ def _render_topic_view(repo: Repo, topic_id: str, file_rel: str | None) -> str:
         # 重写 img src：相对路径 → /raw/<规范化后的路径>，处理 .. 与中文
         import posixpath
         from urllib.parse import quote, unquote
+
         md_dir = str(selected_path.parent.relative_to(repo.root))
 
         def _rewrite_src(m: re.Match) -> str:
@@ -452,7 +439,7 @@ def _render_topic_view(repo: Repo, topic_id: str, file_rel: str | None) -> str:
             if joined.startswith("../") or joined == "..":
                 return m.group(0)
             encoded = quote(joined, safe="/")
-            return f'{prefix}/raw/{encoded}{suffix}'
+            return f"{prefix}/raw/{encoded}{suffix}"
 
         content_html = re.sub(r'(src=")([^"]+)(")', _rewrite_src, content_html)
         # 加标题锚点 + 构建目录
@@ -524,6 +511,7 @@ def _render_topic_view(repo: Repo, topic_id: str, file_rel: str | None) -> str:
 
 # ────────────────────────── HTTP 路由 ──────────────────────────
 
+
 class PreviewHandler(SimpleHTTPRequestHandler):
     def log_message(self, format: str, *args) -> None:
         pass
@@ -541,7 +529,7 @@ class PreviewHandler(SimpleHTTPRequestHandler):
         if path == "/":
             html = _render_index(repo)
         elif path.startswith("/t/"):
-            topic_id = path[len("/t/"):]
+            topic_id = path[len("/t/") :]
             # ?f=<relative path>
             file_rel: str | None = None
             for kv in parsed.query.split("&"):
@@ -549,7 +537,7 @@ class PreviewHandler(SimpleHTTPRequestHandler):
                     file_rel = unquote(kv[2:])
             html = _render_topic_view(repo, topic_id, file_rel)
         elif path.startswith("/raw/"):
-            rel = unquote(path[len("/raw/"):])
+            rel = unquote(path[len("/raw/") :])
             fp = repo.root / rel
             if not fp.exists() or not fp.is_file():
                 self.send_error(404, f"Not found: {rel}")
@@ -566,7 +554,9 @@ class PreviewHandler(SimpleHTTPRequestHandler):
                 ".excalidraw": "application/json",
             }.get(ext, "application/octet-stream")
             self.send_response(200)
-            self.send_header("Content-Type", f"{ctype}; charset=utf-8" if ext in (".svg",) else ctype)
+            self.send_header(
+                "Content-Type", f"{ctype}; charset=utf-8" if ext in (".svg",) else ctype
+            )
             self.send_header("Content-Length", str(len(data)))
             self.end_headers()
             self.wfile.write(data)
@@ -586,11 +576,12 @@ class PreviewHandler(SimpleHTTPRequestHandler):
 def _detect_lan_ip() -> str | None:
     """对外 UDP socket 探测本机在局域网中的 IP（不会真正发包）"""
     import socket
+
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
         s.connect(("8.8.8.8", 80))
         return s.getsockname()[0]
-    except Exception:
+    except OSError:
         return None
     finally:
         s.close()

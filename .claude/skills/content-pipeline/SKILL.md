@@ -19,32 +19,11 @@ uv run --directory scripts content <subcommand>
 
 ## 数据模型
 
-四类文档，schema 见 `scripts/src/content/schema.py`：
-
-| kind | 位置 | ID 示例 | 状态机 |
-|---|---|---|---|
-| `topic` | `topics/T001-*/brief.md` | `T001` | inbox→briefing→outlined→adapting→archived |
-| `draft` | `platforms/{platform}/T001-*/<file>.md` | `T001-wechat-v1` | draft→reviewing→ready→scheduled→published→retired |
-| `published` | `published/YYYY-MM/T001-{platform}.md` | `T001-wechat-pub` | live→analyzing→closed |
-| `analytics` | `analytics/T001.md` | `T001-review` | pending→t+3→t+7→final |
-
-关系图：父子由 `parent_id` 指向，topic 是根。
+四类文档（topic/draft/published/analytics），schema 见 `scripts/src/content/schema.py`；状态机、路径与 CLI 见 `rules/project/workflow.md`。父子由 `parent_id` 指向，topic 是根。
 
 ## 命令清单
 
-| 命令 | 用途 |
-|---|---|
-| `content list` | 选题进度总览（**任何动作前先 list**） |
-| `content new "<title>"` | 新建选题，分配 T0XX，生成 brief + outline |
-| `content adapt <T001> <platform>` | 派生平台草稿，自动递增 revision |
-| `content show <T001>` | 选题详情（所有衍生物） |
-| `content transition <doc_id> <status>` | 推进状态，schema 校验合法转移 |
-| `content validate` | 全量 frontmatter 校验 |
-| `content index` | 重建 `.content-index.json` |
-| `content stats` | 全局统计 |
-| `content preview [T001]` | 浏览器预览（默认 0.0.0.0:8765） |
-
-**平台名仅 4 个**：`wechat` / `xiaohongshu` / `x` / `douyin`
+CLI 命令与状态机见 `rules/project/workflow.md`。要点：**任何动作前先 `content list`**；`adapt` 自动递增 revision。**平台名仅 4 个**：`wechat` / `xiaohongshu` / `x` / `douyin`。
 
 ## 创作约定
 
@@ -74,7 +53,7 @@ Agent 启动前确保已就绪：
 
 ## 写作风格宪法（所有平台通用，所有 agent 遵守）
 
-> 本节是硬约束。每条都来自踩坑。
+> 本节是硬约束。每条都来自踩坑。选题级 `style.md` 写作宪法依本节为具体选题实例化（平台差异写入各 writer agent 文件）。
 
 ### 句法
 - **一行之内句句环环相扣**——前半句铺路，后半句落地
@@ -111,7 +90,7 @@ Agent 启动前确保已就绪：
 - **靠具体性**——开头必须有一件**具体的事**
 - **靠诚恳**——写得像在跟一个具体的朋友讲
 
-各平台有各自的反 AI 味清单，在对应 agent 的 SKILL.md 里。
+各平台有各自的平台专属写作宪法与反 AI 味检查，在 `.claude/agents/<平台>-writer.md` 里。
 
 ## 最小经验
 

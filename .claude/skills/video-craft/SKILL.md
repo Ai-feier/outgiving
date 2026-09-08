@@ -8,13 +8,7 @@ argument-hint: "[new|design|direct|style]"
 
 ## 和 content-pipeline 的关系
 
-```
-选题 brief + outline（共享层）
-        │
-        ├─ content-pipeline ─→ 4 平台 writer agent ─→ 文本产出
-        │
-        └─ video-pipeline  ─→ 3 设计师 agent ─→ video-director ─→ AI 视频 prompt
-```
+选题 brief + outline（共享层）→ 分叉：**content-pipeline** → 4 平台 writer agent → 文本产出；**video-pipeline** → 3 设计师 agent → video-director → AI 视频 prompt。
 
 两个 pipeline **独立运行**，共享 brief 里的核心观点、受众、钩子、关键信息点、视觉资产规划。文本走"写作"心智，视频走"导演"心智——不是同一件事，不该用同一套流程。视频管线内部，本文件是所有 4 个 video agent 共享的知识基座（元知识层），各 agent 的具体实现细节在各 `.md` 中。
 
@@ -167,23 +161,32 @@ Signature Gestures + Laban Effort Profile + Camera Relationship + Proxemics 四�
 
 所有视频 agent 设计时必须在工具能力内展开。以下是核心边界速查：
 
-| 维度 | Seedance 2.0 | Kling 3.0 | Veo / Luma |
-|------|-------------|-----------|------------|
-| 单段上限 | 15s(mini) / 30s(pro) * | 15s | 60s / 20s |
-| 角色一致 | 50 槽锚定，强 | Subject Binding | 中等 |
-| 镜头控制 | 自然语言+R2V，强 | Multi-Shot+vCoT | JSON / KF 帧级 |
-| 动漫风格 | 优秀 | 日系真但漂移 | 中等 |
-| 参考图限 | ≤9 图 / 推荐 3-7 / 尾帧不计槽 | ≤6 图 | ≤4 图 / KF |
-| 中文 | 支持 | Omni 支持 | 有限 |
-| 物理模拟 | 中等 | 强 | 中等 |
+| 维度 | Seedance 2.0 | Kling 3.0 | Veo / Luma | H3 (MiniMax) |
+|------|-------------|-----------|------------|--------------|
+| 单段上限 | 15s(mini) / 30s(pro) * | 15s | 60s / 20s | 4-15s（skill 要求匹配时长）[能力待实测] |
+| 角色一致 | 50 槽锚定，强 | Subject Binding | 中等 | Ref2VA subject_definitions + retention_analysis [待实测] |
+| 镜头控制 | 自然语言+R2V，强 | Multi-Shot+vCoT | JSON / KF 帧级 | [Shot N] 时间线 + camera motion 自然英语 [待实测] |
+| 动漫风格 | 优秀 | 日系真但漂移 | 中等 | [待实测] |
+| 参考图限 | ≤9 图 / 推荐 3-7 / 尾帧不计槽 | ≤6 图 | ≤4 图 / KF | `<Picture/Video/Audio N>` 标签体系 [数量待实测] |
+| 中文 | 支持 | Omni 支持 | 有限 | [待实测]（skill 示例为 `<d>[English]`） |
+| 物理模拟 | 中等 | 强 | 中等 | [待实测] |
 
 * `uv run --directory scripts ai generate video` 当前适配器硬限 15s（不限 model），需 30s 须 CLI 分支处理。
 
-**Seedance 2.0 版权过滤器**：不拦截单角色名，拦截**特征组合**（如"spiky orange hair + black robe + paired blades"→Bleach）。绕过：按角色域拆分生成段，不在同段混用不同 IP 特征。特征级规避优于名称级规避。
+**版权过滤器**：Seedance 2.0 拦截特征组合而非单角色名，规避策略（角色域拆分/特征级规避）见 video-director.md「工具约束应对策略」；H3 待实测。
 
 **P0 双意提示**：find-ref 的 P0-P5 是**来源可获取性**层级；visual-designer 的 P0/P1 是**生产关键性**层级。两套正交，不互相推导。
 
 **综合自检**：设计前确认目标工具对所需运镜的支持状态（见 rhythm-designer.md 工具-运镜能力矩阵）。工具不支持→换表达或换工具，不反向适配。
+
+## 生成后自评估（共享原则）
+
+AI 视频生成后、交付用户前，video-director 必须验证产出再交付--不直接展示原始生成结果。这是四 agent 共享的质量底线；三个设计师在写 spec 时就应给出可验证的期望（时长/景别/关键元素位置/安全边界），供导演生成后核对。
+
+- **检查项**：ffprobe 验时长/分辨率/码率；关键帧抽样（首2s/末2s/中点）查一致性/穿帮/文字锐度/边缘裁剪；段接缝连续性。失败→修复→重生成→重评估，最多 3 轮，仍未过则标注问题给用户，不静默交付
+- **完整流程**：见 video-director.md「生成后自评估」节（3 步：段接缝/音频完整性/止め絵）+ Hard Rules 4-6（时长/一致性/3轮上限）
+
+> 设计师 implication：visual-designer 的安全边界、script-designer 的转折词断拍、rhythm-designer 的停顿点都是可验证的设计参数——写进 spec 即成为生成后的检查基准。检查工具：`uv run --directory scripts ai verify <video> --expect-duration N --expect-resolution WxH`（ffprobe 元数据 + 首2s/中点/末2s 抽样 + PASS/FAIL 退出码）。
 
 ## Prompt 工程速查
 
@@ -198,6 +201,14 @@ Signature Gestures + Laban Effort Profile + Camera Relationship + Proxemics 四�
 ```
 [景别] + [主体+动作+实体tag] + [场景] + [光影] + [运镜/动] + [风格+画质] + [间]
 ```
+
+### H3 三核心字段（MiniMax H3 特化 — 语法权威源 `.agents/skills/h3-prompt-writing/`）
+
+```
+[integrated_multimodal_description（[Shot N] 时间线）] + [overall_soundscape（环境+物理声）] + [non_diegetic_music（BGM）]
+```
+
+按输入模式（T2VA/I2VA/FL2VA/L2VA/Ref2VA）嵌入 `<Picture/Subject/Video/Audio N>` 标签；9要素→H3 映射见 video-director.md「H3 输出分支」。
 
 ### 核心规则
 
@@ -217,12 +228,12 @@ Signature Gestures + Laban Effort Profile + Camera Relationship + Proxemics 四�
 
 ## Agent 能力清单
 
-| Agent | 角色 | 新增能力维度（2026-07 深度精进后） |
-|-------|------|----------------------------------|
-| **script-designer** | 叙事架构 | 镜头叙事映射（12 情绪→景别 / 8 弧线→运镜基调 / 7 过渡→镜头关系 / 4 镜头物象化模式）；AI prompt 指令从标签升级为结构化参数；物象化阶梯三级（文字→动作→镜头）；段边界尾帧设计 + 链式漂移防御（每 2-3 段重置边界） |
-| **visual-designer** | 视觉世界 | 细节展开系统（9 材质类压缩→prompt 展开速查）；环境四要素体系（大气/天气/飘落物/背景人群）；多层光源语法（key+fill+rim+ambient+practical）；负向 prompt 体系（分层防护+平台差异+迭代策略）；情绪动作化扩展为三通道（微表情 FACS 7 表/微动作 4 通道/环境交互 6 表）；视觉锚点体系（硬锚/软锚/意锚/记忆策略四级） |
-| **rhythm-designer** | 时间呼吸 | 节奏-运镜耦合规则（intensity→运镜+景别+切频映射）；曲线×运镜特化（8 种曲线各自高/低能段运镜规则）；停顿点 6 种镜头行为（消化性/预期性/悬念/边界/落地/余韵）；工具-运镜能力矩阵（8 运镜×3 工具）；平台基线表扩展（典型运镜+景别+镜头语言原因） |
-| **video-director** | 导演合成 | 电影语言完整模块（7 景别+15 运镜+6 角度+光学 DOF+4 光影类+6 转场）；9 要素 SDK 字段映射表；素材装配协议 3 步；收敛门六道（FreeLOC/LoL/ZPC/IaD/RefImg/ALIGN）；生成调度（GroundShot P0→P1→P2 + 段间末帧链）；japanese-anime 风格约束全局标注；工具约束应对策略（版权过滤器/P0 双意） |
+| Agent | 角色 | 核心能力（详见各自 .md） |
+|-------|------|------------------------|
+| **script-designer** | 叙事架构 | 弧线选择/节拍序列/矛盾矩阵/镜头叙事映射/角色行为弧线/段边界尾帧设计 |
+| **visual-designer** | 视觉世界 | 六维构建/材质与细节展开/情绪动作化三通道/角色语言五维/视觉锚点体系 |
+| **rhythm-designer** | 时间呼吸 | 节奏曲线/节奏-运镜耦合/停顿点镜头行为/工具-运镜矩阵/平台基线 |
+| **video-director** | 导演合成 | 三元素对位/收敛门/素材装配/生成调度/9 要素 prompt/生成后自评估 |
 
 ## 风格参考
 
@@ -230,21 +241,8 @@ Signature Gestures + Laban Effort Profile + Camera Relationship + Proxemics 四�
 
 ## 命令
 
-```bash
-# 为已有选题初始化视频产出目录
-uv run --directory scripts content adapt <T0XX> douyin
-# 视频 prompt 输出到 platforms/doujin/T0XX-*/video-prompt.md
-# AI 视频生成
-uv run --directory scripts ai generate video --scene "..." --subject "..." -o ./out/
-uv run --directory scripts ai generate image --prompt "..." -o out.png
-uv run --directory scripts ai extract-lastframe in.mp4 -o frame.png
-```
+CLI 见 CLAUDE.md「命令」：`content adapt` 初始化视频产出目录（prompt 输出 `platforms/<plat>/T0XX-*/video-prompt.md`）；`ai generate video/image/extract-lastframe/verify` 为生成与自评估入口。
 
 ## 输出
 
-每个选题的视频产出放在 `ai-video/projects/TXXX/` 下：
-
-- `video-prompt.md` — 合成的 AI 视频生成提示词
-- `script-beats.md` — 剧本节拍（含镜头叙事映射和情绪-景别推导）
-- `visual-world.md` — 视觉世界定义（含细节展开、环境四要素、多层光源）
-- `rhythm-curve.md` — 节奏曲线（含节奏-运镜耦合和停顿点镜头行为）
+视频产出在 `ai-video/projects/TXXX/`：`video-prompt.md` / `script-beats.md` / `visual-world.md` / `rhythm-curve.md`（详见 video-director.md「产出」表）。

@@ -1,0 +1,1979 @@
+<!doctype html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>提示词工作台</title>
+    <script src="/vendor/marked.min.js"></script>
+    <script src="/vendor/dompurify.min.js"></script>
+    <style>
+      :root {
+        --bg: #14161a;
+        --panel: #1c1f26;
+        --line: #2a2e37;
+        --txt: #d6dae3;
+        --dim: #8a91a0;
+        --acc: #e0563a;
+        --ok: #3fa66a;
+        --warn: #d9a03f;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--txt);
+        font:
+          14px/1.6 system-ui,
+          -apple-system,
+          "PingFang SC",
+          "Microsoft YaHei",
+          sans-serif;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+      }
+      header {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        padding: 10px 16px;
+        border-bottom: 1px solid var(--line);
+        background: var(--panel);
+        flex-wrap: wrap;
+      }
+      header .logo {
+        font-weight: 700;
+        color: var(--acc);
+      }
+      select,
+      input,
+      button {
+        background: #101216;
+        color: var(--txt);
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 6px 10px;
+        font: inherit;
+      }
+      button {
+        cursor: pointer;
+      }
+      button:hover {
+        border-color: var(--acc);
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      button:focus-visible,
+      select:focus-visible,
+      input:focus-visible {
+        outline: 2px solid var(--acc);
+        outline-offset: 1px;
+      }
+      .block .md a,
+      .layer .lbody a {
+        color: #a9c4ff;
+        text-decoration: none;
+        border-bottom: 1px solid #4a5f8a;
+      }
+      .block .md a:hover,
+      .layer .lbody a:hover {
+        color: #fff;
+        border-bottom-color: var(--acc);
+      }
+      .block .md a:visited,
+      .layer .lbody a:visited {
+        color: #8a91a0;
+      }
+      .unit .urole,
+      .uhead select[data-state] {
+        min-height: 26px;
+      }
+      .layer .ltag button {
+        padding: 5px 10px;
+        font-size: 12px;
+        border-radius: 6px;
+        border: 1px solid var(--line);
+        background: #101216;
+        color: var(--txt);
+        cursor: pointer;
+      }
+      .layer .ltag button:hover {
+        border-color: var(--acc);
+      }
+      #files {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      #files button.on {
+        background: var(--acc);
+        border-color: var(--acc);
+        color: #fff;
+      }
+      main {
+        flex: 1;
+        display: flex;
+        overflow: hidden;
+      }
+      #view {
+        flex: 1;
+        overflow-y: auto;
+        padding: 18px 24px;
+      }
+      #side {
+        width: 430px;
+        min-width: 340px;
+        overflow-y: auto;
+        border-left: 1px solid var(--line);
+        padding: 14px 16px;
+        background: var(--panel);
+      }
+      .block {
+        position: relative;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        padding: 10px 14px;
+        margin: 8px 0;
+        background: var(--panel);
+      }
+      .block:hover {
+        border-color: var(--line);
+      }
+      .block .tools {
+        position: absolute;
+        top: 6px;
+        right: 8px;
+        display: none;
+        gap: 4px;
+      }
+      .block:hover .tools {
+        display: flex;
+      }
+      .block .tools button {
+        font-size: 12px;
+        padding: 2px 8px;
+      }
+      .block h1,
+      .block h2,
+      .block h3,
+      .block h4 {
+        margin: 0.4em 0 0.5em;
+        color: #fff;
+      }
+      .block h2 {
+        font-size: 1.25em;
+        border-bottom: 1px solid var(--line);
+        padding-bottom: 4px;
+      }
+      .block h3 {
+        font-size: 1.1em;
+        color: var(--acc);
+      }
+      .block table {
+        border-collapse: collapse;
+        margin: 8px 0;
+        font-size: 13px;
+      }
+      .block th,
+      .block td {
+        border: 1px solid var(--line);
+        padding: 4px 8px;
+      }
+      .block th {
+        background: #22262f;
+      }
+      .block code {
+        background: #0e1013;
+        padding: 1px 5px;
+        border-radius: 4px;
+        font-size: 12.5px;
+      }
+      .block pre {
+        background: #0e1013;
+        padding: 10px;
+        border-radius: 6px;
+        overflow-x: auto;
+      }
+      .block blockquote {
+        border-left: 3px solid var(--acc);
+        margin: 6px 0;
+        padding: 2px 10px;
+        color: var(--dim);
+      }
+      #side h4 {
+        margin: 14px 0 6px;
+        color: #fff;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      #reqjson,
+      #cmd {
+        background: #0e1013;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 10px;
+        font:
+          12px/1.5 ui-monospace,
+          Menlo,
+          monospace;
+        white-space: pre-wrap;
+        word-break: break-all;
+        max-height: 260px;
+        overflow-y: auto;
+      }
+      .row {
+        display: flex;
+        gap: 8px;
+        margin: 6px 0;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .meta {
+        color: var(--dim);
+        font-size: 12.5px;
+        margin: 4px 0;
+      }
+      .cost {
+        color: var(--ok);
+        font-weight: 600;
+      }
+      .err {
+        color: var(--warn);
+      }
+      .annot {
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 8px 10px;
+        margin: 6px 0;
+        font-size: 13px;
+      }
+      .annot.resolved {
+        opacity: 0.5;
+      }
+      .annot .h {
+        color: var(--dim);
+        font-size: 12px;
+        margin-bottom: 2px;
+      }
+      .annot .h .st {
+        font-weight: 700;
+      }
+      .st.open {
+        color: var(--warn);
+      }
+      .st.resolved {
+        color: var(--ok);
+      }
+      .modal-bg {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 10;
+        align-items: center;
+        justify-content: center;
+      }
+      .modal-bg.show {
+        display: flex;
+      }
+      .modal {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 18px;
+        width: min(760px, 92vw);
+        max-height: 86vh;
+        display: flex;
+        flex-direction: column;
+      }
+      .modal textarea {
+        flex: 1;
+        min-height: 220px;
+        width: 100%;
+        background: #101216;
+        color: var(--txt);
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 10px;
+        font:
+          13px/1.6 ui-monospace,
+          Menlo,
+          monospace;
+        resize: vertical;
+      }
+      .modal .mfoot {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
+        gap: 8px;
+      }
+      .badge {
+        background: #22262f;
+        border-radius: 10px;
+        padding: 1px 9px;
+        font-size: 12px;
+        color: var(--dim);
+      }
+      .badge.hot {
+        background: var(--acc);
+        color: #fff;
+      }
+      .modebtn {
+        background: #101216;
+      }
+      .modebtn.on {
+        background: var(--acc);
+        border-color: var(--acc);
+        color: #fff;
+      }
+      .unit {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        margin: 0 0 14px;
+        background: var(--panel);
+        overflow: hidden;
+      }
+      .unit .uhead {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--line);
+        flex-wrap: wrap;
+      }
+      .unit .urole {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 2px 8px;
+        border-radius: 10px;
+        background: #2a2e37;
+        color: var(--dim);
+      }
+      .unit .urole.goal {
+        background: #34425a;
+        color: #a9c4ff;
+      }
+      .unit .urole.end {
+        background: #2f4a3a;
+        color: #86d8a6;
+      }
+      .unit .utitle {
+        font-weight: 600;
+        color: #fff;
+      }
+      .unit .ufollows {
+        margin-left: auto;
+        font-size: 10px;
+        color: var(--dim);
+        font-family: ui-monospace, monospace;
+      }
+      .unit .uhead {
+        cursor: pointer;
+      }
+      .unit.selected {
+        border-color: var(--acc);
+        box-shadow: 0 0 0 1px var(--acc) inset;
+      }
+      .sidetitle {
+        color: #fff;
+        font-weight: 700;
+        font-size: 14px;
+        margin: 4px 0 2px;
+      }
+      .side-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px 12px;
+        margin: 10px 0;
+      }
+      .side-grid .k {
+        color: var(--dim);
+        font-size: 11.5px;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+      }
+      .side-grid .v {
+        color: var(--txt);
+        font-size: 12.5px;
+        word-break: break-all;
+      }
+      .layer {
+        border-top: 1px dashed var(--line);
+        padding: 10px 14px;
+      }
+      .layer:first-of-type {
+        border-top: none;
+      }
+      .layer .ltag {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        color: var(--dim);
+        margin-bottom: 6px;
+        cursor: pointer;
+      }
+      .layer .ltag b {
+        color: var(--txt);
+        font-size: 13px;
+      }
+      .layer .ltag .why {
+        color: var(--dim);
+        font-size: 11.5px;
+      }
+      .layer .lbody {
+        font-size: 13.5px;
+      }
+      .layer .lbody img,
+      .layer .lbody video {
+        max-width: 100%;
+        border-radius: 6px;
+        display: block;
+        margin: 6px 0;
+      }
+      .layer .ltag button {
+        margin-left: auto;
+        font-size: 12px;
+        padding: 6px 12px;
+        min-height: 32px;
+        border: 1px solid var(--line);
+        background: #101216;
+        color: var(--txt);
+        border-radius: 6px;
+        cursor: pointer;
+      }
+      .layer.thinking .lbody {
+        color: #b3bac7;
+        background: #161920;
+        border-radius: 6px;
+        padding: 8px 10px;
+      }
+      .layer.exec .meta {
+        font-size: 11.5px;
+      }
+      .layer.collapsed .lbody {
+        display: none;
+      }
+      .arrow {
+        text-align: center;
+        color: var(--acc);
+        font-size: 18px;
+        margin: -6px 0 6px;
+      }
+      .pblock {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        margin: 0 0 18px;
+        background: var(--panel);
+        overflow: hidden;
+      }
+      .pblock .phead {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--line);
+        background: #191c22;
+        flex-wrap: wrap;
+      }
+      .pblock .pbadge {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 2px 8px;
+        border-radius: 10px;
+        background: #2a2e37;
+        color: var(--dim);
+        font-family: ui-monospace, monospace;
+      }
+      .pblock .ptitle {
+        font-weight: 600;
+        color: #fff;
+      }
+      .pblock .pmeta {
+        margin-left: auto;
+        font-size: 10px;
+        color: var(--dim);
+        font-family: ui-monospace, monospace;
+      }
+      .pblock .pmap {
+        padding: 10px 14px;
+        overflow-x: auto;
+        border-bottom: 1px dashed var(--line);
+      }
+      .pblock .pcards {
+        padding: 10px 14px;
+      }
+      .pstate {
+        font-size: 11px;
+        padding: 1px 8px;
+        border-radius: 10px;
+        font-weight: 700;
+      }
+      .st-not_started {
+        color: #8a91a0;
+        background: #22262f;
+      }
+      .st-ready {
+        color: #a9c4ff;
+        background: #34425a;
+      }
+      .st-running {
+        color: #f0c67a;
+        background: #3a3020;
+      }
+      .st-done {
+        color: #86d8a6;
+        background: #2f4a3a;
+      }
+      .st-failed {
+        color: #ff9f9f;
+        background: #3a2323;
+      }
+      .dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        display: inline-block;
+      }
+      .dot.d-not_started {
+        background: #8a91a0;
+      }
+      .dot.d-ready {
+        background: #4a5f8a;
+      }
+      .dot.d-running {
+        background: #d9a03f;
+      }
+      .dot.d-done {
+        background: #3fa66a;
+      }
+      .dot.d-failed {
+        background: #e0563a;
+      }
+      .phasehandoff {
+        text-align: center;
+        color: var(--acc);
+        font-size: 13px;
+        margin: -6px 0 12px;
+        font-weight: 600;
+      }
+      .alertbar {
+        background: #3a3020;
+        border: 1px solid var(--warn);
+        color: #f0c67a;
+        border-radius: 8px;
+        padding: 8px 12px;
+        margin: 0 0 14px;
+        font-size: 12.5px;
+      }
+      .cmap {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 10px 14px;
+        margin: 0 0 10px;
+        overflow-x: auto;
+      }
+      .cm-node {
+        cursor: pointer;
+      }
+      .cm-node rect {
+        fill: #171a20;
+        stroke: var(--line);
+        stroke-width: 1;
+        transition: stroke 0.15s;
+      }
+      .cm-node:hover rect {
+        stroke: var(--acc);
+      }
+      .cm-node text {
+        fill: var(--txt);
+        font:
+          12px ui-monospace,
+          monospace;
+        text-anchor: middle;
+      }
+      .cm-anchor rect {
+        fill: #1a2230;
+        stroke-width: 2.4;
+      }
+      .cm-anchor text {
+        font:
+          700 13px ui-monospace,
+          monospace;
+        fill: #fff;
+      }
+      .cm-edge {
+        fill: none;
+        stroke: #5b6474;
+        stroke-width: 1.4;
+        marker-end: url(#cmarr);
+      }
+      .cm-edge.handoff {
+        stroke: var(--acc);
+        stroke-width: 2.2;
+        stroke-dasharray: 6 3;
+      }
+      .nochain {
+        color: var(--dim);
+        padding: 20px;
+      }
+      .chip {
+        background: #22262f;
+        border-radius: 10px;
+        padding: 2px 8px;
+        font-size: 11.5px;
+        color: var(--dim);
+      }
+      .chip b {
+        color: var(--txt);
+      }
+      .taskline {
+        font-size: 12.5px;
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        margin: 3px 0;
+      }
+      .taskline input {
+        margin: 0;
+      }
+      .taskline.done {
+        color: var(--dim);
+        text-decoration: line-through;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <span class="logo">◈ 提示词工作台</span>
+      <select id="project"></select>
+      <button
+        id="fileToggle"
+        title="文件视图（块编辑 + 请求体装配）"
+        style="margin-left: 8px"
+      >
+        📄 文件
+      </button>
+      <button
+        id="refresh"
+        title="刷新链（agent 写了 md 后点这里或等 15s 自动轮询）"
+      >
+        ⟳
+      </button>
+      <span class="badge" id="syncAt" title="最后同步时间">—</span>
+    </header>
+    <div
+      id="filesPanel"
+      style="
+        display: none;
+        position: absolute;
+        z-index: 50;
+        top: 44px;
+        left: 200px;
+        max-width: 320px;
+        max-height: 60vh;
+        overflow: auto;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 8px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      "
+    ></div>
+    <main>
+      <div id="view"><div class="meta">选择项目与文件…</div></div>
+      <div id="side"></div>
+    </main>
+
+    <div class="modal-bg" id="editBg">
+      <div class="modal">
+        <h3 id="editTitle" style="margin: 0 0 8px; color: #fff"></h3>
+        <div class="meta" id="editMeta"></div>
+        <textarea id="editArea"></textarea>
+        <div class="mfoot">
+          <button id="editCancel">取消</button
+          ><button id="editSave">保存（写回 md）</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-bg" id="noteBg">
+      <div class="modal" style="width: min(560px, 92vw)">
+        <h3 style="margin: 0 0 8px; color: #fff">提意见</h3>
+        <div class="meta" id="noteTarget"></div>
+        <textarea
+          id="noteArea"
+          placeholder="指出哪里不对 / 想要什么效果。落进 annotations.md，主会话与 agent 迭代前必读。"
+        ></textarea>
+        <div class="mfoot">
+          <button id="noteCancel">取消</button
+          ><button id="noteSave">提交意见</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-bg" id="runBg">
+      <div class="modal" style="width: min(640px, 94vw)">
+        <h3 style="margin: 0 0 8px; color: #fff">记录运行</h3>
+        <div class="meta" id="runMeta"></div>
+        <div class="row" style="margin-top: 8px">
+          <span class="chip">provider <b id="runProv">? </b></span>
+          <span class="chip">时长 <b id="runDur">? </b></span>
+          <span class="chip">成本 <b id="runCost">? </b></span>
+        </div>
+        <div class="row">
+          <label
+            >结果
+            <select id="runOutcome" style="margin-left: 4px">
+              <option value="成功" selected>成功</option>
+              <option value="失败">失败</option>
+            </select>
+          </label>
+        </div>
+        <div class="meta">一句话结果（必填）</div>
+        <textarea
+          id="runOneline"
+          style="min-height: 64px"
+          placeholder="这次生成了什么 / 结论 ／ 上次做到哪"
+        ></textarea>
+        <details style="margin-top: 8px">
+          <summary class="meta">高级（可选）</summary>
+          <div class="row">
+            <label>task id <input id="runTaskid" style="width: 200px" /></label>
+          </div>
+          <div class="row">
+            <label
+              >时长(秒) <input id="runDuration" style="width: 90px"
+            /></label>
+          </div>
+          <div class="meta">详情（自由块，如 SSIM / 问题 / 参数）</div>
+          <textarea id="runDetail" style="min-height: 100px"></textarea>
+        </details>
+        <div class="mfoot">
+          <button id="runCancel">取消</button><button id="runSave">提交</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-bg" id="gateBg">
+      <div class="modal" style="width: min(560px, 92vw)">
+        <h3 style="margin: 0 0 8px; color: #fff">过门</h3>
+        <div class="meta" id="gateTarget"></div>
+        <textarea
+          id="gateArea"
+          placeholder="一句话理由（必填。打回 = 意见进该单元 ②，agent 迭代前必读必答）。"
+        ></textarea>
+        <div class="mfoot">
+          <button id="gateCancel">取消</button
+          ><button id="gateSave">提交（写门记录进 ⑤）</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-bg" id="grillBg">
+      <div class="modal" style="width: min(560px, 92vw)">
+        <h3 style="margin: 0 0 8px; color: #fff">追问（grill）</h3>
+        <div class="meta" id="grillTarget"></div>
+        <textarea
+          id="grillArea"
+          placeholder="指出这层哪里可疑 / 为什么这么定 / 依据是什么。落进该单元 ② ### grill 记录。"
+        ></textarea>
+        <div class="mfoot">
+          <button id="grillCancel">取消</button
+          ><button id="grillSave">提交追问</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const $ = (s) => document.querySelector(s);
+      let state = {
+        project: null,
+        file: null,
+        blocks: [],
+        bodies: {},
+        provider: "autodl_comfyui",
+        duration: 5,
+        resolution: "768p横",
+        refs: [],
+        annotIndex: 0,
+        mode: "chain",
+        chain: null,
+        selected: null,
+      };
+      const STATES = ["未开始", "就绪", "运行中", "完成", "失败"];
+      const STATE_CLS = {
+        未开始: "not_started",
+        就绪: "ready",
+        运行中: "running",
+        完成: "done",
+        失败: "failed",
+      };
+      const STATE_COLOR = {
+        未开始: "#8a91a0",
+        就绪: "#4a5f8a",
+        运行中: "#d9a03f",
+        完成: "#3fa66a",
+        失败: "#e0563a",
+      };
+      const LAYERS = [
+        {
+          key: "claim",
+          tag: "① 简层",
+          why: "人话：是什么、要什么感觉（人可改）",
+          cls: "simple",
+          editable: true,
+        },
+        {
+          key: "thinking",
+          tag: "② 思考",
+          why: "agent 为什么这么定、锚了什么——可 grill 追问",
+          cls: "thinking",
+          editable: false,
+          collapsible: true,
+        },
+        {
+          key: "content",
+          tag: "③ 内容详情",
+          why: "交付物本身（设计件 / 完整提示词）",
+          cls: "content",
+          editable: false,
+          collapsible: true,
+        },
+        {
+          key: "exec",
+          tag: "④ 执行",
+          why: "Run 卡 / 调用记录（生图、生成）",
+          cls: "exec",
+          editable: false,
+          collapsible: true,
+        },
+        {
+          key: "result",
+          tag: "⑤ 结果",
+          why: "指标 / 对齐自报 / 交接 / 门记录；end ⑤ 验收表回答 goal ①",
+          cls: "end",
+          editable: false,
+        },
+      ];
+      const LAYER_LABEL = {
+        claim: "① 简层",
+        thinking: "② 思考",
+        content: "③ 内容详情",
+        exec: "④ 执行",
+        result: "⑤ 结果",
+      };
+
+      marked.setOptions({ gfm: true, breaks: true });
+      const esc = (s) =>
+        s.replace(
+          /[&<>"]/g,
+          (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c],
+        );
+      const safe = (h) => DOMPurify.sanitize(h);
+      const md = (t) => safe(marked.parse(t));
+      function setHTML(el, html) {
+        el.innerHTML = safe(html); // pi-lens-ignore: no-inner-html-js
+      }
+      function textHTML(el, h) {
+        el.innerHTML = safe(h); // pi-lens-ignore: no-inner-html-js
+      }
+
+      async function api(path, opts) {
+        const r = await fetch(path, opts);
+        const j = await r.json().catch(() => ({}));
+        if (!r.ok)
+          throw Object.assign(new Error(j.error || "HTTP " + r.status), {
+            status: r.status,
+            body: j,
+          });
+        return j;
+      }
+
+      let flashT;
+      // 键盘激活：Enter/Space 触发 click（a11y）
+      function bindEnter(el, fn) {
+        el.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            fn();
+          }
+        });
+      }
+      function flash(msg, isError) {
+        const el = document.createElement("div");
+        el.textContent = msg;
+        el.style.cssText = `position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#22262f;border:1px solid ${isError ? "var(--acc)" : "var(--ok)"};color:var(--txt);padding:8px 16px;border-radius:8px;z-index:99;font-size:13px;max-width:80vw`;
+        document.body.appendChild(el);
+        clearTimeout(flashT);
+        flashT = setTimeout(() => el.remove(), isError ? 5200 : 2800);
+      }
+      // 409 特殊处理：弹出"刷新后重试"
+      function handleWriteError(e, retryFn) {
+        if (e && e.status === 409) {
+          const btns = document.createElement("div");
+          btns.innerHTML = "";
+          textHTML(
+            btns,
+            `<div style="font-size:13px;color:var(--txt)">这一层在你填写期间被改过（agent 或另一窗口，md 为准）。这次没写进去。</div>`,
+          );
+          const btn = document.createElement("button");
+          btn.textContent = "刷新后重试";
+          btn.onclick = async () => {
+            closeModal();
+            await loadChain();
+            if (retryFn) retryFn();
+          };
+          btns.appendChild(btn);
+          showModalBox(btns);
+        } else {
+          flash("保存失败：" + (e && e.message ? e.message : e), true);
+        }
+      }
+      function showModalBox(el) {
+        const bg = document.createElement("div");
+        bg.className = "modal-bg show";
+        const m = document.createElement("div");
+        m.className = "modal";
+        m.style.width = "min(520px, 92vw)";
+        m.appendChild(el);
+        bg.appendChild(m);
+        bg.onclick = () => bg.remove();
+        document.body.appendChild(bg);
+      }
+
+      // 模态 a11y：容器标 dialog 语义 + 全局 Esc 关闭 + 打开时聚焦首字段
+      function initModals() {
+        document.querySelectorAll(".modal-bg").forEach((bg) => {
+          const m = bg.querySelector(".modal");
+          if (!m) return;
+          m.setAttribute("role", "dialog");
+          m.setAttribute("aria-modal", "true");
+        });
+        document.addEventListener("keydown", (e) => {
+          if (e.key === "Escape") {
+            const open = document.querySelector(".modal-bg.show");
+            if (open) open.classList.remove("show");
+          }
+        });
+      }
+
+      async function loadProjects() {
+        const q = new URLSearchParams(location.search).get("p");
+        const { projects } = await api("/api/projects");
+        const sel = $("#project");
+        textHTML(
+          sel,
+          projects
+            .map((p) => `<option value="${esc(p.id)}">${esc(p.id)}</option>`)
+            .join("") || "<option>（无 TXXX 项目）</option>",
+        );
+        sel.value =
+          q && projects.some((p) => p.id === q) ? q : projects[0]?.id || "";
+        state.project = sel.value || null;
+        // 选中恢复（sessionStorage，D35：刷新恢复）
+        try {
+          const saved = JSON.parse(sessionStorage.getItem("wb:") || "null");
+          if (saved && saved.project === state.project && saved.selected)
+            state.selected = saved.selected;
+        } catch {}
+        if (state.project) await loadChain();
+        sel.onchange = async () => {
+          state.project = sel.value;
+          await loadChain();
+        };
+      }
+
+      async function loadFiles() {
+        const { projects } = await api("/api/projects");
+        const p = projects.find((x) => x.id === state.project);
+        const box = $("#files");
+        box.innerHTML = "";
+        if (!p) return;
+        for (const f of p.files) {
+          const b = document.createElement("button");
+          b.textContent = f.split("/").pop();
+          b.title = f;
+          b.onclick = () => {
+            state.file = f;
+            renderFiles(box);
+            loadFile();
+          };
+          box.appendChild(b);
+        }
+        renderFiles(box);
+        loadFile();
+      }
+      function renderFiles(box) {
+        [...box.children].forEach((b) =>
+          b.classList.toggle("on", b.title === state.file),
+        );
+      }
+
+      async function loadFile() {
+        if (!state.file) return;
+        const d = await api(
+          `/api/file?p=${state.project}&f=${encodeURIComponent(state.file)}`,
+        );
+        state.blocks = d.blocks;
+        state.bodies = Object.fromEntries(d.blocks.map((b) => [b.id, b.body]));
+        renderView();
+        await renderSide();
+      }
+      function renderView() {
+        const v = $("#view");
+        if (!state.blocks.length) {
+          v.innerHTML = '<div class="meta">（空文件）</div>';
+          return;
+        }
+        v.innerHTML = "";
+        state.blocks.forEach((b) => {
+          const el = document.createElement("div");
+          el.className = "block";
+          el.dataset.id = b.id;
+          setHTML(
+            el,
+            `${b.level > 0 ? `<h${b.level}><span id="ht-${cssId(b.id)}"></span></h${b.level}>` : ""}<div class="md" id="md-${cssId(b.id)}"></div><div class="tools"><button data-act="edit">✎ 编辑</button><button data-act="copy">⧉ 复制原文</button></div>`,
+          );
+          el.querySelector("#ht-" + cssId(b.id)).textContent = b.title;
+          setHTML(
+            el.querySelector("#md-" + cssId(b.id)),
+            md(b.body || "（空）"),
+          );
+          el.querySelectorAll(".tools button").forEach(
+            (btn) => (btn.onclick = () => act(btn.dataset.act, b.id)),
+          );
+          v.appendChild(el);
+        });
+      }
+      function cssId(id) {
+        return id.replace(/[^0-9a-z\u4e00-\u9fff-]/gi, "_");
+      }
+
+      async function act(actName, id) {
+        const b = state.blocks.find((x) => x.id === id);
+        if (actName === "copy") {
+          await navigator.clipboard.writeText(b.body);
+          flash(`已复制块「${b.title}」原文`);
+        } else if (actName === "edit") {
+          $("#editTitle").textContent = `编辑 · ${state.file} § ${b.title}`;
+          $("#editMeta").textContent =
+            `块原文（${b.body.length} 字符）。保存后写回 md 文件（agent 与 CLI 读同一份）。`;
+          $("#editArea").value = b.body;
+          $("#editArea").dataset.block = id;
+          $("#editBg").classList.add("show");
+        } else if (actName === "note") {
+          // v4.1：annotations.md 已废，意见走对应单元 ② grill 记录（链视图「💬 追问」）
+          flash(
+            "v4.1：意见请走链视图对应单元的「💬 追问」（落进 ② grill 记录）",
+            true,
+          );
+        }
+      }
+
+      $("#editSave").onclick = async () => {
+        if (state._editingChain) {
+          const { uid, lkey, expected } = state._editingChain;
+          try {
+            await api("/api/chain/part", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                p: state.project,
+                unit: uid,
+                part: lkey,
+                expected_body: expected,
+                new_body: $("#editArea").value,
+              }),
+            });
+            state._editingChain = null;
+            $("#editBg").classList.remove("show");
+            await loadChain();
+            flash("已写回单元文件（反馈会被 agent 读到）");
+          } catch (e) {
+            handleWriteError(e);
+          }
+          return;
+        }
+        const id = $("#editArea").dataset.block;
+        const b = state.blocks.find((x) => x.id === id);
+        try {
+          const d = await api("/api/file", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              p: state.project,
+              f: state.file,
+              block_id: id,
+              expected_body: state.bodies[id],
+              new_body: $("#editArea").value,
+            }),
+          });
+          state.blocks = d.blocks;
+          state.bodies = Object.fromEntries(
+            d.blocks.map((x) => [x.id, x.body]),
+          );
+          $("#editBg").classList.remove("show");
+          renderView();
+          await renderSide();
+          flash(`已保存「${b.title}」→ ${state.file}`);
+        } catch (e) {
+          handleWriteError(e);
+        }
+      };
+      $("#editCancel").onclick = () => $("#editBg").classList.remove("show");
+
+      $("#noteSave").onclick = async () => {
+        // v4.1：annotations 已废。整文件/块级意见 → 提示走单元 grill
+        $("#noteBg").classList.remove("show");
+        flash(
+          "v4.1：annotations.md 已废除。意见请走对应单元 ② grill 记录（链视图「💬 追问」）。",
+          true,
+        );
+      };
+      $("#noteCancel").onclick = () => $("#noteBg").classList.remove("show");
+
+      // ── 侧栏：请求体层 + 参数 + 批注 ──
+      function isPromptFile() {
+        return /video-prompt/.test(state.file || "");
+      }
+      async function renderSide() {
+        const s = $("#side");
+        if (!isPromptFile()) {
+          s.innerHTML =
+            '<div class="meta">打开 video-prompt*.md 可看请求体层（真正会发出去的 API JSON + 成本 + 命令）。</div>';
+          return;
+        }
+        setHTML(
+          s,
+          `<h4>请求体层 · 看到的就是要发出去的</h4>
+          <div class="row"><select id="prov"><option value="autodl_comfyui" ${state.provider === "autodl_comfyui" ? "selected" : ""}>H3（多图参考）</option><option value="seedance" ${state.provider === "seedance" ? "selected" : ""}>Seedance 2.0</option></select><label>时长 <input id="dur" type="number" min="1" max="15" value="${state.duration}" style="width:60px"></label></div>
+          <div class="row" id="resRow" ${state.provider === "seedance" ? "style=display:none" : ""}><label>分辨率 <select id="res">${["768p横", "768p竖", "480p横", "480p竖", "1080p横", "1080p竖", "768p(1:1)", "480p(1:1)", "1080p(1:1)"].map((r) => `<option ${state.resolution === r ? "selected" : ""}>${r}</option>`).join("")}</select></label></div>
+          <div class="row"><label>参考图（每行一条 URL/本地路径；H3 必填 ref_image_0）</label></div>
+          <textarea id="refs" style="width:100%;height:64px;background:#101216;border:1px solid var(--line);border-radius:6px;color:var(--txt);font:12px ui-monospace,monospace;padding:6px"></textarea>
+          <button id="asmb" style="margin:8px 0">⟳ 装配请求体（不花钱，等价 --dry-run）</button>
+          <div id="reqmeta" class="meta"></div><div id="reqjson" class="err">点「装配」后显示 API 请求体</div><div id="cmd"></div>`,
+        );
+        const refsFromIndex = await refCandidates();
+        $("#refs").value = refsFromIndex.join("\n");
+        $("#prov").onchange = (e) => {
+          state.provider = e.target.value;
+          $("#resRow").style.display =
+            state.provider === "seedance" ? "none" : "";
+          refreshAsm();
+        };
+        $("#dur").onchange = (e) => {
+          state.duration = +e.target.value;
+          refreshAsm();
+        };
+        $("#res").onchange = (e) => {
+          state.resolution = e.target.value;
+          refreshAsm();
+        };
+        $("#refs").onchange = refreshAsm;
+        $("#asmb").onclick = refreshAsm;
+        refreshAsm();
+      }
+      async function refCandidates() {
+        const urls = new Set();
+        try {
+          const d = await api(
+            `/api/file?p=${state.project}&f=${encodeURIComponent("assets/ref-images/_index.md")}`,
+          );
+          for (const m of d.content.matchAll(
+            /https?:\/\/\S+\.(?:jpg|jpeg|png|webp)/gi,
+          ))
+            urls.add(m[0]);
+        } catch {}
+        for (const m of Object.values(state.bodies))
+          for (const u of (
+            m.match(/!\[[^\]]*\]\((https?:\/\/[^)]+)\)/g) || []
+          ).map((x) => x.match(/https?:\/\/[^)]+/)[0]))
+            urls.add(u);
+        return [...urls];
+      }
+      async function refreshAsm() {
+        const refs = ($("#refs")?.value || "")
+          .split("\n")
+          .map((s) => s.trim())
+          .filter(Boolean);
+        const qs = new URLSearchParams({
+          p: state.project,
+          f: state.file,
+          provider: state.provider,
+          duration: String(state.duration),
+          resolution: state.resolution,
+          refs: refs.join(","),
+        });
+        try {
+          const d = await api("/api/prompt-body?" + qs);
+          setHTML(
+            $("#reqmeta"),
+            d.error
+              ? `<span class="err">装配门禁：${esc(d.error)}</span>`
+              : `格式 <b>${esc(d.format)}</b> · 时长 <b>${d.duration}</b> 秒${d.cost != null ? ` · 成本 <span class="cost">¥${d.cost.toFixed(2)}</span>` : ""}`,
+          );
+          $("#reqjson").textContent = d.error
+            ? d.request
+              ? JSON.stringify(d.request, null, 2)
+              : "（无请求体）"
+            : JSON.stringify(d.request, null, 2);
+          $("#reqjson").className = d.error ? "err" : "";
+          $("#cmd").innerHTML = "";
+          const p = document.createElement("pre");
+          p.style.cssText =
+            "background:#0e1013;border:1px solid var(--line);border-radius:6px;padding:10px;font:12px/1.5 ui-monospace,monospace;white-space:pre-wrap;word-break:break-all";
+          p.textContent = d.command || "";
+          $("#cmd").append(p);
+        } catch (e) {
+          setHTML($("#reqmeta"), `<span class="err">${esc(e.message)}</span>`);
+          $("#reqjson").textContent = "";
+          $("#cmd").innerHTML = "";
+        }
+      }
+
+      // v4.1：annotations.md 已废除（P2 §7）——意见走单元 ② grill 记录（/api/chain/append kind=grill）
+
+      // ── 链视图 ──
+      function mediaUrl(rel) {
+        return `/media?p=${state.project}&rel=${encodeURIComponent(rel)}`;
+      }
+      function mediaHtml(body) {
+        const host = document.createElement("div");
+        host.innerHTML = safe(md(body)); // pi-lens-ignore: no-inner-html-js
+        const MEDIA = /\.(mp4|webm|mov)(\?|$)/i;
+        const IMG = /\.(png|jpe?g|webp|gif)(\?|$)/i;
+        host.querySelectorAll("a[href]").forEach((a) => {
+          const href = a.getAttribute("href") || "";
+          if (
+            href.startsWith("http://") ||
+            href.startsWith("https://") ||
+            href.startsWith("data:")
+          )
+            return;
+          const url = href.startsWith("/media") ? href : mediaUrl(href);
+          let el;
+          if (MEDIA.test(href)) {
+            el = document.createElement("video");
+            el.controls = true;
+            el.preload = "metadata";
+          } else if (IMG.test(href)) {
+            el = document.createElement("img");
+            el.alt = a.textContent;
+          } else return;
+          el.src = url;
+          el.onerror = () => {
+            const d = document.createElement("div");
+            d.className = "meta";
+            d.textContent = `媒体缺失：${href}（文件被移动或删除？请检查 end 层指针）`;
+            d.style.color = "var(--warn)";
+            el.replaceWith(d);
+          };
+          a.replaceWith(el);
+        });
+        return safe(host.innerHTML);
+      }
+
+      function phaseState(ph, byId) {
+        const ids = ph.units || [];
+        let anyFailed = false,
+          anyRunning = false,
+          allDone = true,
+          any = false;
+        for (const id of ids) {
+          const u = byId[id];
+          if (!u) continue;
+          any = true;
+          if (u.state === "失败") anyFailed = true;
+          if (u.state === "运行中") anyRunning = true;
+          if (u.state !== "完成") {
+            if (u.state !== "未开始" && u.state !== "就绪") allDone = false;
+            else allDone = false;
+          }
+          if (
+            u.state === "未开始" ||
+            u.state === "就绪" ||
+            u.state === "运行中"
+          )
+            allDone = false;
+        }
+        if (!any) return "未开始";
+        if (anyFailed) return "失败";
+        if (anyRunning) return "运行中";
+        if (allDone) return "完成";
+        return "进行中";
+      }
+
+      // 段内 DAG（SVG），返回 HTML
+      function phaseDag(ph, byId) {
+        const ids = ph.units || [];
+        const all = ids.map((id) => byId[id]).filter(Boolean);
+        if (!all.length) return "";
+        // 中间 n = 去掉段始/段末
+        const startId = ph.start || "";
+        const endId = ph.end || "";
+        const mids = all.filter((u) => u.unit !== startId && u.unit !== endId);
+        const anchor = (u, cls, label) => {
+          const col = cls === "start" ? "#4a5f8a" : "#3fa66a";
+          const p = pos[u.unit] || { x: 0, y: 0 };
+          return `<g class="cm-node cm-anchor" data-jump="${u.unit}" tabindex="0" role="button" aria-label="跳转到 ${esc(u.title)}"><title>${esc(u.title)}${u.meta?.agent ? " · " + esc(u.meta.agent) : ""}</title><rect x="${p.x}" y="${p.y}" width="${W}" height="${A}" rx="9" fill="#1a2230" stroke="${col}" stroke-width="2"/><text x="${p.x + W / 2}" y="${p.y + A / 2 + 4}">${label}</text></g>`;
+        };
+        const W = 96,
+          A = 40,
+          H = 30,
+          GX = 40,
+          GY = 16,
+          pad = 12;
+        const mid = mids.length ? mids : all;
+        // 中间 DAG：最长路径深度分层（每层一列，按依赖深度铺开）
+        const depth = {};
+        const d = (id) => {
+          if (depth[id] !== undefined) return depth[id];
+          const u = byId[id];
+          const fs = (u.follows || []).filter(
+            (f) => byId[f] && byId[f].phase === ph.id && f !== endId,
+          );
+          depth[id] = !fs.length ? 0 : 1 + Math.max(...fs.map((f) => d(f)));
+          return depth[id];
+        };
+        mid.forEach((u) => d(u.unit));
+        const cols = {};
+        mid.forEach((u) => {
+          (cols[depth[u.unit]] = cols[depth[u.unit]] || []).push(u);
+        });
+        const colKeys = Object.keys(cols)
+          .map(Number)
+          .sort((a, b) => a - b);
+        const maxRows = Math.max(...colKeys.map((k) => cols[k].length), 1);
+        const midW = colKeys.length * W + (colKeys.length - 1) * GX;
+        const midH = maxRows * H + (maxRows - 1) * GY;
+        const midX = pad + W + GX;
+        const midY = pad + A / 2 - midH / 2;
+        const pos = {};
+        // 起点锚
+        pos[startId] = { x: pad, y: pad, w: W, h: A };
+        // 中间
+        colKeys.forEach((col, ci) => {
+          const arr = cols[col];
+          const off = ((maxRows - arr.length) * (H + GY)) / 2;
+          arr.forEach((u, i) => {
+            pos[u.unit] = {
+              x: midX + ci * (W + GX),
+              y: midY + off + i * (H + GY),
+              w: W,
+              h: H,
+            };
+          });
+        });
+        // 终点锚
+        const endX = midX + ((colKeys.length || 1) - 1) * (W + GX) + W + GX;
+        pos[endId] = { x: endX, y: pad, w: W, h: A };
+        const svgW = endX + W + pad;
+        const svgH = pad * 2 + Math.max(A, midH);
+        // 边
+        let edges = "";
+        const edge = (from, to) => {
+          const a = pos[from],
+            b = pos[to];
+          if (!a || !b) return;
+          const x1 = a.x + a.w,
+            y1 = a.y + a.h / 2,
+            x2 = b.x,
+            y2 = b.y + b.h / 2;
+          const mx = (x1 + x2) / 2;
+          edges += `<path class="cm-edge" d="M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2 - 4},${y2}"/>`;
+        };
+        mid.forEach((u) =>
+          (u.follows || []).forEach((f) => {
+            if (byId[f] && byId[f].phase === ph.id) edge(f, u.unit);
+          }),
+        );
+        // 起点 → 中间首列，中间末列 → 终点
+        const firstCol = colKeys[0];
+        const lastCol = colKeys[colKeys.length - 1];
+        (cols[firstCol] || []).forEach((u) => edge(startId, u.unit));
+        (cols[lastCol] || []).forEach((u) => edge(u.unit, endId));
+        if (!firstCol) edge(startId, endId);
+        // 节点
+        let nodesHtml = "";
+        if (startId) {
+          const su = byId[startId];
+          if (su) nodesHtml += anchor(su, "start", su.unit);
+        }
+        mid.forEach((u) => {
+          const p = pos[u.unit];
+          const col = STATE_COLOR[u.state] || "#5b6474";
+          const agent = u.meta?.agent || "";
+          nodesHtml += `<g class="cm-node" data-jump="${u.unit}" tabindex="0" role="button" aria-label="跳转到 ${esc(u.title)}"><title>${esc(u.title)}${agent ? " · " + esc(agent) : ""}</title><rect x="${p.x}" y="${p.y}" width="${W}" height="${H}" rx="7" fill="#171a20" stroke="${col}" stroke-width="2"/><text x="${p.x + W / 2}" y="${p.y + H / 2 + 4}">${esc(u.unit)}</text></g>`;
+        });
+        if (endId) {
+          const eu = byId[endId];
+          if (eu) nodesHtml += anchor(eu, "end", eu.unit);
+        }
+        return `<div class="cmap"><svg viewBox="0 0 ${svgW} ${svgH}" width="${svgW}" height="${svgH}"><defs><marker id="cmarr${ph.id}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b6474"/></marker></defs>${edges}${nodesHtml}</svg></div>`;
+      }
+
+      function renderChain() {
+        const c = state.chain;
+        const v = $("#view");
+        const byId = Object.fromEntries(
+          (c.units || []).map((u) => [u.unit, u]),
+        );
+        // 顶部告警条
+        let alerts = "";
+        if (c.missing && c.missing.length)
+          alerts += `<div class="alertbar">⚠ 缺失上游：${esc(c.missing.join(", "))}（补 frontmatter follows 或补单元文件）</div>`;
+        if (c.layer_errors && c.layer_errors.length)
+          alerts += `<div class="alertbar">⚠ 层结构：${esc(c.layer_errors.join("；"))}</div>`;
+        // 层块（v4.1：API 返回 layers；兼容旧字段 phases）
+        const layersAll =
+          c.layers && c.layers.length
+            ? c.layers
+            : c.phases && c.phases.length
+              ? c.phases
+              : [
+                  {
+                    id: "default",
+                    title: "全部单元",
+                    units: c.order || [],
+                    start: (c.order || [])[0],
+                    end: (c.order || [])[c.order.length - 1],
+                  },
+                ];
+        let phaseHtml = "";
+        layersAll.forEach((ph, i) => {
+          const ps = ph.state || phaseState(ph, byId);
+          const pcls = STATE_CLS[ps] || "not_started";
+          const n = (ph.units || []).length;
+          const mid = Math.max(0, n - 2); // 中间 n：去掉层始/层末两个
+          const startId = ph.start || "";
+          const endId = ph.end || "";
+          phaseHtml += `<div class="pblock"><div class="phead"><span class="pbadge">${esc(ph.id)}</span><span class="ptitle">${esc(ph.title || ph.id)}</span><span class="pstate st-${pcls}">${esc(ps)}</span><span class="pmeta">1 <b>${esc(startId)}</b> → ${mid} 单元 → 1 <b>${esc(endId)}</b>${ph.legacy ? ' <span class="chip" title="旧 4 节格式，待迁移（P3）">旧格式</span>' : ""}</span></div>${phaseDag(ph, byId)}<div class="pcards">`;
+          // 层内单元卡
+          (ph.units || []).forEach((uid) => {
+            const u = byId[uid];
+            if (u) phaseHtml += unitCard(u, c);
+          });
+          phaseHtml += `</div></div>`;
+          // 层间交接箭头：上一层之后、这一层之前
+          if (i < layersAll.length - 1)
+            phaseHtml += `<div class="phasehandoff">交接 · ${esc(ph.id)} end → 下层 goal（待审批）</div>`;
+        });
+        setHTML(
+          v,
+          `<h2 style="color:#fff;margin:4px 0 12px">生产链 · ${esc(state.project)}</h2>${alerts}${phaseHtml}`,
+        );
+        v.querySelectorAll("g.cm-node").forEach((n) => {
+          const go = () => {
+            const el = document.getElementById("card-" + n.dataset.jump);
+            if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+          };
+          n.onclick = go;
+          bindEnter(n, go);
+        });
+        // 层折叠点击
+        v.querySelectorAll(".layer .ltag").forEach((l) => {
+          const toggle = () => {
+            const layer = l.closest(".layer");
+            if (layer.classList.contains("collapsible"))
+              layer.classList.toggle("collapsed");
+          };
+          l.onclick = (e) => {
+            if (e.target.tagName === "BUTTON" || e.target.tagName === "SELECT")
+              return;
+            toggle();
+          };
+          bindEnter(l, toggle);
+        });
+        v.querySelectorAll("button[data-edit]").forEach(
+          (b) => (b.onclick = () => openLayerEdit(b.dataset.edit)),
+        );
+        v.querySelectorAll("button[data-exec]").forEach(
+          (b) => (b.onclick = () => assembleUnit(b.dataset.exec)),
+        );
+        v.querySelectorAll("button[data-grill]").forEach(
+          (b) => (b.onclick = () => openGrill(b.dataset.grill)),
+        );
+        v.querySelectorAll("button[data-run]").forEach(
+          (b) => (b.onclick = () => openRunForm(b.dataset.run)),
+        );
+        v.querySelectorAll("button[data-gate]").forEach(
+          (b) => (b.onclick = () => openGate(b)),
+        );
+        v.querySelectorAll(".taskline input").forEach(
+          (inp) => (inp.onchange = () => toggleTask(inp)),
+        );
+        v.querySelectorAll("select[data-state]").forEach(
+          (sel) => (sel.onchange = () => changeState(sel)),
+        );
+        v.querySelectorAll(".uhead[data-sel]").forEach((h) => {
+          h.onclick = () => selectUnit(h.dataset.sel);
+          bindEnter(h, () => selectUnit(h.dataset.sel));
+        });
+        // 默认选中 = 第一个可行动单元（DESIGN §4.4：owner 是来推进的不是来浏览的）
+        if (!state.selected && c.order && c.order.length) {
+          const activeLayer = layersAll.find(
+            (L) => (L.state || "进行中") !== "完成",
+          );
+          const scope = activeLayer ? activeLayer.units : c.order;
+          const act =
+            scope.find(
+              (id) =>
+                byId[id] &&
+                byId[id].state !== "完成" &&
+                byId[id].state !== "运行中",
+            ) ||
+            scope.find((id) => byId[id] && byId[id].state === "运行中") ||
+            scope[0];
+          selectUnit(act);
+        }
+      }
+
+      function stateBadgeCls(u) {
+        return "st-" + (STATE_CLS[u.state] || "not_started");
+      }
+
+      function unitCard(u, c) {
+        const agent = u.meta?.agent || "";
+        const skill = u.meta?.skill || "";
+        const execK = u.exec_kind;
+        const role =
+          u.unit === "goal" || u.unit.startsWith("goal")
+            ? "goal"
+            : u.unit === "end" || u.unit.endsWith("end")
+              ? "end"
+              : "";
+        const layers = LAYERS.map((L) => {
+          const sec = u.parts && u.parts[L.key];
+          const s = (sec && sec.body) || "";
+          const collapsible = L.collapsible ? " collapsible collapsed" : "";
+          let btn = "";
+          if (L.editable)
+            btn = `<button data-edit="${u.unit}/${L.key}">✎ 改这层</button>`;
+          else if (L.key === "exec" && execK === "run")
+            btn = `<button data-exec="${u.unit}">⟳ 看请求体</button><button data-run="${u.unit}">＋ 记录运行</button>`;
+          else if (L.key === "thinking")
+            btn = `<button data-grill="${u.unit}">💬 追问</button>`;
+          else if (L.key === "result" && role === "goal")
+            btn = `<button data-gate="${u.unit}" data-gate-type="layer">🔓 层放行</button>`;
+          else if (L.key === "result" && u.gate)
+            btn = `<button data-gate="${u.unit}" data-verdict="批准">✓ 批准</button><button data-gate="${u.unit}" data-verdict="打回">↩ 打回</button>`;
+          let rendered;
+          if (L.key === "result") rendered = mediaHtml(s);
+          else if (L.key === "exec") rendered = renderExec(s);
+          else rendered = md(s || "（待填）");
+          return `<div class="layer ${L.cls}${collapsible}"><div class="ltag" title="${esc(L.why)}"><b>${L.tag}</b>${btn}</div><div class="lbody">${rendered}</div></div>`;
+        }).join("");
+        const badge = agent
+          ? `<span class="chip" title="${esc(skill || "skill")}">${esc(agent)}${skill ? " · " + esc(skill) : ""}</span>`
+          : "";
+        const stateSel = `<select data-state="${u.unit}" class="meta" title="改状态（写回状态行）">${STATES.map((s) => `<option ${u.state === s ? "selected" : ""}>${s}</option>`).join("")}</select>`;
+        const follows =
+          u.follows && u.follows.length
+            ? `<span class="ufollows">← ${esc(u.follows.join(" / "))}</span>`
+            : "";
+        const sel = state.selected === u.unit ? " selected" : "";
+        return `<div class="unit${sel}" id="card-${u.unit}"><div class="uhead" data-sel="${u.unit}" tabindex="0" role="button" aria-label="选中单元 ${esc(u.title)}"><span class="dot d-${STATE_CLS[u.state] || "not_started"}"></span><span class="urole ${role}">${esc(u.unit)}</span><span class="utitle">${esc(u.title)}</span>${badge}${stateSel}${follows}</div>${layers}</div>`;
+      }
+
+      function renderUnitSide(u) {
+        const s = $("#side");
+        const agent = u.meta?.agent || "";
+        const skill = u.meta?.skill || "";
+        const execK = u.exec_kind;
+        const kv = (k, v) =>
+          `<div><div class="k">${esc(k)}</div><div class="v">${esc(v || "—")}</div></div>`;
+        const meta = u.meta || {};
+        const grid = [
+          kv("状态", u.state || "未开始"),
+          kv("类型", execK === "run" ? "运行单元" : "设计单元"),
+          kv("agent", agent),
+          kv("skill", skill),
+          kv("provider", meta.provider),
+          kv("model", meta.model),
+          kv("时长", meta.duration ? meta.duration + "s" : ""),
+          kv("分辨率", meta.resolution),
+        ].join("");
+        setHTML(
+          s,
+          `<div class="meta" style="margin-bottom:2px">已选中单元 · 层 ${esc(u.layer || u.phase || "default")}${u.legacy ? " · 旧 4 节格式" : ""}</div>${`<div class="sidetitle">${esc(u.title)}</div>`}<div class="meta">${execK === "run" ? "运行单元 · Run 卡在 ④ 层" : "设计单元 · 交付在 ③ 内容详情"}</div><div class="side-grid">${grid}</div>`,
+        );
+        // sessionStorage 持久化选中（D35：刷新恢复）
+        try {
+          sessionStorage.setItem(
+            "wb:",
+            JSON.stringify({
+              selected: u.unit,
+              project: state.project,
+            }),
+          );
+        } catch {}
+      }
+
+      function selectUnit(uid) {
+        state.selected = uid;
+        const u = state.chain.units.find((x) => x.unit === uid);
+        document
+          .querySelectorAll(".unit.selected")
+          .forEach((e) => e.classList.remove("selected"));
+        const card = document.getElementById("card-" + uid);
+        if (card) card.classList.add("selected");
+        if (u) renderUnitSide(u);
+      }
+
+      function renderExec(s) {
+        // 抽前置清单 GFM 行 → 可点 checkbox；其余交给 marked
+        const lines = s.split("\n");
+        let html = "";
+        let inList = false;
+        lines.forEach((ln) => {
+          const m = ln.match(/^\s*- \[([ xX])\]\s*(.*)$/);
+          if (m) {
+            html += `<div class="taskline ${m[1] === "x" || m[1] === "X" ? "done" : ""}"><input type="checkbox" ${m[1] === "x" || m[1] === "X" ? "checked" : ""} data-task="${esc(ln)}">${esc(m[2])}</div>`;
+            inList = true;
+            return;
+          }
+          if (inList && ln.trim() === "") {
+            inList = false;
+            html += "\n";
+          }
+          if (inList && ln.trim() !== "" && /^\S/.test(ln)) {
+            inList = false;
+          }
+          html += ln + "\n";
+        });
+        return md(html);
+      }
+      function toggleTask(inp) {
+        const raw = inp.dataset.task;
+        const checked = inp.checked;
+        const newLine = raw.replace(
+          /^(\s*- \[\s)[xX]\s\]/,
+          `$1${checked ? "x" : " "}]`,
+        );
+        const blockId = inp.closest(".unit").id.replace("card-", "");
+        const u = state.chain.units.find((x) => x.unit === blockId);
+        const sec = u.parts && u.parts["exec"];
+        const body = sec ? sec.body : "";
+        const newBody = body
+          .split("\n")
+          .map((ln) => (ln === raw ? newLine : ln))
+          .join("\n");
+        api("/api/chain/part", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            p: state.project,
+            unit: blockId,
+            part: "exec",
+            expected_body: body,
+            new_body: newBody,
+          }),
+        })
+          .then(() => {
+            flash("清单已写回");
+            loadChain();
+          })
+          .catch((e) => {
+            inp.checked = !checked;
+            handleWriteError(e);
+          });
+      }
+
+      async function changeState(sel) {
+        const uid = sel.dataset.state;
+        const u = state.chain.units.find((x) => x.unit === uid);
+        const old = u.state;
+        const val = sel.value;
+        try {
+          await api("/api/chain/state", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              p: state.project,
+              unit: uid,
+              state: val,
+              expected: old,
+            }),
+          });
+          flash(`状态 → ${val}`);
+          loadChain();
+        } catch (e) {
+          sel.value = old;
+          handleWriteError(e);
+        }
+      }
+
+      async function openLayerEdit(which) {
+        const [uid, lkey] = which.split("/");
+        const u = state.chain.units.find((x) => x.unit === uid);
+        const sec = u.parts && u.parts[lkey];
+        $("#editTitle").textContent =
+          `改 · ${u.title} § ${LAYER_LABEL[lkey] || lkey}`;
+        $("#editMeta").textContent =
+          `改完写回单元文件 ${u.file}（agent 会读到你的反馈并重处理这层）。`;
+        $("#editArea").value = sec ? sec.body : "";
+        $("#editBg").classList.add("show");
+        state._editingChain = { uid, lkey, expected: sec ? sec.body : "" };
+      }
+
+      async function assembleUnit(uid) {
+        const s = $("#side");
+        s.innerHTML = '<div class="meta">装配中…</div>';
+        try {
+          const d = await api(
+            `/api/chain/assemble?p=${state.project}&unit=${uid}`,
+          );
+          if (d.error) {
+            setHTML(s, `<span class="err">装配门禁：${esc(d.error)}</span>`);
+            return;
+          }
+          setHTML(
+            s,
+            `<h4>请求体层 · ${esc(d.unit_title || "")}</h4><div class="meta">格式 <b>${esc(d.format)}</b> · 时长 <b>${d.duration}</b> 秒${d.cost != null ? ` · 成本 <span class="cost">¥${d.cost.toFixed(2)}</span>` : ""}</div><div id="reqjson" style="max-height:320px">${esc(JSON.stringify(d.request, null, 2))}</div><div id="cmd"><pre class="meta" style="white-space:pre-wrap">${esc(d.command || "")}</pre></div>`,
+          );
+        } catch (e) {
+          setHTML(s, `<span class="err">${esc(e.message)}</span>`);
+        }
+      }
+
+      function openGrill(uid) {
+        const u = state.chain.units.find((x) => x.unit === uid);
+        $("#grillTarget").textContent =
+          `${u.title} · ② 思考层 → 写进 ### grill 记录`;
+        $("#grillTarget").dataset.unit = uid;
+        $("#grillArea").value = "";
+        $("#grillBg").classList.add("show");
+      }
+      $("#grillSave").onclick = async () => {
+        const text = $("#grillArea").value.trim();
+        if (!text) return;
+        const uid = $("#grillTarget").dataset.unit;
+        try {
+          await api("/api/chain/append", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              p: state.project,
+              unit: uid,
+              kind: "grill",
+              idem: Date.now() + "-" + Math.random().toString(36).slice(2),
+              text,
+            }),
+          });
+          $("#grillBg").classList.remove("show");
+          flash("追问已写进 ② ### grill 记录");
+          loadChain();
+        } catch (e) {
+          flash("提交失败：" + e.message, true);
+        }
+      };
+      $("#grillCancel").onclick = () => $("#grillBg").classList.remove("show");
+
+      // 门（DESIGN §2.6/§4.2）：单元门（gate: 是）批准/打回 + goal 层放行
+      function openGate(btn) {
+        const uid = btn.dataset.gate;
+        const verdict = btn.dataset.verdict || "批准";
+        const gateType = btn.dataset.gateType || "unit";
+        const u = state.chain.units.find((x) => x.unit === uid);
+        $("#gateTarget").textContent =
+          `${u.title} · ${gateType === "layer" ? "层边界审批（层放行）" : "单元门"} · 判定：${verdict}`;
+        $("#gateTarget").dataset.unit = uid;
+        $("#gateTarget").dataset.verdict = verdict;
+        $("#gateTarget").dataset.gateType = gateType;
+        $("#gateArea").value = "";
+        $("#gateSave").textContent =
+          verdict === "打回" ? "打回（写门记录进 ⑤）" : "批准（写门记录进 ⑤）";
+        $("#gateBg").classList.add("show");
+      }
+      $("#gateSave").onclick = async () => {
+        const oneline = $("#gateArea").value.trim();
+        if (!oneline) {
+          flash("一句话理由必填", true);
+          return;
+        }
+        const t = $("#gateTarget");
+        try {
+          await api("/api/chain/append", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              p: state.project,
+              unit: t.dataset.unit,
+              kind: "gate",
+              idem: Date.now() + "-" + Math.random().toString(36).slice(2),
+              verdict: t.dataset.verdict,
+              oneline,
+              type: t.dataset.gateType === "layer" ? "层放行" : "单元门",
+            }),
+          });
+          $("#gateBg").classList.remove("show");
+          flash(`门记录已写入 ⑤（${t.dataset.unit} · ${t.dataset.verdict}）`);
+          loadChain();
+        } catch (e) {
+          flash("提交失败：" + e.message, true);
+        }
+      };
+      $("#gateCancel").onclick = () => $("#gateBg").classList.remove("show");
+
+      function openRunForm(uid) {
+        const u = state.chain.units.find((x) => x.unit === uid);
+        const meta = u.meta || {};
+        $("#runMeta").textContent =
+          `${u.title} · ④ 执行层 → Run 卡（服务端算 Run 编号）`;
+        $("#runMeta").dataset.unit = uid;
+        $("#runProv").textContent = meta.provider || "?";
+        $("#runDur").textContent = meta.duration || state.duration + "s";
+        $("#runCost").textContent = "（装配后定）";
+        $("#runOutcome").value = "成功";
+        $("#runOneline").value = "";
+        $("#runTaskid").value = "";
+        $("#runDuration").value = "";
+        $("#runDetail").value = "";
+        $("#runSave").disabled = false;
+        $("#runBg").classList.add("show");
+        // 尝试拿成本
+        if (meta["prompt-file"]) {
+          assembleAsync(uid, (cost) => {
+            if (cost != null) $("#runCost").textContent = "¥" + cost.toFixed(2);
+          });
+        }
+      }
+      async function assembleAsync(uid, cb) {
+        try {
+          const d = await api(
+            `/api/chain/assemble?p=${state.project}&unit=${uid}`,
+          );
+          if (d.cost != null) cb(d.cost);
+        } catch {}
+      }
+      $("#runSave").onclick = async () => {
+        const oneline = $("#runOneline").value.trim();
+        if (!oneline) {
+          flash("一句话结果必填（记录运行的最少信息）", true);
+          return;
+        }
+        const uid = $("#runMeta").dataset.unit;
+        $("#runSave").disabled = true;
+        const payload = {
+          p: state.project,
+          unit: uid,
+          kind: "run",
+          idem: Date.now() + "-" + Math.random().toString(36).slice(2),
+          outcome: $("#runOutcome").value,
+          oneline,
+        };
+        const taskid = $("#runTaskid").value.trim();
+        if (taskid) payload.taskid = taskid;
+        const dur = $("#runDuration").value.trim();
+        if (dur) payload.duration = dur;
+        const detail = $("#runDetail").value.trim();
+        if (detail) payload.detail = detail;
+        const meta = state.chain.units.find((x) => x.unit === uid)?.meta || {};
+        payload.provider = meta.provider || state.provider;
+        if (meta.model) payload.model = meta.model;
+        try {
+          const d = await api("/api/chain/append", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          $("#runBg").classList.remove("show");
+          flash(`已记录 Run ${d.run_no != null ? d.run_no : ""}（${uid}）`);
+          loadChain();
+        } catch (e) {
+          $("#runSave").disabled = false;
+          handleWriteError(e);
+        }
+      };
+      $("#runCancel").onclick = () => $("#runBg").classList.remove("show");
+
+      function closeModal() {
+        document.querySelectorAll(".modal-bg.show").forEach((x) => x.remove());
+      }
+
+      async function loadChain() {
+        const v = $("#view");
+        if (!state.chain) v.innerHTML = '<div class="meta">加载链…</div>';
+        try {
+          state.chain = await api(`/api/chain?p=${state.project}`);
+          state.chain._synced = new Date();
+          $("#syncAt").textContent =
+            "同步 " +
+            state.chain._synced.toLocaleTimeString("zh-CN", { hour12: false });
+          if (!state.chain.units || !state.chain.units.length)
+            throw new Error("no units");
+        } catch (e) {
+          setHTML(
+            v,
+            `<div class="nochain">该项目还没有单元文件（带 <code>unit:</code> frontmatter 的 md）。<br>这是 agent 建立生产链的落点：它把目标拆成 层（goal → 中间单元 → end）。</div>`,
+          );
+          $("#side").innerHTML = "";
+          return;
+        }
+        renderChain();
+      }
+      loadProjects().catch((e) => flash("加载失败：" + e.message, true));
+      initModals();
+
+      // D35：15s 轮询（仅标签页有焦点）+ header [⟳] 手动刷新
+      setInterval(() => {
+        if (document.hasFocus() && state.project && state.chain) loadChain();
+      }, 15000);
+      $("#refresh").onclick = () => loadChain();
+      // 文件视图切换（v4.1：块编辑 + 请求体装配保留）
+      $("#fileToggle").onclick = async () => {
+        const panel = $("#filesPanel");
+        if (panel.style.display === "block") {
+          panel.style.display = "none";
+          return;
+        }
+        if (state.mode === "file") {
+          // 文件视图 → 回链视图
+          state.mode = "chain";
+          state.file = null;
+          $("#fileToggle").textContent = "📄 文件";
+          loadChain();
+          return;
+        }
+        try {
+          const { projects } = await api("/api/projects");
+          const p = projects.find((x) => x.id === state.project);
+          setHTML(
+            panel,
+            `<div class="meta" style="margin-bottom:6px">项目文件（点进文件视图）</div>` +
+              (p
+                ? p.files
+                    .map(
+                      (f) =>
+                        `<button data-f="${esc(f)}" style="display:block;width:100%;text-align:left;margin:2px 0;background:none;border:none;color:var(--txt);cursor:pointer;font-size:12px">📄 ${esc(f)}</button>`,
+                    )
+                    .join("")
+                : "（无文件）"),
+          );
+          panel.querySelectorAll("button[data-f]").forEach((b) => {
+            b.onclick = () => {
+              state.file = b.dataset.f;
+              state.mode = "file";
+              panel.style.display = "none";
+              $("#fileToggle").textContent = "⛓ 链视图";
+              loadFile();
+            };
+          });
+          panel.style.display = "block";
+        } catch (e) {
+          flash("文件列表加载失败：" + e.message, true);
+        }
+      };
+      // 选中恢复已在 loadProjects 内完成
+    </script>
+  </body>
+</html>

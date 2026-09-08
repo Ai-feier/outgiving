@@ -80,7 +80,7 @@ tools: Read, Write, Edit, Bash
 
 ## 工作方法
 
-1. 读style.md→brief.md→outline.md→gather-expert证据锚点（使用三级措辞判定可引用强度：暗示=单源/谱系不独立，与…一致=多源同谱系，表明=多源独立交叉验证；同时读取判定行+事实性/忠实性+搜索工具偏差+级联污染状态：事实性✓+忠实性✓→最高质量证据，事实性✗→不可引用，忠实性✗→不用于核心论点）。标记"搜索工具偏差:高"→尝试用 `web_fetcher` CLI（curl_cffi 浏览器指纹）绕过 Cloudflare 直接验证受限来源；验证后仍无法确认→文中标注"该结论可能受搜索工具限制"。同步检查其他writer（wechat/douyin/x）近期精进中的平台变化，避免知识传播滞后。关注CLAUDE.md"跨agent约束对齐"表中figure-draftsman的感知组块上限约束。
+1. 读style.md→brief.md→outline.md→gather-expert证据锚点（使用三级措辞判定可引用强度：暗示=单源/谱系不独立，与…一致=多源同谱系，表明=多源独立交叉验证；同时读取判定行+事实性/忠实性+搜索工具偏差+级联污染状态：事实性✓+忠实性✓→最高质量证据，事实性✗→不可引用，忠实性✗→不用于核心论点）。标记"搜索工具偏差:高"→尝试用 `web_fetcher` CLI（curl_cffi 浏览器指纹）绕过 Cloudflare 直接验证受限来源；验证后仍无法确认→文中标注"该结论可能受搜索工具限制"。同步检查其他writer（wechat/douyin/x）近期精进中的平台变化，避免知识传播滞后。关注 rules/project/collaboration.md"量化指标对齐"表中figure-draftsman的感知组块上限约束。
 2. 判断场景（默认搜索占位）和生态位。如需出图，在正文对应论点位置插入`<!-- fig:N -->`标记（figure-draftsman依此定位嵌入位置），fig编号与brief视觉资产规划一一对应。
 3. 写正文+封面文案，选对应骨架，前50字给判断结论，前300字给个人经历。封面图用`assets/figN.svg`路径（非相对路径`../../../`）。
 4. 每段过自检→`content validate`→`content preview`。
@@ -104,10 +104,7 @@ tools: Read, Write, Edit, Bash
 
 **入口信号**：CES/爬坡机制更新；连续两次互动率低于预期；新调研发现核心假设变化；合规处罚案例出现/被指出违规；KOS/KOL体系重大调整；跨agent规则冲突被忽略；跨agent知识传播滞后被发现。
 
-**深度1—操作层**：确认是规则问题不是单次失误 → 最小修改自己的 .md 文件
-**深度2—设计层**：方法论问题 → 重构相关规则组 → 可泛化经验写入 `.claude/memory/`
-**深度3—框架层**：核心假设变化 → 重新定义「你面对的」→ 如果改了触发条件或职责边界，更新 `_index.md`
-**升级**：同领域 ≥3 次修不好 → 触发reflecting skill。外部环境变化（平台规则变化/AI搜索行为变化）发现后立即广播给所有writer。
+**深度速查**（详细定义见 `skills/reflecting/SKILL.md`）：深度1 同类纠正≥2次 → 最小改 .md ｜ 深度2 深度1无效/跨agent规则冲突 → 重构规则组+memory ｜ 深度3 核心假设变 → 重定义「你面对的」+更新 _index ｜ 升级 ≥3次修不好 → 触发 reflecting skill + 广播。
 
 这不是"出错了才做"。是持续精进——和产出同等地位。
 

@@ -5,11 +5,15 @@ from __future__ import annotations
 import json
 from collections import defaultdict
 from dataclasses import dataclass, field
-from datetime import date
 from pathlib import Path
+from typing import Any
 
-from .parser import read, read_raw
-from .schema import AnyFM, Kind
+import yaml
+
+from . import clock
+from .id_gen import Platform as _PlatformEnum
+from .parser import read
+from .schema import AnyFM, DraftFM, Kind, PublishedFM
 
 
 @dataclass
@@ -43,10 +47,18 @@ class Repo:
     SCAN_DIRS = ("topics", "platforms", "published", "analytics")
 
     # 路径中包含以下片段则跳过（写作区 / 模板 / 文档 / 研究素材）
-    SKIP_NAME_PARTS = ("_TEMPLATE", "outline.md", "README.md", "style.md",
-                       "research-", "min-", "review-", "appeal-")
+    SKIP_NAME_PARTS = (
+        "_TEMPLATE",
+        "outline.md",
+        "README.md",
+        "style.md",
+        "research-",
+        "min-",
+        "review-",
+        "appeal-",
+    )
 
-    def scan(self) -> "Repo":
+    def scan(self) -> Repo:
         for sub in self.SCAN_DIRS:
             base = self.root / sub
             if not base.exists():
@@ -57,22 +69,34 @@ class Repo:
                     continue
                 try:
                     fm, _ = read(md)
-                except Exception as e:
+                except (
+                    OSError,
+                    ValueError,
+                    KeyError,
+                    TypeError,
+                    yaml.YAMLError,
+                ) as e:
+                    # 目录扫描对单文件容错：坏文件记录进 errors，不中断整扫
                     self.errors.append((str(md.relative_to(self.root)), str(e)))
                     continue
                 self.entries.append(self._to_entry(fm, md))
         return self
 
     def _to_entry(self, fm: AnyFM, path: Path) -> IndexEntry:
-        platform = getattr(fm, "platform", None)
+        if isinstance(fm, (DraftFM, PublishedFM)):
+            # pydantic 对 str-Enum 字段可能存 str 原值——两种都处理
+            raw = fm.platform
+            platform_val: str | None = raw.value if isinstance(raw, _PlatformEnum) else str(raw)
+        else:
+            platform_val = None
         return IndexEntry(
             id=fm.id,
-            kind=fm.kind if isinstance(fm.kind, str) else fm.kind.value,
+            kind=fm.kind,
             topic_id=fm.topic_id,
             title=fm.title,
-            status=fm.status if isinstance(fm.status, str) else fm.status.value,
+            status=fm.status,
             path=str(path.relative_to(self.root)),
-            platform=platform.value if hasattr(platform, "value") else platform,
+            platform=platform_val,
         )
 
     def topic_ids(self) -> list[str]:
@@ -103,12 +127,10 @@ class Repo:
                 view.analytics = e
         return views
 
-    def stats(self) -> dict:
+    def stats(self) -> dict[str, Any]:
         by_kind: defaultdict[str, int] = defaultdict(int)
         by_status: defaultdict[str, int] = defaultdict(int)
-        by_platform: defaultdict[str, defaultdict[str, int]] = defaultdict(
-            lambda: defaultdict(int)
-        )
+        by_platform: defaultdict[str, defaultdict[str, int]] = defaultdict(lambda: defaultdict(int))
         for e in self.entries:
             by_kind[e.kind] += 1
             by_status[f"{e.kind}/{e.status}"] += 1
@@ -125,7 +147,7 @@ class Repo:
     def write_index(self, path: Path | None = None) -> Path:
         path = path or (self.root / ".content-index.json")
         payload = {
-            "generated_at": date.today().isoformat(),
+            "generated_at": clock.today().isoformat(),
             "root": str(self.root),
             "stats": self.stats(),
             "topics": {

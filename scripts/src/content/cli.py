@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import re
 from datetime import date
 from pathlib import Path
@@ -11,15 +12,16 @@ from rich.console import Console
 from rich.table import Table
 
 from .id_gen import (
+    ParsedId,
     Platform,
     draft_id,
     next_topic_id,
     parse_id,
-    published_id,
-    analytics_id,
 )
 from .lifecycle import TransitionError, assert_transition
 from .parser import read, write
+from .platform import get as platform_get
+from .platform import slugify_title
 from .repo import Repo, find_repo_root
 from .schema import (
     DraftFM,
@@ -27,22 +29,23 @@ from .schema import (
     Kind,
     TopicFM,
     TopicStatus,
-    parse_frontmatter,
 )
 
 console = Console()
 
 
-def _slugify(title: str) -> str:
-    """中文保留，空格/标点转 -，连续 - 折叠"""
-    s = title.strip().lower()
-    s = re.sub(r"[\s\\/:*?\"<>|]+", "-", s)
-    s = re.sub(r"-+", "-", s).strip("-")
-    return s[:60] if s else "untitled"
+slugify = slugify_title
 
 
 def _today() -> date:
-    return date.today()
+    """今天日期；CONTENT_TODAY=YYYY-MM-DD 可覆写（测试 / 回填历史数据）。"""
+    env = os.environ.get("CONTENT_TODAY", "").strip()
+    if env:
+        try:
+            return date.fromisoformat(env)
+        except ValueError:
+            pass
+    return date.today()  # opengrep-allow: CLI 写入 frontmatter 的合法时钟
 
 
 @click.group()
@@ -111,7 +114,7 @@ def list_cmd(ctx: click.Context) -> None:
 
     for tid in sorted(views.keys()):
         v = views[tid]
-        plat_cells = []
+        plat_cells: list[str] = []
         for p in Platform:
             drafts = [d for d in v.drafts if d.platform == p.value]
             if drafts:
@@ -125,9 +128,7 @@ def list_cmd(ctx: click.Context) -> None:
 
     console.print(table)
     s = repo.stats()
-    console.print(
-        f"\n[dim]共 {s['total']} 份文档；by_kind={s['by_kind']}[/dim]"
-    )
+    console.print(f"\n[dim]共 {s['total']} 份文档；by_kind={s['by_kind']}[/dim]")
 
 
 # ────────────────────────── show ──────────────────────────
@@ -171,7 +172,7 @@ def new(ctx: click.Context, title: str, audience: str | None, platforms: str) ->
     root = ctx.obj["root"]
     repo = Repo(root).scan()
     tid = next_topic_id(repo.topic_ids())
-    slug = _slugify(title)
+    slug = slugify(title)
     today = _today()
     plats = [Platform(p.strip()) for p in platforms.split(",") if p.strip()]
 
@@ -234,13 +235,22 @@ def adapt(ctx: click.Context, topic_id: str, platform: str, revision: int | None
     # 自增版本号
     if revision is None:
         existing = [
-            e for e in repo.entries
+            e
+            for e in repo.entries
             if e.kind == Kind.DRAFT.value and e.topic_id == topic_id and e.platform == plat.value
         ]
-        revision = max([parse_id(e.id)["revision"] for e in existing], default=0) + 1
+        revision = (
+            max(
+                ((parse_id(e.id) or ParsedId()).get("revision", 0) for e in existing),
+                default=0,
+            )
+            + 1
+        )
 
     # 父 topic 标题
-    topic_entry = next(e for e in repo.entries if e.kind == Kind.TOPIC.value and e.topic_id == topic_id)
+    topic_entry = next(
+        e for e in repo.entries if e.kind == Kind.TOPIC.value and e.topic_id == topic_id
+    )
     today = _today()
 
     fm = DraftFM(
@@ -255,25 +265,22 @@ def adapt(ctx: click.Context, topic_id: str, platform: str, revision: int | None
         updated_at=today,
     )
 
-    target_dir = root / "platforms" / plat.value / f"{topic_id}-{_slugify(topic_entry.title)}"
-    filename = {
-        Platform.WECHAT: "article.md",
-        Platform.XHS: "caption.md",
-        Platform.X: "thread.md",
-        Platform.DOUYIN: "script.md",
-    }[plat]
-    target = target_dir / filename
+    target_dir = root / "platforms" / plat.value / f"{topic_id}-{slugify(topic_entry.title)}"
+    spec = platform_get(plat.value)
+    if spec is None:
+        raise click.ClickException(f"未知平台: {plat.value}")
+    target = target_dir / spec.default_file
     if target.exists():
-        console.print(f"[yellow]目标已存在：{target.relative_to(root)}，已带版本号 v{revision}[/yellow]")
+        console.print(
+            f"[yellow]目标已存在：{target.relative_to(root)}，已带版本号 v{revision}[/yellow]"
+        )
 
-    template = (root / "assets" / "templates" / _template_name(plat)).read_text(encoding="utf-8")
+    template = (root / "assets" / "templates" / spec.template_file).read_text(encoding="utf-8")
     # 去掉模板里旧的 frontmatter（如果有），保留正文部分
     body = re.sub(r"^---\n.*?\n---\n", "", template, count=1, flags=re.DOTALL)
 
     write(target, fm, body)
-    console.print(
-        f"[green]✅ 已派生[/green] [cyan]{fm.id}[/cyan] → {target.relative_to(root)}"
-    )
+    console.print(f"[green]✅ 已派生[/green] [cyan]{fm.id}[/cyan] → {target.relative_to(root)}")
 
 
 def _template_name(p: Platform) -> str:
@@ -308,9 +315,7 @@ def transition(ctx: click.Context, doc_id: str, to_status: str) -> None:
         raise SystemExit(1)
     fm = fm.model_copy(update={"status": to_status})
     write(path, fm, body)
-    console.print(
-        f"[green]✅ {doc_id}[/green]: {entry.status} → [bold]{to_status}[/bold]"
-    )
+    console.print(f"[green]✅ {doc_id}[/green]: {entry.status} → [bold]{to_status}[/bold]")
 
 
 # ────────────────────────── stats ──────────────────────────
@@ -323,10 +328,10 @@ def stats(ctx: click.Context) -> None:
     s = repo.stats()
     console.print(f"[bold]Total[/bold]: {s['total']}  [dim](errors: {s['errors']})[/dim]")
     console.print(f"[bold]By kind[/bold]: {s['by_kind']}")
-    console.print(f"[bold]By status[/bold]:")
+    console.print("[bold]By status[/bold]:")
     for k, v in sorted(s["by_status"].items()):
         console.print(f"  {k:32s} {v}")
-    console.print(f"[bold]By platform[/bold]:")
+    console.print("[bold]By platform[/bold]:")
     for plat, kinds in s["by_platform"].items():
         console.print(f"  {plat:14s} {kinds}")
 

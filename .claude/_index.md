@@ -12,6 +12,12 @@
 | [video-craft](skills/video-craft/SKILL.md) | 视频选题、AI 视频生成 | AI 视频创作元知识：剧本/主体/节奏三元素相互成就的认知框架，不是工序流水线 |
 | [find-ref](skills/find-ref/SKILL.md) | `/find-ref [query]` — 任何 agent 需要参考素材时 | 规范化参考素材搜索：五步法（需求→来源→搜索→验证→下载）+ 精进日志。与 visual-designer gate 流程对接 |
 
+### 外部 Skill（锁定，只引用不维护）
+
+| Skill | 来源 | 用途 |
+|-------|------|------|
+| [h3-prompt-writing](../../.agents/skills/h3-prompt-writing/SKILL.md) | MiniMax-AI/MiniMax-H3（skills-lock.json） | MiniMax H3 视频生成 prompt 语法权威源（三核心字段/参考标签/输入模式）。video-director「H3 输出分支」与 video-craft「H3 三核心字段」引用 |
+
 ## Agents
 
 所有 agent 平级放在 `.claude/agents/`，任何 skill 均可调用。
@@ -87,7 +93,9 @@
 |------|------|
 | `CLAUDE.md` | 项目协作权威入口：数据模型、命令、约定、协作者角色 |
 | `rules/README.md` | Rules 系统说明：架构、优先级、维护规则 |
-| `README.md` | 人类可读的项目说明 |
+| `README.md` | 人类可读的项目说明（入口） |
+| `docs/README.md` | 人类知识库（最终形态文档：pipeline/architecture/operations/troubleshooting） |
+| `memory/MEMORY.md` | 跨 session 经验沉淀入口（反馈教训/研究记录） |
 
 ## 资产系统
 
@@ -106,7 +114,7 @@
 ```
 □ 去重        — skills/agents/rules 间无重复规则，冲突规则已合并
 □ 过期        — 所有引用路径有效（链接目标存在），无失效引用
-□ 行数        — 单个 SKILL.md ≤ 200 行，单个 rule ≤ 150 行，超限拆分
+□ 行数        — 单个 SKILL.md ≤ 200 行（元知识层 video-craft/reflecting ≤ 250），单个 rule ≤ 150 行，超限拆分
 □ 交叉引用    — _index.md 覆盖全部 skills/agents/rules/output-styles/memory，无孤立文件
 □ 触发条件    — 每个 skill 的触发条件准确，无漏触发/误触发
 □ CLAUDE.md   — 项目级入口不超过 200 行，新增命令/约定已同步

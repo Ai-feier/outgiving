@@ -1,0 +1,15 @@
+# H3 Seg1 — 压抑→觉醒→锁定（0.0–5.0s）
+
+Input Mode: T2VA + 多图参考（workflow minimax_h3_lightx2v_v5；<Picture 1> = 官方形态图 001（1061×1500 竖）, <Picture 2> = 官方场景图 002（1920×1080 横））
+Duration: 5s（CLI --duration 5 传入，1-10s 硬限内）
+Resolution: 768p横（CLI --resolution 传入）
+Purpose: 段 1 生成单元；末 1.8s 落定 hold = 段边界接续锚点（末帧提取源）
+Parser 约束: 三核心字段值必须各占单行（CLI 按行切块，字段值内换行会丢内容——实测 2026-08-24）
+
+How the reference pictures align with the target video — Picture 1 and Picture 2 are official identity references for the target FINAL form (the horned, masked, blood-chain state); they are NOT opening or closing keyframes: the video opens in a pre-transformation state with no horns and no mask, and reaches the form shown in Picture 1 and Picture 2 only at the end of the final shot.
+
+integrated_multimodal_description: [Shot 1] 2D-animated, high-contrast cel-shaded anime style, a medium low-angle shot frames a young man in a deep crouch with his head lowered and long orange hair falling over his face, wearing a black shinigami-style robe, with no horns on his head and no mask on his face in this pre-transformation state, inside a pitch-black ink-wash void where dark ink tendrils press in from all sides; blood-red chain-like spiritual energy flickers faintly and pulses under his skin at his neck, wrists and ankles like something caged, and his body trembles slightly with suppressed breathing; the camera holds a static shot with an almost imperceptible push in. [Shot 2] At 00:01.200, the shot cuts to the awakening: the blood-red chains erupt and shatter outward from his neck, hands and feet, a black half-hollow mask crawls rapidly across his face as he rises, two horns push out of his head, anime speed lines appear around him, and the long blade in his hand glows and begins to transform in the same instant; the camera drifts with a gentle handheld sway and pushes in. [Shot 3] At 00:03.200, the shot transitions to the completed form matching the character in Picture 1 and Picture 2: two full curved horns, a complete black mask that is black not white, the blood-red chains fully blazing at neck, wrists and ankles, the transformed blade held horizontally at his side in a formal ready stance, his head raised, his body still and charged with power; the ink-wash void and blood-red glow hold, the camera finishes a slow push in and holds a static shot for the final 1.8 seconds, ending on a clean, sharp frame without motion blur.
+
+overall_soundscape: A low pressure rumble presses from all directions inside a near-silent void, then the blood-red chains creak and strain under tension before snapping and bursting outward with a sharp crack, the air tears as the black mask spreads across the face, and anime speed lines add a high whoosh of displaced air, ending in a deep resonant hum as the body locks into the ready stance.
+
+non_diegetic_music: A low pulsing ostinato at a slow tempo with sustained deep strings underneath, gradually building in volume through the middle of the video and reaching a full crescendo exactly as the final pose locks, no vocals.

@@ -17,13 +17,19 @@ import json
 import os
 import subprocess
 from pathlib import Path
+from typing import Any
 
 from editor.models import Composition
+
+# 诊断报告：嵌套 dict + 标量混合
+Report = dict[str, Any]
 
 _FFPROBE = os.environ.get("FFPROBE_BINARY", "ffprobe")
 
 
-def diagnose(comp: Composition, output_path: Path, expected_duration: float | None = None) -> dict:
+def diagnose(
+    comp: Composition, output_path: Path, expected_duration: float | None = None
+) -> Report:
     """Analyze rendered output and return a structured diagnostic report.
 
     Returns a dict that an agent can read and act on:
@@ -41,44 +47,71 @@ def diagnose(comp: Composition, output_path: Path, expected_duration: float | No
         }
     """
     if expected_duration is None:
-        expected_duration = max(s.tl_end for t in comp.tracks for s in t.segments if t.type == "video")
+        expected_duration = max(
+            s.tl_end for t in comp.tracks for s in t.segments if t.type == "video"
+        )
 
-    report: dict = {"status": "ok", "issues": [], "duration": {"expected": expected_duration}}
+    report: Report = {"status": "ok", "issues": [], "duration": {"expected": expected_duration}}
 
     # Probe output
-    cmd = [_FFPROBE, "-v", "error",
-           "-show_entries", "format=duration:stream=codec_type,width,height,codec_name",
-           "-of", "json", str(output_path)]
-    result = subprocess.run(cmd, capture_output=True, text=True, timeout=15)
+    cmd = [
+        _FFPROBE,
+        "-v",
+        "error",
+        "-show_entries",
+        "format=duration:stream=codec_type,width,height,codec_name",
+        "-of",
+        "json",
+        str(output_path),
+    ]
+    result = subprocess.run(cmd, capture_output=True, text=True, timeout=15, check=False)
 
     if result.returncode != 0 or not result.stdout.strip():
         report["status"] = "error"
-        report["issues"].append({"severity": "error", "type": "probe_failed", "detail": result.stderr[:200]})
+        report["issues"].append(
+            {"severity": "error", "type": "probe_failed", "detail": result.stderr[:200]}
+        )
         return report
 
-    data = json.loads(result.stdout)
-    streams = data.get("streams", [])
-    fmt = data.get("format", {})
+    try:
+        data: dict[str, Any] = json.loads(result.stdout)
+    except (json.JSONDecodeError, ValueError, TypeError):
+        report["status"] = "error"
+        report["issues"].append(
+            {"severity": "error", "type": "probe_parse_failed", "detail": "ffprobe JSON 解析失败"}
+        )
+        return report
+    streams: list[Any] = list(data.get("streams", []))
+    fmt: Any = data.get("format", {})
 
     # Duration check
-    actual = float(fmt.get("duration", 0))
-    delta_pct = abs(actual - expected_duration) / expected_duration * 100 if expected_duration > 0 else 0
+    try:
+        actual = float(fmt.get("duration", 0))
+    except (TypeError, ValueError):
+        actual = 0.0
+    delta_pct = (
+        abs(actual - expected_duration) / expected_duration * 100 if expected_duration > 0 else 0
+    )
     report["duration"]["actual"] = actual
     report["duration"]["delta_pct"] = round(delta_pct, 1)
 
     if delta_pct > 5:
-        report["issues"].append({
-            "severity": "error",
-            "type": "timing_drift",
-            "detail": f"Video {actual:.0f}s vs expected {expected_duration:.0f}s ({delta_pct:.1f}% off)"
-        })
+        report["issues"].append(
+            {
+                "severity": "error",
+                "type": "timing_drift",
+                "detail": f"Video {actual:.0f}s vs expected {expected_duration:.0f}s ({delta_pct:.1f}% off)",
+            }
+        )
         report["status"] = "error"
     elif delta_pct > 1:
-        report["issues"].append({
-            "severity": "warning",
-            "type": "timing_drift",
-            "detail": f"Minor drift: {actual:.0f}s vs {expected_duration:.0f}s ({delta_pct:.1f}%)"
-        })
+        report["issues"].append(
+            {
+                "severity": "warning",
+                "type": "timing_drift",
+                "detail": f"Minor drift: {actual:.0f}s vs {expected_duration:.0f}s ({delta_pct:.1f}%)",
+            }
+        )
         if report["status"] == "ok":
             report["status"] = "warning"
 
@@ -88,19 +121,24 @@ def diagnose(comp: Composition, output_path: Path, expected_duration: float | No
 
     for s in streams:
         if s.get("codec_type") == "video":
-            report["video"] = {"width": s.get("width"), "height": s.get("height"), "codec": s.get("codec_name")}
+            report["video"] = {
+                "width": s.get("width"),
+                "height": s.get("height"),
+                "codec": s.get("codec_name"),
+            }
         elif s.get("codec_type") == "audio":
             report["audio"] = {"present": True, "codec": s.get("codec_name")}
 
     if "audio" not in report:
         report.setdefault("audio", {})["present"] = False
-        basename = output_path.stem
-        report["issues"].append({
-            "severity": "warning",
-            "type": "no_audio",
-            "detail": f"No audio stream in output. Add an audio track to improve quality.",
-            "suggestion": f"Add track bgm with asset: assets/audio/bgm-lofi.mp3 (volume: 0.2)"
-        })
+        report["issues"].append(
+            {
+                "severity": "warning",
+                "type": "no_audio",
+                "detail": "No audio stream in output. Add an audio track to improve quality.",
+                "suggestion": "Add track bgm with asset: assets/audio/bgm-lofi.mp3 (volume: 0.2)",
+            }
+        )
         if report["status"] == "ok":
             report["status"] = "warning"
 
@@ -109,33 +147,47 @@ def diagnose(comp: Composition, output_path: Path, expected_duration: float | No
         total_dur = actual if actual > 0 else expected_duration
         sub_coverage = sum(s.end - s.start for s in comp.subtitles)
         coverage_pct = sub_coverage / total_dur * 100 if total_dur > 0 else 0
-        report["subtitles"] = {"count": len(comp.subtitles), "total_coverage_pct": round(coverage_pct, 1)}
+        report["subtitles"] = {
+            "count": len(comp.subtitles),
+            "total_coverage_pct": round(coverage_pct, 1),
+        }
 
         # Detect gaps between subtitles (> 5s without text = potential dead air)
         sorted_subs = sorted(comp.subtitles, key=lambda s: s.start)
-        gaps = []
+        gaps: list[dict[str, object]] = []
         for i in range(len(sorted_subs) - 1):
             gap = sorted_subs[i + 1].start - sorted_subs[i].end
             if gap > 5:
-                gaps.append({"from": sorted_subs[i].end, "to": sorted_subs[i + 1].start, "duration": gap})
+                gaps.append(
+                    {"from": sorted_subs[i].end, "to": sorted_subs[i + 1].start, "duration": gap}
+                )
         if gaps:
-            report["issues"].append({
-                "severity": "info",
-                "type": "subtitle_gaps",
-                "detail": f"{len(gaps)} gaps >5s without subtitles",
-                "gaps": gaps,
-            })
+            report["issues"].append(
+                {
+                    "severity": "info",
+                    "type": "subtitle_gaps",
+                    "detail": f"{len(gaps)} gaps >5s without subtitles",
+                    "gaps": gaps,
+                }
+            )
 
     # Segment-level check: find segments with zero-duration (failed to render)
     # Note: we can't probe individual segments post-render, so we flag based on model
-    zero_segs = [s.id for t in comp.tracks for s in t.segments if t.type == "video" and (s.src_end - s.src_start) <= 0]
+    zero_segs = [
+        s.id
+        for t in comp.tracks
+        for s in t.segments
+        if t.type == "video" and (s.src_end - s.src_start) <= 0
+    ]
     if zero_segs:
-        report["issues"].append({
-            "severity": "error",
-            "type": "zero_duration_segments",
-            "detail": f"{len(zero_segs)} segments have zero source duration",
-            "segments": zero_segs,
-        })
+        report["issues"].append(
+            {
+                "severity": "error",
+                "type": "zero_duration_segments",
+                "detail": f"{len(zero_segs)} segments have zero source duration",
+                "segments": zero_segs,
+            }
+        )
 
     # Build summary
     issue_count = len(report["issues"])
@@ -145,15 +197,19 @@ def diagnose(comp: Composition, output_path: Path, expected_duration: float | No
         sev = [i["severity"] for i in report["issues"]]
         errs = sev.count("error")
         warns = sev.count("warning")
-        parts = []
-        if errs: parts.append(f"{errs} error(s)")
-        if warns: parts.append(f"{warns} warning(s)")
-        report["summary"] = f"{', '.join(parts)}. Duration {actual:.0f}s (Δ={abs(actual-expected_duration):.1f}s)."
+        parts: list[str] = []
+        if errs:
+            parts.append(f"{errs} error(s)")
+        if warns:
+            parts.append(f"{warns} warning(s)")
+        report["summary"] = (
+            f"{', '.join(parts)}. Duration {actual:.0f}s (Δ={abs(actual - expected_duration):.1f}s)."
+        )
 
     return report
 
 
-def diagnose_and_log(comp: Composition, output_path: Path) -> dict:
+def diagnose_and_log(comp: Composition, output_path: Path) -> Report:
     """Run diagnosis and write a report alongside the output."""
     report = diagnose(comp, output_path)
     log_path = output_path.with_suffix(".diagnosis.md")
@@ -161,24 +217,26 @@ def diagnose_and_log(comp: Composition, output_path: Path) -> dict:
     return report
 
 
-def _write_md_report(report: dict, path: Path) -> None:
+def _write_md_report(report: Report, path: Path) -> None:
     """Write a human/agent-readable markdown diagnosis file."""
     lines = [
         f"# Diagnosis: {path.stem}",
-        f"",
+        "",
         f"**Status**: `{report['status'].upper()}`",
         f"**Summary**: {report['summary']}",
-        f"",
-        f"## Output",
-        f"",
-        f"| Metric | Value |",
-        f"|--------|-------|",
+        "",
+        "## Output",
+        "",
+        "| Metric | Value |",
+        "|--------|-------|",
         f"| Duration | {report['duration'].get('actual', '?'):.1f}s (expected {report['duration'].get('expected', '?'):.0f}s, Δ={report['duration'].get('delta_pct', 0):.1f}%) |",
         f"| Streams | {', '.join(report.get('streams', []))} |",
     ]
     if "video" in report:
         v = report["video"]
-        lines.append(f"| Video | {v.get('width', '?')}×{v.get('height', '?')} {v.get('codec', '?')} |")
+        lines.append(
+            f"| Video | {v.get('width', '?')}×{v.get('height', '?')} {v.get('codec', '?')} |"
+        )
     if report.get("audio", {}).get("present"):
         lines.append(f"| Audio | {report['audio'].get('codec', '?')} |")
     if "subtitles" in report:
@@ -188,13 +246,18 @@ def _write_md_report(report: dict, path: Path) -> None:
     if report["issues"]:
         lines += ["", "## Issues", ""]
         for i, issue in enumerate(report["issues"]):
-            lines.append(f"**{i+1}. [{issue['severity'].upper()}] {issue['type']}**")
+            lines.append(f"**{i + 1}. [{issue['severity'].upper()}] {issue['type']}**")
             lines.append(f"> {issue['detail']}")
             if "suggestion" in issue:
                 lines.append(f"> **Fix**: {issue['suggestion']}")
             lines.append("")
 
     if report["status"] == "ok":
-        lines += ["", "## Next Steps", "", "No issues detected. Ready for TTS voiceover integration."]
+        lines += [
+            "",
+            "## Next Steps",
+            "",
+            "No issues detected. Ready for TTS voiceover integration.",
+        ]
 
     path.write_text("\n".join(lines))
