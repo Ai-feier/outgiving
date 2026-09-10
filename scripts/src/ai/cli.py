@@ -7,7 +7,6 @@
 """
 
 import json
-import re
 import sys
 import time
 import urllib.request
@@ -94,25 +93,12 @@ if _stock_group is not None:
 from ai.cli_edit import register_edit_commands
 from ai.cli_verify import register_verify_commands
 
+# 人审面（看表 / 改表 / 追问 / 拍板 / 验收）——非生成通路，实现住在 workbench/
+from workbench.cli import workbench as _workbench_group
+
 register_verify_commands(cli)
 register_edit_commands(cli)
-
-
-@cli.command("workbench")
-@click.argument("project", default=None, required=False)
-@click.option("--port", default=8766, type=int, help="Port（默认 8766；8765 留给 content preview）")
-@click.option("--host", default="127.0.0.1", help="绑定地址（默认仅本机——可写 md）")
-@click.option("--no-browser", is_flag=True, help="不自动打开浏览器")
-def workbench_cmd(project: str | None, port: int, host: str, no_browser: bool) -> None:
-    """启动视频提示词工作台（web 看/改/提意见；md 文件仍为唯一事实源）。"""
-    import click as _click
-
-    if project and not re.match(r"^T\d{3}(-[\w-]+)?$", project):
-        _click.echo(f"Invalid project: {project}（应为 TXXX，如 T005）")
-        raise SystemExit(1)
-    from workbench.server import run
-
-    run(port=port, host=host, project=project, open_browser=not no_browser)
+cli.add_command(_workbench_group, "workbench")
 
 
 @cli.group()
