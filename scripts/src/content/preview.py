@@ -1,9 +1,12 @@
-"""浏览器预览 —— 侧栏 + Tailwind Typography，区分平台
+"""浏览器预览 —— 侧栏 + Tailwind Typography，区分渠道
 
 技术栈：
 - markdown-it-py：commonmark 渲染（删掉了手写正则）
 - Tailwind CDN + @tailwindcss/typography：零构建排版
-- 平台用配色 token 区分，不追求像素级还原
+- 渠道用配色 token 区分，不追求像素级还原
+
+一个选题一个目录：products/<id>-<slug>/。侧栏按 frontmatter 的 kind / channel
+归类（母版 / 各渠道 / 已发布 / 复盘），不依赖任何按渠道分层的目录。
 """
 
 from __future__ import annotations
@@ -16,7 +19,8 @@ from urllib.parse import unquote, urlparse
 
 from markdown_it import MarkdownIt
 
-from . import platform as _platform
+from . import channel as _channel
+from .id_gen import slugify_anchor
 from .parser import read_raw
 from .repo import Repo, find_repo_root
 
@@ -26,56 +30,55 @@ _MD = MarkdownIt("commonmark", {"html": True, "linkify": True, "typographer": Tr
 )
 
 
-# 侧栏分组定义：(标题, emoji, 目录前缀, 平台 token)
-# 平台 token 决定右侧主体的配色（None 表示无平台特定色）
-# 平台行从注册表生成——加平台只改 content/platform.py
-_GROUPS: list[tuple[str, str, str, str | None]] = [
-    ("母版", "📋", "topics", None),
-    *[(spec.display, spec.emoji, spec.dir_name, spec.value) for spec in _platform.all()],
-    ("已发布", "📊", "published", None),
-    ("复盘", "📈", "analytics", None),
+# 侧栏分组定义：(标题, emoji, 渠道 token)
+# 渠道 token 决定右侧主体的配色（None 表示无渠道特定色）
+# 渠道行从注册表生成——加渠道只改 content/channel.py
+_GROUPS: list[tuple[str, str, str | None]] = [
+    ("母版", "📋", None),
+    *[(spec.display, spec.emoji, spec.value) for spec in _channel.all()],
+    ("已发布", "📊", None),
+    ("复盘", "📈", None),
 ]
-
-# 平台配色（Tailwind 颜色名 + 主色 hex；用于强调线和 badge）
-_PLATFORM_COLORS: dict[str, tuple[str, str]] = {
-    spec.value: (spec.color_hex, spec.color_name) for spec in _platform.all()
-}
 
 
 # ────────────────────────── 文件收集 ──────────────────────────
 
 
+def _classify(path: Path) -> tuple[str, str, str | None]:
+    """按 frontmatter 归类 → (分组标题, emoji, 渠道 token)。"""
+    fm, _ = read_raw(path)
+    kind = fm.get("kind")
+    if kind == "draft":
+        spec = _channel.get(fm.get("channel"))
+        if spec is not None:
+            return spec.display, spec.emoji, spec.value
+        return "其他", "📄", None
+    if kind == "published":
+        return "已发布", "📊", None
+    if kind == "analytics":
+        return "复盘", "📈", None
+    # topic 与无 kind 的写作区文件都进「母版」
+    return "母版", "📋", None
+
+
 def _collect_topic_files(root: Path, topic_id: str) -> dict[str, list[Path]]:
-    """按分组收集与某 topic 相关的所有 md 文件。
+    """收集某选题目录 products/<id>-<slug>/ 内的全部 md，按分组归类。
 
-    返回 {group_title: [paths...]}；包含没 frontmatter 的 outline.md。
-    路径含 topic_id 子串或前缀 = 命中。
+    返回 {group_title: [paths...]}。跳过人审表 review.md 与 README / 模板。
     """
-    result: dict[str, list[Path]] = {}
-    for title, _, prefix, _ in _GROUPS:
-        base = root / prefix
-        if not base.exists():
-            result[title] = []
+    result: dict[str, list[Path]] = {title: [] for title, _e, _c in _GROUPS}
+    products = root / "products"
+    if not products.exists():
+        return result
+    for project in sorted(products.glob(f"{topic_id}-*")):
+        if not project.is_dir():
             continue
-        matched: list[Path] = []
-        for md in sorted(base.rglob("*.md")):
-            rel = str(md.relative_to(root))
-            # 跳过 README / TEMPLATE
-            if "_TEMPLATE" in rel or rel.endswith("README.md"):
+        for md in sorted(project.rglob("*.md")):
+            if md.name in ("review.md", "README.md") or "_TEMPLATE" in str(md):
                 continue
-            # 关联判断：路径里含 topic_id（如 T001-xxx/ 或 T001.md 或 T001-wechat.md）
-            if topic_id in str(md):
-                matched.append(md)
-        result[title] = matched
+            title, _emoji, _chan = _classify(md)
+            result.setdefault(title, []).append(md)
     return result
-
-
-def _group_for_path(rel_path: str) -> tuple[str, str, str | None]:
-    """根据相对路径找到 (group_title, emoji, platform_token)"""
-    for title, emoji, prefix, plat in _GROUPS:
-        if rel_path.startswith(prefix):
-            return title, emoji, plat
-    return "其他", "📄", None
 
 
 # ────────────────────────── HTML 渲染 ──────────────────────────
@@ -90,7 +93,7 @@ def _build_toc_and_anchors(html: str) -> tuple[str, str]:
     used: dict[str, int] = {}
 
     def _slugify(raw: str) -> str:
-        return _platform.slugify_anchor(raw, used)
+        return slugify_anchor(raw, used)
 
     def _add_id(m: re.Match) -> str:
         tag, inner = m.group(1), m.group(2)
@@ -135,14 +138,14 @@ def _html_shell(body_html: str, title: str = "Content Pipeline") -> str:
 <title>{title}</title>
 <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
 <style>
-  /* 平台主色 CSS 变量 */
-  .platform-wechat      {{ --pc: #07c160; }}
-  .platform-xiaohongshu {{ --pc: #ff2442; }}
-  .platform-x           {{ --pc: #1d9bf0; }}
-  .platform-douyin      {{ --pc: #fe2c55; }}
-  .platform-neutral     {{ --pc: #6b7280; }}
+  /* 渠道主色 CSS 变量 */
+  .channel-wechat      {{ --pc: #07c160; }}
+  .channel-xiaohongshu {{ --pc: #ff2442; }}
+  .channel-x           {{ --pc: #1d9bf0; }}
+  .channel-douyin      {{ --pc: #fe2c55; }}
+  .channel-neutral     {{ --pc: #6b7280; }}
 
-  /* 正文内 blockquote / 链接 / 选中 用平台色 */
+  /* 正文内 blockquote / 链接 / 选中 用渠道色 */
   .prose blockquote {{ border-left-color: var(--pc, #6b7280) !important; }}
   .prose a          {{ color: var(--pc, #1a73e8) !important; }}
 
@@ -173,17 +176,17 @@ def _html_shell(body_html: str, title: str = "Content Pipeline") -> str:
     font-weight: 500;
   }}
 
-  /* 抖音深色模式：在 .platform-douyin 容器里反转 prose */
-  .platform-douyin {{ background: #111; color: #f5f5f5; }}
-  .platform-douyin .prose,
-  .platform-douyin .prose * {{ color: #f5f5f5 !important; }}
-  .platform-douyin .prose h1,
-  .platform-douyin .prose h2,
-  .platform-douyin .prose h3,
-  .platform-douyin .prose strong {{ color: #fff !important; }}
-  .platform-douyin .prose :not(pre) > code {{ background: #3a3a3a !important; color: #fda4af !important; }}
-  .platform-douyin .prose pre  {{ background: #0f172a !important; border-color: #334155 !important; }}
-  .platform-douyin .prose pre code {{ color: #e2e8f0 !important; }}
+  /* 抖音深色模式：在 .channel-douyin 容器里反转 prose */
+  .channel-douyin {{ background: #111; color: #f5f5f5; }}
+  .channel-douyin .prose,
+  .channel-douyin .prose * {{ color: #f5f5f5 !important; }}
+  .channel-douyin .prose h1,
+  .channel-douyin .prose h2,
+  .channel-douyin .prose h3,
+  .channel-douyin .prose strong {{ color: #fff !important; }}
+  .channel-douyin .prose :not(pre) > code {{ background: #3a3a3a !important; color: #fda4af !important; }}
+  .channel-douyin .prose pre  {{ background: #0f172a !important; border-color: #334155 !important; }}
+  .channel-douyin .prose pre code {{ color: #e2e8f0 !important; }}
 
   /* 目录导航高亮 */
   .toc-link.active {{
@@ -191,7 +194,7 @@ def _html_shell(body_html: str, title: str = "Content Pipeline") -> str:
     background: #f1f5f9 !important;
     font-weight: 600;
   }}
-  .platform-douyin .toc-link.active {{
+  .channel-douyin .toc-link.active {{
     color: #f5f5f5 !important;
     background: #1e293b !important;
   }}
@@ -322,7 +325,7 @@ def _render_index(repo: Repo) -> str:
         v = views[tid]
         drafts = (
             " ".join(
-                f'<span class="inline-block px-1.5 py-0.5 rounded text-xs bg-slate-100 text-slate-600">{d.platform}</span>'
+                f'<span class="inline-block px-1.5 py-0.5 rounded text-xs bg-slate-100 text-slate-600">{d.channel}</span>'
                 for d in v.drafts
             )
             or '<span class="text-slate-300">—</span>'
@@ -344,7 +347,7 @@ def _render_index(repo: Repo) -> str:
             <thead class="bg-slate-50 text-left text-xs uppercase text-slate-500">
                 <tr>
                     <th class="py-2 px-4">ID</th><th class="py-2 px-4">标题</th>
-                    <th class="py-2 px-4">状态</th><th class="py-2 px-4">平台</th>
+                    <th class="py-2 px-4">状态</th><th class="py-2 px-4">渠道</th>
                 </tr>
             </thead>
             <tbody>{rows}</tbody>
@@ -378,7 +381,7 @@ def _render_topic_view(repo: Repo, topic_id: str, file_rel: str | None) -> str:
 
     # ── 侧栏 ──
     sidebar_items = ""
-    for title, emoji, _prefix, _plat in _GROUPS:
+    for title, emoji, _chan in _GROUPS:
         files = grouped.get(title, [])
         if not files:
             sidebar_items += f"""
@@ -404,16 +407,16 @@ def _render_topic_view(repo: Repo, topic_id: str, file_rel: str | None) -> str:
     toc_html = ""
     if selected_path is None:
         main = '<div class="p-12 text-slate-500 text-center">这个选题还没有任何文件。</div>'
-        platform_class = "platform-neutral"
+        channel_class = "channel-neutral"
         breadcrumb = ""
     else:
         fm, raw_body = read_raw(selected_path)
         rel = str(selected_path.relative_to(repo.root))
-        group_title, group_emoji, plat = _group_for_path(rel)
-        platform_class = f"platform-{plat or 'neutral'}"
+        group_title, group_emoji, chan = _classify(selected_path)
+        channel_class = f"channel-{chan or 'neutral'}"
 
-        # frontmatter 摘要：只显 id / status / platform / revision / updated_at
-        fm_keys = ("id", "status", "platform", "revision", "updated_at", "url")
+        # frontmatter 摘要：只显 id / status / channel / revision / updated_at
+        fm_keys = ("id", "status", "channel", "revision", "updated_at", "url")
         fm_chips = ""
         for k in fm_keys:
             if k in fm and fm[k] not in (None, ""):
@@ -476,7 +479,7 @@ def _render_topic_view(repo: Repo, topic_id: str, file_rel: str | None) -> str:
         <aside class="w-64 bg-white border-r border-slate-200 overflow-y-auto py-2 flex-shrink-0">
             {sidebar_items}
         </aside>
-        <main id="preview-main" class="flex-1 overflow-y-auto {platform_class}">
+        <main id="preview-main" class="flex-1 overflow-y-auto {channel_class}">
             <div class="max-w-3xl mx-auto px-8 py-8">
                 {main}
             </div>
