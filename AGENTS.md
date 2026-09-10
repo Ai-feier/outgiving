@@ -78,6 +78,5 @@ Hook: `git config core.hooksPath .githooks`。
 
 ## 协作
 
-- **Issue tracker**：Issues 存 GitHub Issues（`Ai-feier/outgiving`），用 `gh` CLI 读写。
-- **Triage 标签**：五角色标签，标签字符串即角色名——`needs-triage` / `needs-info` / `ready-for-agent` / `ready-for-human` / `wontfix`。
+- **Issue tracker 与 triage 标签**：见 [`.pi/rules/issue-tracker.md`](.pi/rules/issue-tracker.md) 与 [`.pi/rules/triage-labels.md`](.pi/rules/triage-labels.md)。
 - **决策记录**：长期决策与取舍写入 [`.agents/notes/`](.agents/notes/)，三态目录 + 入口约定，引用用相对链接，不建索引。

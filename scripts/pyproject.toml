@@ -36,10 +36,5 @@ markers = [
 [tool.ruff]
 line-length = 100
 
-[tool.pyright]
-typeCheckingMode = "strict"
-venvPath = "."
-venv = ".venv"
-
 [dependency-groups]
 dev = ["pytest>=8.0"]

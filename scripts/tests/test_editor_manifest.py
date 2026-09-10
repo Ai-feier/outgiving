@@ -15,7 +15,7 @@ from editor.manifest import CompositionFormatError, from_markdown
 from editor.models import Composition
 
 REPO = Path(__file__).resolve().parents[2]
-T004_COMPOSITION = REPO / "ai-video/projects/T004-funny-video/composition.md"
+T004_COMPOSITION = REPO / "products/_archive/T004-funny-video/composition.md"
 
 
 def write(tmp_path: Path, name: str, text: str) -> Path:

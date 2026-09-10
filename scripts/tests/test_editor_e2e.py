@@ -17,7 +17,7 @@ from editor.compose import render
 from editor.models import Asset, Composition, Keyframe, Segment, Track
 
 REPO = Path(__file__).resolve().parents[2]
-T004 = REPO / "ai-video/projects/T004-funny-video"
+T004 = REPO / "products/_archive/T004-funny-video"
 FOOTAGE = T004 / "assets/footage"
 OUTPUT = T004 / "editor-tests"
 
