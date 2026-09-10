@@ -76,16 +76,24 @@ frontmatter：`name` / `description`（职责与何时派发）/ `tools`；正�
 
 ## 检查门
 
-一个入口：`scripts/check_harness.*`。至少覆盖：
+一个入口：`scripts/check_harness.py`。唯一命令：
+
+```bash
+uv run --directory scripts check_harness.py
+```
+
+一条命令跑完全部检查；失败即非零退出，逐条输出 `PASS`/`FAIL` + 失败原因 + `文件:行` 定位。
+判定口径的作者源就是这个脚本，本节只写命令与需要文字定义的两处口径。
+
+至少覆盖：
 
 1. 顶层只有允许的 7 项 + 两份入口文件 + 已放行的 git 机制文件（清单见「目录约定」）
 2. 每个 skill 有消费者（被 ≥1 个 agent 或流程引用）
 3. 渠道名不出现在任何路径中
 4. 共有维度不在两处定义（禁用词表：单拍时长、组块上限等）
 5. 仓库内相对引用可解析（含决策记录）
-6. 每个 skill 含 ≥1 个例子
-
-检查必须可执行、失败即非零退出。
+6. 每个 skill 含 ≥1 个例子——可判定的最小结构：SKILL.md 有一个含「例子 / 真例 / 示例 / 实例 / Example」的 ATX 标题，或一个同时含「输入」与「输出」的围栏代码块。只约束本仓作者源的 skill；`.pi/skills/engineering/`、`.pi/skills/productivity/`（外部引入的通用工具包）与 `.pi/skills/h3-prompt-writing/`（外部锁定 skill）豁免——质量标准是对本仓内容的要求，不对别人的源文件施加
+7. 「平台」零残留——扫路径与文件内容；豁免「必须点出被禁词」的规则行本身，以及不指代内容出口的云服务商名称（行级白名单，条目与理由见 `scripts/check_harness.py`）
 
 ## 禁止项
 

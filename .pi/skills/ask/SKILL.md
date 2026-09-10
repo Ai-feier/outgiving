@@ -58,6 +58,6 @@ uv run --directory scripts ai        # 图像 / 视频生成与校验
 **路由**：
 
 1. 阶段 = 创作·视频 → 本文件「创作·视频」四张全读（节奏定秒数、镜头语言定景别运镜、视觉世界定角色一致性、提示词工程把画面转成生成输入）。
-2. 渠道参数 = `douyin` → 读 [`channels/CHANNELS.md`](../channels/CHANNELS.md) 的 douyin 行（60–90s、组块上限 ≤3、钩子前 3 秒）与 [`channels/douyin.md`](../channels/douyin.md) 的读者注意状态。
+2. 渠道参数 = `douyin` → 读 [`channels/CHANNELS.md`](../channels/CHANNELS.md) 的 douyin 行（时长、感知组块上限、钩子位置）与 [`channels/douyin.md`](../channels/douyin.md) 的读者注意状态。共有维度的数值只在渠道表定义一处，本文件不复述。
 
 **输出**：`products/T006-请大佛开口/review.md`——12 拍分镜表（拍 / 秒 / 画面 / 景别 / 运镜 / 台词），表下固定三块「关键决策 · 未锚假设 · 待你拍板」。全片 60s，第 1 拍 3s 是具体画面（香火燃起），不用概念开场。

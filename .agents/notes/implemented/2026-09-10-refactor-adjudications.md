@@ -28,4 +28,4 @@ harness 单源化要先定三条边界，否则后续搬迁无法判定完成：
 
 - 顶层 7 项由检查门（`scripts/check_harness.*`）机械校验，新增顶层目录需要一条新决策记录。
 - `docs/` 的具体归位在 T9；本记录不定义文件级去向。
-- 引用已同步：[`.pi/agents/video-director.md`](../../../.pi/agents/video-director.md)、[`.pi/skills/video-craft/SKILL.md`](../../../.pi/skills/video-craft/SKILL.md) 指向 `.pi/skills/h3-prompt-writing/`。
+- 引用已同步：[`.pi/agents/video-director.md`](../../../.pi/agents/video-director.md) 与（当时的）`.pi/skills/video-craft/SKILL.md` 指向 `.pi/skills/h3-prompt-writing/`。
