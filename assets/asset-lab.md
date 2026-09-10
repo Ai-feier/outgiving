@@ -25,7 +25,7 @@
 
 **扩展路径**：新增类型 → 在 `taxonomy-registry.md` 注册前缀 → 创建目录 + 子索引（从已有子索引模板复制） → 更新本表。**禁止凭空创建目录后不注册前缀。**
 
-**查询原则**：agent 只读取相关类型的子索引，不扫描全表。例如 script-designer 查角色规范参考 → 读 `characters-index.md`。video-director 收参考素材 → 读所有子索引。
+**查询原则**：agent 只读取相关类型的子索引，不扫描全表。例如 narrative-architect 查角色规范参考 → 读 `characters-index.md`。video-director 收参考素材 → 读所有子索引。
 
 ## 命名规范
 
@@ -57,7 +57,7 @@
 ## 全局生命周期管理
 
 ```
-draft（visual-designer 产出）
+draft（visual-draftsman 产出）
   → IaD 检查 → 按命名规范入库对应子目录 → 更新对应子索引（状态=active，记录 appears_in_topic + appears_in_style）
   → 外观变更 → 新版本入库（revision/variant 类型标注），旧版标记 deprecated
   → 选题结束 → 如 appears_in_topic 中无 active 选题引用 → 标记 archived
@@ -74,20 +74,20 @@ draft（visual-designer 产出）
 
 ## Agent 读写协调
 
-**问题**：visual-designer 写入子索引时，video-director/script-designer 可能同时读取，读到半更新状态。
+**问题**：visual-draftsman 写入子索引时，video-director/narrative-architect 可能同时读取，读到半更新状态。
 
 **协议**（低开销，无需分布式锁）：
 
-1. **写锁**：visual-designer 在开始更新子索引前，于同一目录创建 `.asset-lab.lock`，内容为 `visual-designer|PID|YYYY-MM-DD HH:MM:SS`
+1. **写锁**：visual-draftsman 在开始更新子索引前，于同一目录创建 `.asset-lab.lock`，内容为 `visual-draftsman|PID|YYYY-MM-DD HH:MM:SS`
 2. **原子写入**：写临时文件 → `mv` 覆盖（`asset-lab.md.tmp` → `asset-lab.md`）
 3. **清锁**：写入完成后删除 `.asset-lab.lock`
 4. **读检测**：读取 agent 检测锁文件存在 → 等 1s 重试，最多 3 次 → 超时报"索引被锁定"，不读脏数据
 
 ## 全局上架规则
 
-1. **IaD 门禁**：角色参考图入库前须经中性表情检查。不合规 → 退回 visual-designer 重产。
+1. **IaD 门禁**：角色参考图入库前须经中性表情检查。不合规 → 退回 visual-draftsman 重产。
 2. **查重前置**：新选题生产前先查对应子索引。同角色已存在且六维+风格兼容 → 直接引用路径 + 更新该资产的 `appears_in_topic` + `appears_in_style` 字段。
-3. **风格一致性复核**：跨风格复用资产时（如 Bleach 的角色用于赛博朋克变体），visual-designer 必须确认六维推导在该风格下仍成立。不成立 → 需新资产，不复用。
+3. **风格一致性复核**：跨风格复用资产时（如 Bleach 的角色用于赛博朋克变体），visual-draftsman 必须确认六维推导在该风格下仍成立。不成立 → 需新资产，不复用。
 4. **版本关系**：外观变更 → 判断是 Revision（递增版本号）还是 Variant（新建条目 + `derived_from` 链接）。旧版标记 `deprecated`，保留 30 天后可归档。
 5. **跨引用保护**：标记 archived 前检查 `appears_in_topic` 列表——如有 active 选题仍引用，不允许归档。
 6. **视角要求**：每角色≥1帧组合图（正面+半侧+全身，KeyFrame-Compass ≤1帧约束）。
@@ -117,8 +117,8 @@ grep -E 'active.*✓' assets/characters-index.md
 ## 消费路径
 
 ```
-visual-designer 产角色/场景图 → 按命名规范入库 → 更新对应子索引
-script-designer 查询 characters-index.md 确认规范参考 → visual-designer 协调分镜线稿（入库 assets/storyboards/ + 更新 storyboards-index.md）
+visual-draftsman 产角色/场景图 → 按命名规范入库 → 更新对应子索引
+narrative-architect 查询 characters-index.md 确认规范参考 → visual-draftsman 协调分镜线稿（入库 assets/storyboards/ + 更新 storyboards-index.md）
 video-director 查所有子索引收集参考素材 → 编入 9 要素 prompt
 选题结束后 → 协作者审计各子索引 + taxonomy-registry.md，清理 archived 超 90 天资产
 ```

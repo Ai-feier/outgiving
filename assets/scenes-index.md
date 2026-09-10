@@ -2,7 +2,7 @@
 
 > 资产根清单见 `assets/asset-lab.md`。
 > 受控词汇表（类型前缀/风格标签/状态码/变体名）见 `assets/taxonomy-registry.md`。
-> 风格文件参考：`.claude/skills/video-craft/references/styles/`
+> 风格文件参考：`assets/styles/`
 
 ## 查询提示
 
@@ -28,7 +28,7 @@ grep 'appears_in_topic.*\[T' assets/scenes-index.md
 文件名格式：`{Type}_{TopicID}[_{StyleTag}]_{EntityName}_{Variant}_v{NN}.png`
 
 | 段 | 规则 | 示例 |
-|----|------|------|
+| ---- | ------ | ------ |
 | Type | `SCN` | `SCN` |
 | TopicID | 来源选题 | `T002` |
 | StyleTag | **可选**。仅单一风格专属时加入 | `bleach` / 省略 |
