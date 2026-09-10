@@ -35,7 +35,7 @@ AI 视频创作的本质是**导演**，不是编剧。
 ### 景别 7 级
 
 | 标记 | 名称 | 功能 | 风格偏好 |
-|------|------|------|---------|
+| ------ | ------ | ------ | --------- |
 | EWS | 极远景 | 建立空间/孤寂感 | 日系少用；纪录片开场 |
 | WS / Full shot | 全景/全身 | 全身+环境/动作空间 | 纪录片基线；日系可接受 |
 | MWS / Cowboy | 中全景 | 膝上/人物+环境 | 商业产品环绕 |
@@ -49,7 +49,7 @@ AI 视频创作的本质是**导演**，不是编剧。
 每拍只指定一种主导运镜。复合运动拆为时序节拍：「Start: slow dolly-in. Then: gentle pan right for final 2s」。速度标量统一用 slow / medium / fast。
 
 | 运镜 | Seedance 识别率 | 风格约束 |
-|------|----------------|---------|
+| ------ | ---------------- | --------- |
 | Static locked shot | 极高 | 各风格通用 |
 | Dolly-in / Push-in | 高 | 日系偏好 slow；高强节奏用 fast |
 | Dolly-out / Pull-back | 高 | 结尾/释放感 |
@@ -69,7 +69,7 @@ AI 视频创作的本质是**导演**，不是编剧。
 ### 角度 6 种
 
 | 角度 | 心理效果 | 日系偏好 |
-|------|---------|---------|
+| ------ | --------- | --------- |
 | Eye level | 中性/客观 | 默认 |
 | Low angle | 力量/压迫/宏大 | **常用**——力量关系 |
 | High angle | 脆弱/被审视 | **常用**——情绪截面 |
@@ -80,7 +80,7 @@ AI 视频创作的本质是**导演**，不是编剧。
 ### 光学与景深
 
 | 焦距桶 | 效果 | 日系偏好 |
-|--------|------|---------|
+| -------- | ------ | --------- |
 | Wide (24-28mm) | 沉浸/空间夸张 | 少用 |
 | Normal (35-50mm) | 自然/中性 | 通用默认 |
 | Telephoto (85mm+) | 亲密/压缩背景 | **极常用** |
@@ -129,7 +129,7 @@ AI 不理解抽象情绪词。每拍把情绪翻译为**可拍摄的身体和空
 ### 情绪动作化三通道
 
 | 通道 | 描述 | 完整参考 |
-|------|------|---------|
+| ------ | ------ | --------- |
 | **微表情维度** | FACS 级肌肉位移编码，7 情绪（悲伤/愤怒/恐惧/惊讶/快乐/厌恶/轻蔑），每个由 3-4 个因果关系短语构成 | visual-designer.md「微表情维度」 |
 | **微动作维度** | 手部微动作/呼吸模式/姿态微偏移/目光动态 4 通道 | visual-designer.md「微动作维度」 |
 | **环境交互维度** | 情绪在空间中留下痕迹——6 情绪各自的空间行为模式 | visual-designer.md「环境交互维度」 |
@@ -145,7 +145,7 @@ Signature Gestures + Laban Effort Profile + Camera Relationship + Proxemics 四�
 节奏强度（rhythm_intensity）不仅决定切频——也决定运镜类型和景别选择。以下为四层耦合速查：
 
 | 强度 | 推荐运镜 | 推荐景别 | 切频 |
-|------|---------|---------|------|
+| ------ | --------- | --------- | ------ |
 | 高强 (4-5) | handheld, whip pan, fast zoom-in, quick tilt | CU/MCU 为主，偶用 ECU | 0.5-1.5s |
 | 中强 (3-3.9) | dolly-in/out, stable tracking, slight orbit, slow pan | MS+MCU 交替 | 2-4s |
 | 中低 (2-2.9) | slow push-in, static+micro movement, slow tilt | MS 为主，偶用 WS | 4-8s |
@@ -162,7 +162,7 @@ Signature Gestures + Laban Effort Profile + Camera Relationship + Proxemics 四�
 所有视频 agent 设计时必须在工具能力内展开。以下是核心边界速查：
 
 | 维度 | Seedance 2.0 | Kling 3.0 | Veo / Luma | H3 (MiniMax) |
-|------|-------------|-----------|------------|--------------|
+| ------ | ------------- | ----------- | ------------ | -------------- |
 | 单段上限 | 15s(mini) / 30s(pro) * | 15s | 60s / 20s | 4-15s（skill 要求匹配时长）[能力待实测] |
 | 角色一致 | 50 槽锚定，强 | Subject Binding | 中等 | Ref2VA subject_definitions + retention_analysis [待实测] |
 | 镜头控制 | 自然语言+R2V，强 | Multi-Shot+vCoT | JSON / KF 帧级 | [Shot N] 时间线 + camera motion 自然英语 [待实测] |
@@ -171,7 +171,7 @@ Signature Gestures + Laban Effort Profile + Camera Relationship + Proxemics 四�
 | 中文 | 支持 | Omni 支持 | 有限 | [待实测]（skill 示例为 `<d>[English]`） |
 | 物理模拟 | 中等 | 强 | 中等 | [待实测] |
 
-* `uv run --directory scripts ai generate video` 当前适配器硬限 15s（不限 model），需 30s 须 CLI 分支处理。
+- `uv run --directory scripts ai generate video` 当前适配器硬限 15s（不限 model），需 30s 须 CLI 分支处理。
 
 **版权过滤器**：Seedance 2.0 拦截特征组合而非单角色名，规避策略（角色域拆分/特征级规避）见 video-director.md「工具约束应对策略」；H3 待实测。
 
@@ -213,7 +213,7 @@ AI 视频生成后、交付用户前，video-director 必须验证产出再交�
 ### 核心规则
 
 | 规则 | 说明 |
-|------|------|
+| ------ | ------ |
 | **一个镜头只做一件事** | 单拍单一动作/单一运镜，复合运动拆为时序 |
 | **中文定义主体，英文嵌入专业术语** | "一位白发老人在雨中行走" + "slow dolly-in, volumetric god rays, shallow DOF" |
 | **duration 合法值** | {4,5,6,8,10,12,15}（int，不限 model 均 15s 封顶） |
@@ -229,7 +229,7 @@ AI 视频生成后、交付用户前，video-director 必须验证产出再交�
 ## Agent 能力清单
 
 | Agent | 角色 | 核心能力（详见各自 .md） |
-|-------|------|------------------------|
+| ------- | ------ | ------------------------ |
 | **script-designer** | 叙事架构 | 弧线选择/节拍序列/矛盾矩阵/镜头叙事映射/角色行为弧线/段边界尾帧设计 |
 | **visual-designer** | 视觉世界 | 六维构建/材质与细节展开/情绪动作化三通道/角色语言五维/视觉锚点体系 |
 | **rhythm-designer** | 时间呼吸 | 节奏曲线/节奏-运镜耦合/停顿点镜头行为/工具-运镜矩阵/平台基线 |
