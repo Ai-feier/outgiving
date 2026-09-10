@@ -24,7 +24,7 @@
 
 **感知组块上限**
 
-- 全部来自 figure-draftsman Step 0 表，2026-07（已直接验证）
+- 全部来自 visual-draftsman Step 0 表，2026-07（已直接验证）
 
 **钩子位置**
 
