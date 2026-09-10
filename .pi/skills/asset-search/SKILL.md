@@ -131,7 +131,7 @@ P5 — AI 生成 fallback（P1-P4 均无可用时）
 
 ## ref-inbox 消费
 
-用户说「处理 ref-inbox」，或 `ref-inbox.md` 待处理区有未处理条目时：
+用户说「处理 ref-inbox」，或 `assets/ref-inbox.md` 待处理区有未处理条目时：
 
 1. 下载 → `web_fetcher download`
 2. 命名 → 按第五步规范

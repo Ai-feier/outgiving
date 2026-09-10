@@ -1,7 +1,7 @@
 # ref-inbox — 手动发现的参考素材收件箱
 
 > 人在平台（Pixiv/Danbooru/X/官网等）发现的素材，粘贴 URL + 标注用途。
-> 告诉 agent "处理 ref-inbox" → 自动下载、命名、注册 _index.md、创建描述 .md。
+> 告诉 agent "处理 ref-inbox" → 自动下载、命名、注册进 `assets/asset-lab.md` 指向的子索引、创建描述 .md。
 
 ## 待处理
 

@@ -6,8 +6,8 @@ set -e
 
 # 找出本次提交涉及的、需要校验的 md 文件
 STAGED_MD=$(git diff --cached --name-only --diff-filter=ACM \
-    | grep -E '^(topics|platforms|published|analytics)/.*\.md$' \
-    | grep -vE '(_TEMPLATE|outline\.md|README\.md)' || true)
+    | grep -E '^products/.*\.md$' \
+    | grep -vE '(_TEMPLATE|outline\.md|README\.md|review\.md)' || true)
 
 if [ -z "$STAGED_MD" ]; then
     exit 0
