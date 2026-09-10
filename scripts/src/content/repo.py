@@ -1,4 +1,8 @@
-"""仓库扫描 + 索引"""
+"""仓库扫描 + 索引
+
+一个选题一个目录：products/<id>-<slug>/，全生命周期在内。
+扫描 products/ 下的全部 md，按 frontmatter.kind 归类。
+"""
 
 from __future__ import annotations
 
@@ -11,7 +15,7 @@ from typing import Any
 import yaml
 
 from . import clock
-from .id_gen import Platform as _PlatformEnum
+from .id_gen import Channel as _ChannelEnum
 from .parser import read
 from .schema import AnyFM, DraftFM, Kind, PublishedFM
 
@@ -24,7 +28,7 @@ class IndexEntry:
     title: str
     status: str
     path: str
-    platform: str | None = None
+    channel: str | None = None
 
 
 @dataclass
@@ -44,17 +48,17 @@ class Repo:
     errors: list[tuple[str, str]] = field(default_factory=list)  # (path, message)
 
     # 仓库根目录下需要扫描的子目录
-    SCAN_DIRS = ("topics", "platforms", "published", "analytics")
+    SCAN_DIRS = ("products",)
 
-    # 路径中包含以下片段则跳过（写作区 / 模板 / 文档 / 研究素材）
+    # 路径中包含以下片段则跳过（人审表 / 写作区 / 模板 / 研究素材）
     SKIP_NAME_PARTS = (
         "_TEMPLATE",
         "outline.md",
         "README.md",
         "style.md",
+        "review.md",
         "research-",
         "min-",
-        "review-",
         "appeal-",
     )
 
@@ -85,10 +89,10 @@ class Repo:
     def _to_entry(self, fm: AnyFM, path: Path) -> IndexEntry:
         if isinstance(fm, (DraftFM, PublishedFM)):
             # pydantic 对 str-Enum 字段可能存 str 原值——两种都处理
-            raw = fm.platform
-            platform_val: str | None = raw.value if isinstance(raw, _PlatformEnum) else str(raw)
+            raw = fm.channel
+            channel_val: str | None = raw.value if isinstance(raw, _ChannelEnum) else str(raw)
         else:
-            platform_val = None
+            channel_val = None
         return IndexEntry(
             id=fm.id,
             kind=fm.kind,
@@ -96,7 +100,7 @@ class Repo:
             title=fm.title,
             status=fm.status,
             path=str(path.relative_to(self.root)),
-            platform=platform_val,
+            channel=channel_val,
         )
 
     def topic_ids(self) -> list[str]:
@@ -130,18 +134,18 @@ class Repo:
     def stats(self) -> dict[str, Any]:
         by_kind: defaultdict[str, int] = defaultdict(int)
         by_status: defaultdict[str, int] = defaultdict(int)
-        by_platform: defaultdict[str, defaultdict[str, int]] = defaultdict(lambda: defaultdict(int))
+        by_channel: defaultdict[str, defaultdict[str, int]] = defaultdict(lambda: defaultdict(int))
         for e in self.entries:
             by_kind[e.kind] += 1
             by_status[f"{e.kind}/{e.status}"] += 1
-            if e.platform:
-                by_platform[e.platform][e.kind] += 1
+            if e.channel:
+                by_channel[e.channel][e.kind] += 1
         return {
             "total": len(self.entries),
             "errors": len(self.errors),
             "by_kind": dict(by_kind),
             "by_status": dict(by_status),
-            "by_platform": {k: dict(v) for k, v in by_platform.items()},
+            "by_channel": {k: dict(v) for k, v in by_channel.items()},
         }
 
     def write_index(self, path: Path | None = None) -> Path:
@@ -168,9 +172,9 @@ class Repo:
 
 
 def find_repo_root(start: Path | None = None) -> Path:
-    """向上查找包含 inbox / topics 等顶级目录的仓库根。"""
+    """向上查找包含 products / scripts 的仓库根。"""
     p = (start or Path.cwd()).resolve()
-    markers = {"inbox", "topics", "platforms"}
+    markers = {"products", "scripts"}
     for candidate in [p, *p.parents]:
         if all((candidate / m).exists() for m in markers):
             return candidate
