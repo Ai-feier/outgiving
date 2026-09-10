@@ -207,7 +207,7 @@ Seedance空间/时间解耦——空间描述在前，时间在后。[间]日系
 
 ### H3 输出分支（工具 = H3，provider: autodl_comfyui）
 
-第二视频引擎。语法权威源 = 外部 skill `.agents/skills/h3-prompt-writing/`（MiniMax 官方，skills-lock.json 锁定）——项目不复制语法，只定义项目内映射。
+第二视频引擎。语法权威源 = 外部 skill `.pi/skills/h3-prompt-writing/`（MiniMax 官方，`.pi/skills-lock.json` 锁定）——项目不复制语法，只定义项目内映射。
 
 **基础设施事实**（[源:API 文档 autodl.art + MiniMax 官方 v2 文档]）：
 
