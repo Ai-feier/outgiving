@@ -57,6 +57,10 @@ scripts/.git/
 **/__pycache__/
 *.pyc
 
+# === 构建 / 工具缓存（任何层级）===
+.ruff_cache/
+.pytest_cache/
+
 # === 编辑器 ===
 .vscode/
 .idea/
