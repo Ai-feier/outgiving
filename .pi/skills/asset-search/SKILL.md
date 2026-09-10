@@ -97,7 +97,7 @@ P5 — AI 生成 fallback（P1-P4 均无可用时）
 - SEQ 三位数字｜Type: CHR/SCN/KV/LYT/PROP/STYLE/ACTION/AUDIO/REF
 - Purpose: identity/mood/motion/look｜Entity: PascalCase｜vNN
 
-示例：`assets/ref-images/T003/001_CHR_identity_LinBei_v01.png`
+示例：`assets/ref-images/{TopicID}/001_CHR_identity_LinBei_v01.png`
 
 **来源清单**（`ref-sources.md`）：
 

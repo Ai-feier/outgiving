@@ -138,7 +138,7 @@ FENCE_RE = re.compile(r"^\s*```")
 MD_LINK_RE = re.compile(r"(?<!!)\[[^\]]*\]\(([^)]+)\)")
 SKILL_PATH_RE = re.compile(r"\.pi/skills/[^\s`)\]\"'<>]+?/SKILL\.md")
 INLINE_PATH_RE = re.compile(r"`([^`\n]+)`")
-INLINE_PATH_ROOT = (".pi/", "system/", "scripts/")
+INLINE_PATH_ROOT = (".pi/", "system/", "scripts/", "assets/")
 INLINE_PATH_SUFFIX = re.compile(r"\.(md|py|json|txt|sh|ya?ml|toml|svg|png|mp4)$")
 PLACEHOLDER_RE = re.compile(r"[<>{}*]")
 
@@ -362,6 +362,7 @@ def check_shared_values(root: Path) -> list[str]:
 
 
 # ---------------------------------------------------------------- 检查 5
+# 扫描面 = 全仓 md 的 markdown 链接，加上根相对的反引号内路径（``.pi/`` ``system/`` ``scripts/`` ``assets/``）。
 
 
 def check_relative_refs(root: Path) -> list[str]:

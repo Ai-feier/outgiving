@@ -72,7 +72,7 @@ frontmatter：`name` / `description`（职责与何时派发）/ `tools`；正�
 | 渠道名 | 小写单词，与渠道卡文件名一致 | `wechat` / `x` |
 | skill / agent | kebab-case，动词或名词短语 | `shot-language` / `verifier` |
 | 决策记录 | `<日期>-<kebab-slug>` | `2026-09-09-harness-single-source.md` |
-| 素材 | `assets/<类别>/<语义名>` | `assets/characters/astra.md` |
+| 素材 | `assets/<类别>/<语义名>` | `assets/styles/bleach.md` |
 
 ## 检查门
 
@@ -91,7 +91,7 @@ uv run --directory scripts check_harness.py
 2. 每个 skill 有消费者（被 ≥1 个 agent 或流程引用）
 3. 渠道名不出现在任何路径中
 4. 共有维度不在两处定义（禁用词表：单拍时长、组块上限等）
-5. 仓库内相对引用可解析（含决策记录）
+5. 仓库内相对引用可解析（含决策记录）—— 扫描面 = 全仓 md 的 markdown 链接 + 根相对反引号路径（`.pi/`、`system/`、`scripts/`、`assets/`）
 6. 每个 skill 含 ≥1 个例子——可判定的最小结构：SKILL.md 有一个含「例子 / 真例 / 示例 / 实例 / Example」的 ATX 标题，或一个同时含「输入」与「输出」的围栏代码块。只约束本仓作者源的 skill；`.pi/skills/engineering/`、`.pi/skills/productivity/`（外部引入的通用工具包）与 `.pi/skills/h3-prompt-writing/`（外部锁定 skill）豁免——质量标准是对本仓内容的要求，不对别人的源文件施加
 7. 「平台」零残留——扫路径与文件内容；豁免「必须点出被禁词」的规则行本身，以及不指代内容出口的云服务商名称（行级白名单，条目与理由见 `scripts/check_harness.py`）
 
