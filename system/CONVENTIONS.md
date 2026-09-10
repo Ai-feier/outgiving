@@ -16,7 +16,15 @@
 | `.agents/notes/` | 长期决策记录（含被否方案） | 不写实现细节；不建集中索引 |
 | 根 | `AGENTS.md`（入口约束）、`CONTEXT.md`（领域词表） | 不放其他文件 |
 
-顶层只允许 7 项 + 根两份入口文件。新增顶层目录需要一条决策记录。
+顶层只允许 7 项（`.agents/` `.githooks/` `.pi/` `assets/` `products/` `scripts/` `system/`）+ 根两份入口文件（`AGENTS.md`、`CONTEXT.md`）。git 机制文件由检查门放行，当前只有 `.gitignore`（`.githooks/` 已计入 7 项）。新增顶层目录需要一条决策记录。
+
+### 归档与收件箱
+
+- **归档**：`products/_archive/<原选题目录>/`。旧格式项目**原样搬入**——不迁格式、不回改；活在 `products/` 顶层的是唯一目标状态。
+- **选题入口**：`products/_inbox/`——未成选题的草稿落点；转正时移入 `products/<id>-<slug>/`。
+- **素材收件箱**：`assets/ref-inbox.md`——人在外部发现的参考素材，粘 URL + 注用途；消费方法与流程见 [`.pi/skills/asset-search/SKILL.md`](../.pi/skills/asset-search/SKILL.md)。
+
+下划线前缀（`_archive/` `_inbox/`）表示“不是选题”，不占选题 id。
 
 ## 文件形状
 
@@ -70,7 +78,7 @@ frontmatter：`name` / `description`（职责与何时派发）/ `tools`；正�
 
 一个入口：`scripts/check_harness.*`。至少覆盖：
 
-1. 顶层只有允许的 7 项 + 两份入口文件
+1. 顶层只有允许的 7 项 + 两份入口文件 + 已放行的 git 机制文件（清单见「目录约定」）
 2. 每个 skill 有消费者（被 ≥1 个 agent 或流程引用）
 3. 渠道名不出现在任何路径中
 4. 共有维度不在两处定义（禁用词表：单拍时长、组块上限等）
