@@ -5,6 +5,8 @@ description: 设计视频的视觉世界——视觉复杂度 V、材质、环�
 
 # 视觉世界
 
+**风格是贯穿剧本/主体/节奏三元素的元参数**：风格推导从 [`assets/styles/styles.md`](../../../assets/styles/styles.md) 与对应风格文件出发；本 skill 只定义视觉形态与一致性约束，不复制风格库。
+
 眼睛先于大脑。颜色、光线、空间、质感在被理解之前已经在说话。本文件是**实体复现拍数上限**的全仓唯一来源；材质展开、情绪动作化、角色语言的完整表见 [`reference.md`](reference.md)。镜头/运镜/光影/景深归 [`../shot-language/SKILL.md`](../shot-language/SKILL.md)，此处不重复。
 
 ## 视觉复杂度 V
