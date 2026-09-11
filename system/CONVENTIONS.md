@@ -18,13 +18,12 @@
 
 顶层只允许 7 项（`.agents/` `.githooks/` `.pi/` `assets/` `products/` `scripts/` `system/`）+ 根两份入口文件（`AGENTS.md`、`CONTEXT.md`）。git 机制文件由检查门放行，当前只有 `.gitignore`（`.githooks/` 已计入 7 项）。新增顶层目录需要一条决策记录。
 
-### 归档与收件箱
+### 收件箱
 
-- **归档**：`products/_archive/<原选题目录>/`。旧格式项目**原样搬入**——不迁格式、不回改；活在 `products/` 顶层的是唯一目标状态。
 - **选题入口**：`products/_inbox/`——未成选题的草稿落点；转正时移入 `products/<id>-<slug>/`。
 - **素材收件箱**：`assets/ref-inbox.md`——人在外部发现的参考素材，粘 URL + 注用途；消费方法与流程见 [`.pi/skills/asset-search/SKILL.md`](../.pi/skills/asset-search/SKILL.md)。
 
-下划线前缀（`_archive/` `_inbox/`）表示“不是选题”，不占选题 id。
+下划线前缀（`_inbox/`）表示“不是选题”，不占选题 id。
 
 ## 文件形状
 
@@ -44,7 +43,7 @@ frontmatter：`name` / `description`（职责与何时派发）/ `tools`；正�
 只写该渠道专属内容（读者注意状态、算法机制及来源、专属法则、复盘节奏）。共有维度一律进 `CHANNELS.md`。
 
 **项目产出**：`products/<id>-<slug>/`
-固定入口是 `review.md`——一张人审表（字段见 [`PRODUCT.md`](PRODUCT.md)「人审面」），表下固定三块（关键决策 / 未锚假设 / 待你拍板）+ 追问区（待回答）。其余文件按需，但**人审只需 `review.md`**。
+固定入口是 `review.md`——一张人审表（字段见 [`PRODUCT.md`](PRODUCT.md)「人审面」），表下固定三块（关键决策 / 未锚假设 / 待你拍板）+ 追问区（待回答）。`content new` 建选题时即生成它，连同 `brief.md`。其余文件按需，但**人审只需 `review.md`**。
 
 ## 唯一事实源矩阵
 
