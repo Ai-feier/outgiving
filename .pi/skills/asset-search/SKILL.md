@@ -29,7 +29,7 @@ visual-draftsman 参考图流程「网上找」这一步的标准化执行者。
 - **空间关系 (Proxemics)**——角色间距离和空间关系视觉参考
 - **微表情/微动作 (Micro-expression)**——情绪个人化表达的 FACS 级参考
 
-**产出**：一行需求声明，如 `需求：T003 林北 动作参考 signature gesture "握拳横劈"，≥720p 慢动作优先，多角度。`
+**产出**：一行需求声明，如 `需求：<选题 id> <角色> 动作参考 signature gesture "握拳横劈"，≥720p 慢动作优先，多角度。`
 
 **约束**：身份锚定 → 设定图；场景定调 → 全景 + 关键角度；动作参考 → 多帧/视频 ≥60fps；运动质量 → 慢动作 + 角度标注；微表情 → 面部特写 + 慢动作。
 
@@ -146,6 +146,6 @@ P5 — AI 生成 fallback（P1-P4 均无可用时）
 
 ## 例子
 
-真实输入：T003 Yhwach 角色参考图搜索。
+真实输入：一个角色参考图搜索（官方角色形象的正参考）。
 
 真实输出：P1 新闻站 CDN 命中 5 张（如 `otakuusamagazine.com/wp-content/uploads/` 去尺寸后缀拿原图），P3 纸模 1 张，P0 官方 wiki 全未命中（Cloudflare 拦截）。下载 2 张通过验证，写入 `ref-sources.md`，交接 visual-draftsman 作为身份锚定正参考。

@@ -38,7 +38,7 @@ uv run --directory scripts ai verify in.mp4 --expect-duration 60 --expect-resolu
 
 ## 例子
 
-真实输入：T006 人审表（12 拍 = 60s，抖音 9:16）+ 参考来源清单（无外部素材，全部 Seedance 生成）+ `ai verify` 报告。
+真实输入：一张视频选题人审表（12 拍 = 60s，抖音 9:16）+ 参考来源清单（无外部素材，全部 Seedance 生成）+ `ai verify` 报告。
 
 真实输出（verifier 在干净上下文产出的核对表片段）：
 
