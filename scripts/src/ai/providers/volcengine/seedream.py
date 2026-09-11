@@ -5,7 +5,7 @@ Volcengine ARK 平台，支持文生图/图生图/组图生成。
 Model IDs: doubao-seedream-5-0-260128 / doubao-seedream-4-5-251128 / doubao-seedream-4-0。
 
 Agent 使用路径：
-    visual-designer → P0 参考图规格 → SeedreamImage.generate() → ref-images/*.png
+    visual-draftsman → P0 参考图规格 → SeedreamImage.generate() → ref-images/*.png
 """
 
 from __future__ import annotations

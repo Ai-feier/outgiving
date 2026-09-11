@@ -1,7 +1,7 @@
 [project]
 name = "content"
 version = "0.1.0"
-description = "多平台内容创作数据管理引擎"
+description = "多渠道内容创作数据管理引擎"
 authors = [{ name = "mkt", email = "k2664586998@gmail.com" }]
 requires-python = ">=3.11"
 dependencies = [
@@ -35,11 +35,6 @@ markers = [
 
 [tool.ruff]
 line-length = 100
-
-[tool.pyright]
-typeCheckingMode = "strict"
-venvPath = "."
-venv = ".venv"
 
 [dependency-groups]
 dev = ["pytest>=8.0"]

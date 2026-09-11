@@ -11,17 +11,18 @@ import click
 from rich.console import Console
 from rich.table import Table
 
+from .channel import get as channel_get
 from .id_gen import (
+    Channel,
     ParsedId,
-    Platform,
+    doc_filename,
     draft_id,
     next_topic_id,
     parse_id,
+    slugify_title,
 )
 from .lifecycle import TransitionError, assert_transition
 from .parser import read, write
-from .platform import get as platform_get
-from .platform import slugify_title
 from .repo import Repo, find_repo_root
 from .schema import (
     DraftFM,
@@ -30,6 +31,7 @@ from .schema import (
     TopicFM,
     TopicStatus,
 )
+from workbench import review as human_review
 
 console = Console()
 
@@ -48,6 +50,23 @@ def _today() -> date:
     return date.today()  # opengrep-allow: CLI 写入 frontmatter 的合法时钟
 
 
+def _product_dir(root: Path, topic_id: str, title: str) -> Path:
+    """选题目录：products/<id>-<slug>/（一个选题一个目录，全生命周期在内）。"""
+    return root / "products" / f"{topic_id}-{slugify(title)}"
+
+
+def _new_review(tid: str, title: str, audience: str | None) -> human_review.Review:
+    """建选题即建人审表：形状由 `workbench/review.py` 定义，本函数只填初值。
+
+    形态未定（流程末端才分叉），表列先按文本形起步——研究与结构阶段两形态共用，
+    分叉到视频时改表头行（列名就是这张表的定义）。
+    """
+    meta = {"id": tid, "title": title, "形态": "待定", "阶段": "研究"}
+    if audience:
+        meta["初衷"] = audience
+    return human_review.Review(meta=meta, fields=list(human_review.TEXT_FIELDS))
+
+
 @click.group()
 @click.option(
     "--root",
@@ -57,7 +76,7 @@ def _today() -> date:
 )
 @click.pass_context
 def main(ctx: click.Context, root: Path | None) -> None:
-    """多平台内容创作数据管理"""
+    """多渠道内容创作数据管理"""
     ctx.ensure_object(dict)
     ctx.obj["root"] = (root or find_repo_root()).resolve()
 
@@ -107,24 +126,24 @@ def list_cmd(ctx: click.Context) -> None:
     table.add_column("ID", style="cyan", no_wrap=True)
     table.add_column("标题", style="white")
     table.add_column("状态", style="yellow")
-    for p in Platform:
-        table.add_column(p.value, justify="center")
+    for c in Channel:
+        table.add_column(c.value, justify="center")
     table.add_column("发布", justify="center")
     table.add_column("复盘", justify="center")
 
     for tid in sorted(views.keys()):
         v = views[tid]
-        plat_cells: list[str] = []
-        for p in Platform:
-            drafts = [d for d in v.drafts if d.platform == p.value]
+        chan_cells: list[str] = []
+        for c in Channel:
+            drafts = [d for d in v.drafts if d.channel == c.value]
             if drafts:
                 latest = max(drafts, key=lambda d: d.id)
-                plat_cells.append(f"[green]{latest.status[:4]}[/green]")
+                chan_cells.append(f"[green]{latest.status[:4]}[/green]")
             else:
-                plat_cells.append("[dim]·[/dim]")
+                chan_cells.append("[dim]·[/dim]")
         pub = f"[green]{len(v.published)}[/green]" if v.published else "[dim]·[/dim]"
         rev = "[green]✓[/green]" if v.analytics else "[dim]·[/dim]"
-        table.add_row(tid, v.title, v.status, *plat_cells, pub, rev)
+        table.add_row(tid, v.title, v.status, *chan_cells, pub, rev)
 
     console.print(table)
     s = repo.stats()
@@ -162,23 +181,22 @@ def show(ctx: click.Context, topic_id: str) -> None:
 @click.argument("title")
 @click.option("--audience", default=None, help="目标受众一句话")
 @click.option(
-    "--platforms",
+    "--channels",
     default="wechat,xiaohongshu,x,douyin",
-    help="逗号分隔，默认全部四个平台",
+    help="逗号分隔，默认全部四个渠道",
 )
 @click.pass_context
-def new(ctx: click.Context, title: str, audience: str | None, platforms: str) -> None:
-    """新建一个选题"""
+def new(ctx: click.Context, title: str, audience: str | None, channels: str) -> None:
+    """新建一个选题（products/<id>-<slug>/）"""
     root = ctx.obj["root"]
     repo = Repo(root).scan()
     tid = next_topic_id(repo.topic_ids())
-    slug = slugify(title)
     today = _today()
-    plats = [Platform(p.strip()) for p in platforms.split(",") if p.strip()]
+    chans = [Channel(c.strip()) for c in channels.split(",") if c.strip()]
 
-    topic_dir = root / "topics" / f"{tid}-{slug}"
-    if topic_dir.exists():
-        console.print(f"[red]目录已存在：{topic_dir}[/red]")
+    product_dir = _product_dir(root, tid, title)
+    if product_dir.exists():
+        console.print(f"[red]目录已存在：{product_dir}[/red]")
         raise SystemExit(1)
 
     brief = TopicFM(
@@ -187,57 +205,44 @@ def new(ctx: click.Context, title: str, audience: str | None, platforms: str) ->
         title=title,
         status=TopicStatus.BRIEFING,
         audience=audience,
-        platforms_planned=plats,
+        channels_planned=chans,
         created_at=today,
         updated_at=today,
     )
-    write(
-        topic_dir / "brief.md",
-        brief,
-        _BRIEF_BODY.format(title=title),
-    )
-
-    # outline.md / style.md 从 _TEMPLATE/ 拷贝（无 frontmatter，纯写作区）
-    template_dir = root / "topics" / "_TEMPLATE"
-    for name in ("outline.md", "style.md"):
-        src = template_dir / name
-        if src.exists():
-            (topic_dir / name).write_text(
-                src.read_text(encoding="utf-8").replace("{title}", title),
-                encoding="utf-8",
-            )
+    brief_dir = product_dir / doc_filename(Kind.TOPIC.value)
+    write(brief_dir, brief, _BRIEF_BODY.format(title=title))
+    human_review.save(product_dir / human_review.REVIEW_FILE, _new_review(tid, title, audience))
 
     console.print(
         f"[green]✅ 已创建[/green] [cyan]{tid}[/cyan] - {title}\n"
-        f"   {topic_dir.relative_to(root)}/\n"
-        f"   ├── brief.md\n"
-        f"   ├── outline.md (无 frontmatter，纯写作区)\n"
-        f"   └── style.md   (无 frontmatter，写作风格指引)\n\n"
-        f"下一步: [bold]content adapt {tid} <platform>[/bold]"
+        f"   {product_dir.relative_to(root)}/\n"
+        f"   ├── brief.md    (选题信息)\n"
+        f"   └── review.md   (人审表)\n\n"
+        f"下一步: [bold]content adapt {tid} <渠道>[/bold]"
     )
 
 
 # ────────────────────────── adapt ──────────────────────────
 @main.command()
 @click.argument("topic_id")
-@click.argument("platform", type=click.Choice([p.value for p in Platform]))
+@click.argument("channel", type=click.Choice([c.value for c in Channel]))
 @click.option("--revision", type=int, default=None, help="指定版本号；默认自增")
 @click.pass_context
-def adapt(ctx: click.Context, topic_id: str, platform: str, revision: int | None) -> None:
-    """从选题派生一个平台草稿"""
+def adapt(ctx: click.Context, topic_id: str, channel: str, revision: int | None) -> None:
+    """从选题派生一个渠道草稿"""
     root = ctx.obj["root"]
     repo = Repo(root).scan()
     if topic_id not in repo.topic_ids():
         console.print(f"[red]选题不存在：{topic_id}[/red]")
         raise SystemExit(1)
-    plat = Platform(platform)
+    chan = Channel(channel)
 
     # 自增版本号
     if revision is None:
         existing = [
             e
             for e in repo.entries
-            if e.kind == Kind.DRAFT.value and e.topic_id == topic_id and e.platform == plat.value
+            if e.kind == Kind.DRAFT.value and e.topic_id == topic_id and e.channel == chan.value
         ]
         revision = (
             max(
@@ -254,42 +259,36 @@ def adapt(ctx: click.Context, topic_id: str, platform: str, revision: int | None
     today = _today()
 
     fm = DraftFM(
-        id=draft_id(topic_id, plat.value, revision),
+        id=draft_id(topic_id, chan.value, revision),
         topic_id=topic_id,
         parent_id=topic_id,
         title=topic_entry.title,
-        platform=plat,
+        channel=chan,
         revision=revision,
         status=DraftStatus.DRAFT,
         created_at=today,
         updated_at=today,
     )
 
-    target_dir = root / "platforms" / plat.value / f"{topic_id}-{slugify(topic_entry.title)}"
-    spec = platform_get(plat.value)
+    spec = channel_get(chan.value)
     if spec is None:
-        raise click.ClickException(f"未知平台: {plat.value}")
-    target = target_dir / spec.default_file
+        raise click.ClickException(f"未知渠道: {chan.value}")
+    product_dir = _product_dir(root, topic_id, topic_entry.title)
+    target = product_dir / doc_filename(Kind.DRAFT.value, chan.value)
     if target.exists():
         console.print(
             f"[yellow]目标已存在：{target.relative_to(root)}，已带版本号 v{revision}[/yellow]"
         )
 
-    template = (root / "assets" / "templates" / spec.template_file).read_text(encoding="utf-8")
-    # 去掉模板里旧的 frontmatter（如果有），保留正文部分
-    body = re.sub(r"^---\n.*?\n---\n", "", template, count=1, flags=re.DOTALL)
+    template_path = root / "assets" / "templates" / spec.template_file
+    body = ""
+    if template_path.exists():
+        template = template_path.read_text(encoding="utf-8")
+        # 去掉模板里旧的 frontmatter（如果有），保留正文部分
+        body = re.sub(r"^---\n.*?\n---\n", "", template, count=1, flags=re.DOTALL)
 
     write(target, fm, body)
     console.print(f"[green]✅ 已派生[/green] [cyan]{fm.id}[/cyan] → {target.relative_to(root)}")
-
-
-def _template_name(p: Platform) -> str:
-    return {
-        Platform.WECHAT: "wechat.md",
-        Platform.XHS: "xhs.md",
-        Platform.X: "x.md",
-        Platform.DOUYIN: "douyin.md",
-    }[p]
 
 
 # ────────────────────────── transition ──────────────────────────
@@ -331,9 +330,9 @@ def stats(ctx: click.Context) -> None:
     console.print("[bold]By status[/bold]:")
     for k, v in sorted(s["by_status"].items()):
         console.print(f"  {k:32s} {v}")
-    console.print("[bold]By platform[/bold]:")
-    for plat, kinds in s["by_platform"].items():
-        console.print(f"  {plat:14s} {kinds}")
+    console.print("[bold]By channel[/bold]:")
+    for chan, kinds in s["by_channel"].items():
+        console.print(f"  {chan:14s} {kinds}")
 
 
 # ────────────────────────── preview ──────────────────────────
@@ -354,7 +353,7 @@ def preview(
 
     示例：
         content preview              # 选题总览
-        content preview T001         # 直达 T001 四平台对比
+        content preview T001         # 直达 T001 多渠道对比
     """
     from .preview import serve
 

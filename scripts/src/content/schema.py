@@ -13,7 +13,7 @@ from typing import Annotated, Literal, Union
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from .id_gen import Platform
+from .id_gen import Channel
 
 
 class Kind(str, Enum):
@@ -27,7 +27,7 @@ class TopicStatus(str, Enum):
     INBOX = "inbox"          # 仅在 inbox/ 出现
     BRIEFING = "briefing"    # brief.md 起草中
     OUTLINED = "outlined"    # outline.md 完成
-    ADAPTING = "adapting"    # 至少一个平台在改写
+    ADAPTING = "adapting"    # 至少一个渠道在改写
     ARCHIVED = "archived"    # 已结束生命周期
 
 
@@ -118,14 +118,14 @@ class TopicFM(Base):
     status: TopicStatus = TopicStatus.BRIEFING
     audience: str | None = None
     hook_type: HookType | None = None
-    platforms_planned: list[Platform] = Field(default_factory=list)
+    channels_planned: list[Channel] = Field(default_factory=list)
     priority: Priority = Priority.P1
 
 
 class DraftFM(Base):
     kind: Literal[Kind.DRAFT] = Kind.DRAFT
     parent_id: str = Field(description="父文档 ID，通常 = topic_id")
-    platform: Platform
+    channel: Channel
     revision: int = 1
     status: DraftStatus = DraftStatus.DRAFT
     word_count: int = 0
@@ -138,14 +138,14 @@ class DraftFM(Base):
 class PublishedFM(Base):
     kind: Literal[Kind.PUBLISHED] = Kind.PUBLISHED
     parent_id: str = Field(description="上游 draft ID")
-    platform: Platform
+    channel: Channel
     status: PublishedStatus = PublishedStatus.LIVE
     published_at: datetime
     url: str
     title_final: str | None = None
 
 
-class PlatformMetric(BaseModel):
+class ChannelMetric(BaseModel):
     model_config = ConfigDict(extra="allow")
     url: str | None = None
     views: int = 0
@@ -163,8 +163,8 @@ class PlatformMetric(BaseModel):
 class AnalyticsFM(Base):
     kind: Literal[Kind.ANALYTICS] = Kind.ANALYTICS
     status: AnalyticsStatus = AnalyticsStatus.PENDING
-    platforms_data: dict[Platform, PlatformMetric] = Field(default_factory=dict)
-    best_platform: Platform | None = None
+    channels_data: dict[Channel, ChannelMetric] = Field(default_factory=dict)
+    best_channel: Channel | None = None
     best_hook: str | None = None
     next_improvements: list[str] = Field(default_factory=list)
 

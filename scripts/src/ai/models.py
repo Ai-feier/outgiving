@@ -57,7 +57,7 @@ class VideoStatus(str, Enum):
 class VideoPrompt:
     """视频生成的语义 prompt。
 
-    与 visual-designer 的六维构建法对齐：
+    与 visual-draftsman 的六维构建法对齐：
     - scene: 景别 + 场景描述
     - subject: 主体（含实体标签和动作描述）
     - camera: 运镜指令
@@ -229,7 +229,7 @@ class MusicResult:
 class ImagePrompt:
     """图像生成的语义 prompt（Seedream ARK API）。
 
-    对齐 visual-designer 的参考图生产需求：
+    对齐 visual-draftsman 的参考图生产需求：
     - prompt: 自然语言描述
     - reference_image_url: 参考图（1-14 张，用于风格/角色锚定）
     - size: 分辨率预设或 WxH

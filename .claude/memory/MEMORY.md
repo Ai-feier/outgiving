@@ -1,3 +1,0 @@
-- [内容图片路径用 assets/ 不用相对路径](feedback_image_paths.md) — 正文 md 嵌图统一 `![](assets/figN.svg)`，不用 `../../../`
-- [禁止孤行链接，链接必须行内融入](feedback_no_orphan_links.md) — `[名称](url)` 单独占一行是 AI 味最重的一种
-- [CLAUDE.md 是项目协作的权威入口](reference_claude_md.md) — 接手任务前先读，改流程后同步更新
