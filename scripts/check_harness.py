@@ -30,8 +30,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
-# 归档与运行期产物不参与判定：归档是冻结历史，产物由 .gitignore 排除。
-ARCHIVE_PREFIX = "products/_archive/"
+# 运行期产物由 .gitignore 排除，不参与判定。
 SKIP_DIRS = {".git", "__pycache__", ".venv", ".pytest_cache", ".ruff_cache", "node_modules"}
 
 # ---------------------------------------------------------------- 检查 1
@@ -300,7 +299,6 @@ def check_skill_consumers(root: Path) -> list[str]:
         rel
         for rel in repo_files(root)
         if rel.endswith(".md")
-        and not rel.startswith(ARCHIVE_PREFIX)
         and not rel.startswith("products/")
         and (rel in ("AGENTS.md",) or rel.startswith((".pi/agents/", ".pi/rules/", ".pi/skills/", "system/")))
     ]
@@ -326,8 +324,6 @@ def _is_channel_name(segment: str) -> bool:
 def check_channel_in_paths(root: Path) -> list[str]:
     findings: list[str] = []
     for rel in repo_files(root):
-        if rel.startswith(ARCHIVE_PREFIX):
-            continue
         parts = rel.split("/")
         if len(parts) > 1 and not rel.startswith(CHANNEL_PATH_SCOPE):
             continue
@@ -368,7 +364,7 @@ def check_shared_values(root: Path) -> list[str]:
 def check_relative_refs(root: Path) -> list[str]:
     findings: list[str] = []
     for rel in repo_files(root):
-        if not rel.endswith(".md") or rel.startswith(ARCHIVE_PREFIX):
+        if not rel.endswith(".md"):
             continue
         path = root / rel
         for number, line in prose_lines(path):
@@ -427,7 +423,7 @@ def check_platform_term(root: Path) -> list[str]:
     allowed = {(rel, line) for rel, line in PLATFORM_WHITELIST}
     findings: list[str] = []
     for rel in repo_files(root):
-        if rel.startswith(ARCHIVE_PREFIX) or rel in PLATFORM_SCAN_SKIP:
+        if rel in PLATFORM_SCAN_SKIP:
             continue
         path = root / rel
         try:

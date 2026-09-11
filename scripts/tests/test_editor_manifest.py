@@ -1,7 +1,7 @@
 """composition.md YAML schema 解析器测试（快，无 ffmpeg）。
 
-覆盖：T004 真实清单、未知节/段/asset 引用报错（带名字）、keyframes 不重复、
-envelope 相对化、mask 分发、speed→src 区间、yamlmini 基础形状。
+覆盖：未知节/段/asset 引用报错（带名字）、keyframes 目标解析、subtitle style 解析、
+envelope 相对化、speed→src 区间、yamlmini 基础形状。
 """
 
 from __future__ import annotations
@@ -13,9 +13,6 @@ import pytest
 from editor import yamlmini
 from editor.manifest import CompositionFormatError, from_markdown
 from editor.models import Composition
-
-REPO = Path(__file__).resolve().parents[2]
-T004_COMPOSITION = REPO / "products/_archive/T004-funny-video/composition.md"
 
 
 def write(tmp_path: Path, name: str, text: str) -> Path:
@@ -52,82 +49,6 @@ segments:
     end: 4.0
     speed: 2.0
 """
-
-
-# ── T004 真实清单 ───────────────────────────────────────────
-
-
-def test_t004_full_parse() -> None:
-    comp = from_markdown(T004_COMPOSITION)
-    assert comp.name == "社交电量"
-    assert (comp.width, comp.height, comp.fps) == (1920, 1080, 30)
-    assert comp.bg_color == "#000000"
-    assert len(comp.assets) == 58
-    assert [t.id for t in comp.tracks] == [
-        "Main Video",
-        "Texture Overlay",
-        "Light Leak Overlay",
-        "UI Animation Overlay",
-        "BGM",
-        "SFX",
-        "Voiceover",
-    ]
-    assert comp.tracks[0].order == 0 and comp.tracks[3].order == 3
-    assert comp.tracks[1].blend_mode == "overlay" and comp.tracks[1].opacity == 0.12
-    assert len(comp.tracks[0].segments) == 69
-    assert len(comp.masks) == 6
-    assert len(comp.subtitles) == 20
-    assert set(comp.subtitle_styles) == {
-        "subtitle-main",
-        "subtitle-title",
-        "subtitle-stage",
-        "subtitle-emphasis",
-    }
-    assert len(comp.keyframe_specs) == 12
-    assert len(comp.chapter_markers) == 6
-    # 时间线：start/end 就是时间线秒（speed 不进 tl_end）
-    assert comp.total_duration == pytest.approx(434.0)
-    seg0 = comp.tracks[0].segments[0]
-    assert seg0.tl_end == pytest.approx(3.0)
-    assert seg0.src_end == pytest.approx(3.0 / 0.8)  # speed 反推源区间
-
-
-def test_t004_keyframes_no_double_append() -> None:
-    """回归：旧 parser 把每行 keyframe append 两次。"""
-    comp = from_markdown(T004_COMPOSITION)
-    sm = [s for s in comp.tracks[0].segments if s.asset_id == "smile-dead-eyes"][0]
-    assert len(sm.keyframes) == 2  # time 20.0 + 25.0，各一条
-    assert sm.keyframes[0].at == pytest.approx(0.0) and sm.keyframes[0].scale == 1.0
-    assert sm.keyframes[1].at == pytest.approx(5.0) and sm.keyframes[1].scale == pytest.approx(1.08)
-    assert sm.keyframes[1].easing == "linear"
-
-
-def test_t004_masks_distributed() -> None:
-    comp = from_markdown(T004_COMPOSITION)
-    sm = [s for s in comp.tracks[0].segments if s.asset_id == "smile-dead-eyes"][0]
-    assert sm.mask == "circle(0.5,0.45,0.56,feather=0.06)"  # radius 0.28 → size 0.56
-    wipe = [s for s in comp.tracks[0].segments if s.asset_id == "forest-path"]
-    assert any("linear(" in s.mask for s in wipe)
-
-
-def test_t004_envelope_relative() -> None:
-    comp = from_markdown(T004_COMPOSITION)
-    bgm = [s for s in comp.tracks[4].segments if s.asset_id == "bgm-main"][0]
-    assert bgm.envelope[0] == (0.0, 0.0)  # 时间线 0.0 - 段起点 0.0
-    assert bgm.envelope[1] == (3.0, 0.35)
-
-
-def test_t004_transforms() -> None:
-    comp = from_markdown(T004_COMPOSITION)
-    ui = comp.tracks[3].segments[0]
-    assert ui.transform_scale == (0.5, 0.5)
-    assert ui.transform_position == (600.0, -400.0)
-
-
-def test_t004_effects() -> None:
-    comp = from_markdown(T004_COMPOSITION)
-    s = comp.tracks[0].segments[0]
-    assert s.adjustments == {"contrast": 1.2, "saturation": 1.15}
 
 
 # ── 报错路径（必须带名字，不能静默丢段）──────────────────────
