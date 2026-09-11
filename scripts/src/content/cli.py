@@ -31,6 +31,7 @@ from .schema import (
     TopicFM,
     TopicStatus,
 )
+from workbench import review as human_review
 
 console = Console()
 
@@ -52,6 +53,18 @@ def _today() -> date:
 def _product_dir(root: Path, topic_id: str, title: str) -> Path:
     """选题目录：products/<id>-<slug>/（一个选题一个目录，全生命周期在内）。"""
     return root / "products" / f"{topic_id}-{slugify(title)}"
+
+
+def _new_review(tid: str, title: str, audience: str | None) -> human_review.Review:
+    """建选题即建人审表：形状由 `workbench/review.py` 定义，本函数只填初值。
+
+    形态未定（流程末端才分叉），表列先按文本形起步——研究与结构阶段两形态共用，
+    分叉到视频时改表头行（列名就是这张表的定义）。
+    """
+    meta = {"id": tid, "title": title, "形态": "待定", "阶段": "研究"}
+    if audience:
+        meta["初衷"] = audience
+    return human_review.Review(meta=meta, fields=list(human_review.TEXT_FIELDS))
 
 
 @click.group()
@@ -196,16 +209,15 @@ def new(ctx: click.Context, title: str, audience: str | None, channels: str) -> 
         created_at=today,
         updated_at=today,
     )
-    write(
-        product_dir / doc_filename(Kind.TOPIC.value),
-        brief,
-        _BRIEF_BODY.format(title=title),
-    )
+    brief_dir = product_dir / doc_filename(Kind.TOPIC.value)
+    write(brief_dir, brief, _BRIEF_BODY.format(title=title))
+    human_review.save(product_dir / human_review.REVIEW_FILE, _new_review(tid, title, audience))
 
     console.print(
         f"[green]✅ 已创建[/green] [cyan]{tid}[/cyan] - {title}\n"
         f"   {product_dir.relative_to(root)}/\n"
-        f"   └── brief.md   (选题信息)\n\n"
+        f"   ├── brief.md    (选题信息)\n"
+        f"   └── review.md   (人审表)\n\n"
         f"下一步: [bold]content adapt {tid} <渠道>[/bold]"
     )
 

@@ -245,3 +245,21 @@ def test_cli_reports_missing_topic(store: Path):
     result = CliRunner().invoke(workbench_cli, ["show", "T888"])
     assert result.exit_code != 0
     assert "T888" in result.output
+
+
+# ── 来源：content new 必须自产人审表 ────────────────────────
+
+
+def test_content_new_emits_renderable_review(tmp_path: Path):
+    """没有历史人审表可借时，新选题自己带一张——产物必须能被 workbench 读回。"""
+    from content.cli import main as content_cli
+
+    result = CliRunner().invoke(content_cli, ["--root", str(tmp_path), "new", "试片"])
+    assert result.exit_code == 0, result.output
+    assert "review.md" in result.output
+
+    path, rv = R.load_project("T001", root=tmp_path / "products")
+    assert path.name == R.REVIEW_FILE
+    assert rv.fields == list(R.TEXT_FIELDS)
+    assert rv.meta["title"] == "试片"
+    assert "关键决策" in R.render_console(rv)
